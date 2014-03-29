@@ -1,6 +1,7 @@
 name: CosmicOS
 markdown: redcarpet
 pygments: true
+baseurl: 
 #baseurl: /cosmicos
 msg:
   - 
