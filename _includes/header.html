@@ -17,7 +17,8 @@
 {% for css in page.extra_css %}
         <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/{{css}}" />
 {% endfor %}
-        <script type="text/javascript">
+        <link rel='shortcut icon' type='image/x-icon' href='{{site.baseurl}}/favicon.ico' />
+<script type="text/javascript">
            var current_audio = null;
            $(document).ready(function() {
               $(".hear").click(function(e) {
