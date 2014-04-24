@@ -16,11 +16,10 @@ a:hover {
 }
 
 a:visited {
-  color: #ac0011;
 }
 
 .top {
-  background:#000000;
+  background: #000;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -95,11 +94,17 @@ h2 {
   text-shadow: 3px 3px 15px #999;
 }
 
-pre, tt { 
+pre, tt, code, div.highlight { 
   font-family: "inconsolataregular", "Courier New", Courier, monospace;
 }
 
-.happy-block {
+tt, code {
+  background: #dfc;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.happy-block, div.highlight pre {
   display: table;
   background: #dfc;
   padding: 7px;
@@ -143,7 +148,7 @@ a.happy-block-bottom:hover {
   padding-top: 4px;
   padding-bottom: 4px;
   background:#0081AC;
-  color: #ffffff;
+  color: #fff;
   clear: both;
 }
 
@@ -368,7 +373,7 @@ table.msg-index {
   color: #aaa;
 }
 
-.msg-code a:focus {
+a:focus {
   outline: 0;
 }
 
@@ -394,7 +399,7 @@ pre.msg-line {
   margin-top: 0;
 }
 
-h3 a {
+h3.msg a {
   color: initial !important;
 }
 
@@ -403,4 +408,32 @@ h3 a {
 }
 .bottom img { 
   vertical-align: top;
+}
+
+
+ul.index {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;  
+}
+
+ul.index li {
+}
+
+ul.index li a {
+  display: block;
+  max-width: 300px;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  background: #333;
+  border: 1px solid black;
+  font-weight: normal;
+  color: #fff;
+}
+
+ul.index li a:hover {
+  text-decoration: none;
+  border: 1px solid blue;
+  background: #000;
 }

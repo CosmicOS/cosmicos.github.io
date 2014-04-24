@@ -16,9 +16,23 @@ CosmicOS is inspired by Hans Freudenthal's language,
 Carl Sagan's book, <A HREF="http://en.wikipedia.org/wiki/Contact_%28novel%29">Contact</A>.
 </p>
 
-The message consists of a long sequence of four basic symbols. Labeling
+<h2>Posts</h2>
+
+<ul class="index">
+  {% for post in site.posts %}
+    <li>
+      <h3><a href="{{site.baseurl}}{{ post.url }}"><b>{{ post.title }}</b>, {{ post.date | date: "%B %Y" }}</a></h3>
+    </li>
+  {% endfor %}
+</ul>
+
+
+<h2>Structure</h2>
+
+
+<p>The message consists of a long sequence of four basic symbols. Labeling
 them arbitrarily as
-<b>0</b>, <b>1</b>, <b>2</b>, and <b>3</b>, the message begins like this:
+<b>0</b>, <b>1</b>, <b>2</b>, and <b>3</b>, the message begins like this:</p>
 
 <pre class="happy-block happy-block-top">
 {% include block_RRR.txt %}
@@ -132,7 +146,6 @@ used.  Identifiers are mapped onto arbitrarily assigned numbers.
 In the message, there is nothing to distinguish identifiers from 
 numbers.  The actual language is carefully constructed so that
 this distinction is never necessary.</P>
-
 
 <h2>License</h2>
 

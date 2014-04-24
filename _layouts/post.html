@@ -7,3 +7,13 @@ layout: default
 <div class="post">
 {{ content }}
 </div>
+
+<h2>All posts</h2>
+
+<ul class="index">
+  {% for post in site.posts %}
+    <li>
+      <h3><a href="{{site.baseurl}}{{ post.url }}"><b>{{ post.title }}</b>, {{ post.date | date: "%B %Y" }}</a></h3>
+    </li>
+  {% endfor %}
+</ul>
