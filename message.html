@@ -9,7 +9,7 @@ title: "CosmicOS: full message in human-readable form"
 
 <br />
 
-{% for stanza in site.msg %}
+{% for stanza in site.data.msg.msg %}
   {% if stanza.section_description %}
   <h3 class='msg'><a name="section{{stanza.section_index}}" href="#">{{stanza.section_index}}. {{stanza.section_description}}</a></h3>
   {% endif %}
