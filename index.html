@@ -34,11 +34,14 @@ Carl Sagan's book, <A HREF="http://en.wikipedia.org/wiki/Contact_%28novel%29">Co
 them arbitrarily as
 <b>0</b>, <b>1</b>, <b>2</b>, and <b>3</b>, the message begins like this:</p>
 
-<pre class="happy-block happy-block-top">
-{% include block_RRR.txt %}
-...
-</pre>
-<A class="happy-block happy-block-bottom" HREF="wrapped.txt">see full {% include block_CCC.txt %}-symbol message</A>
+{% capture wrapped %}{% include wrapped.txt %}{% endcapture %}
+{% capture wrapped_length %}{{wrapped | strip_newlines | size}}{% endcapture %}
+{% capture wrapped_entropy %}{% include entropy.txt %}{% endcapture %}
+
+<div class="happy-block happy-block-top preish">
+{{wrapped | truncatewords: 7 | replace:' ','<br />' | replace:'...',''}}<br />...
+</div>
+<A class="happy-block happy-block-bottom" HREF="wrapped.txt">see full {{wrapped_length}}-symbol message</A>
 
 <p>
 Or reformatting into Ogham-style script (because: why not?)
@@ -84,13 +87,10 @@ versus unhelpful.
 
 <A NAME=notes></A><h2>Statistics and structure</h2>
 
-<p>
-{% include block_XXX.txt %}
-</p>
-
+{% assign ent = wrapped_entropy | plus: 0 | divided_by: 1024.0 | plus: 0.5 | floor | append: '' | split: '.' %}
 <P>
 Estimate of message entropy in <A HREF=wrapped.txt>compiled form</A>:
-<B>{% include block_EEE.txt %} kB</B>.
+<B>{{ ent.first }} kB</B>.
 </P>
 
 <P>

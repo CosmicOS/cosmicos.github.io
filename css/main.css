@@ -94,7 +94,7 @@ h2 {
   text-shadow: 3px 3px 15px #999;
 }
 
-pre, tt, code, div.highlight { 
+pre, tt, code, div.highlight, div.preish { 
   font-family: "inconsolataregular", "Courier New", Courier, monospace;
 }
 
