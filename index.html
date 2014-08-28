@@ -5,6 +5,16 @@ title: "CosmicOS: a next-generation Contact message"
 
 <h2>CosmicOS: a next-generation Contact message</h2>
 
+<div class="latest">
+<ul class="index">
+  {% for post in site.posts | limit: 3 %}
+    <li>
+      <h3><a href="{{site.baseurl}}{{ post.url }}"><b>{{ post.title }}</b>, {{ post.date | date: "%B %Y" }}</a></h3>
+    </li>
+  {% endfor %}
+</ul>
+</div>
+
 <p>
 CosmicOS is a way to create stand-alone messages suitable for
 conversations across large gulfs of time and space.  It is
@@ -16,21 +26,46 @@ CosmicOS is inspired by Hans Freudenthal's language,
 Carl Sagan's book, <A HREF="http://en.wikipedia.org/wiki/Contact_%28novel%29">Contact</A>.
 </p>
 
-<h2>Posts</h2>
+<h2>Status</h2>
 
-<ul class="index">
-  {% for post in site.posts %}
-    <li>
-      <h3><a href="{{site.baseurl}}{{ post.url }}"><b>{{ post.title }}</b>, {{ post.date | date: "%B %Y" }}</a></h3>
-    </li>
-  {% endfor %}
+<p>
+The message so far communicates:
+</p>
+
+<ul>
+  <li>Basic mathematics and logic. Just to start somewhere.</li>
+  <li>Basic elements of programming. I'm a programmer, I'm biased.</li>
+  <li>2D logic circuits and a program to evaluate them. Just for fun.</li>
+  <li>A very minimal virtual machine for running Java byte code, and a tiny game written in Java. Likewise, just for fun.</li>
 </ul>
 
+<p>
+The idea is to communicate the usual math and logic basics,
+then use that to show how to run programs, then send
+interesting programs that demonstrate behaviors and interactions,
+and start communicating ideas through &rdquo;theater&rdquo;
+rather than dry logic.
+This is inspired by Freudenthal's
+idea of staging conversations between
+his imaginary characters <b>Ha</b> and <b>Hb</b>.
+</p>
 
-<h2>Structure</h2>
+<A NAME="toc"></A>
+<h2>Message in plain text form</h2>
+
+<p>
+The message can be rendered in plain text.  This is <i>not</i> the
+form in which it would be transmitted!
+</p>
+
+{% include sections.html %}
 
 
-<p>The message consists of a long sequence of four basic symbols. Labeling
+
+<h2>Message in 4-symbol form</h2>
+
+<p>Traditionally, CosmicOS has been represented as
+a long sequence of four symbols. Labeling
 them arbitrarily as
 <b>0</b>, <b>1</b>, <b>2</b>, and <b>3</b>, the message begins like this:</p>
 
@@ -43,6 +78,7 @@ them arbitrarily as
 </div>
 <A class="happy-block happy-block-bottom" HREF="wrapped.txt">see full {{wrapped_length}}-symbol message</A>
 
+{% if false %}
 <p>
 Or reformatting into Ogham-style script (because: why not?)
 </p>
@@ -53,50 +89,22 @@ Or reformatting into Ogham-style script (because: why not?)
 </div>
 <A class="happy-block happy-block-bottom" HREF="iconic.html">see full message</A>
 
-<p>
-The message communicates:
-</p>
-
-<ul>
-  <li>Basic mathematics and logic.</li>
-  <li>Basic elements of functional programming.</li>
-  <li>2D logic circuits and a program to evaluate them.</li>
-  <li>A very minimal JVM interpreter.</li>
-  <li>A tiny game that runs on the JVM.</li>
-</ul>
-
-<p>
-The idea is to communicate the usual math and logic basics,
-then use that to show how to run programs, then send
-interesting programs that demonstrate behaviors and interactions
-that get at fuzzier stuff. This is inspired by Freudenthal's
-idea of staging conversations between <b>Ha</b> and <b>Hb</b>
-that happen to be about math but which get at ideas like helpful
-versus unhelpful.
-</p>
-
-<A NAME="toc"></A>
-<h2>Message in human-readable form</h2>
-
-<p>
-  This form of the message is close to the actual &ldquo;source code&rdquo;
-  of the message, and should be much easier to read (especially
-  if you are a programmer).</p>
-
-{% include sections.html %}
-
-<A NAME=notes></A><h2>Statistics and structure</h2>
+{% endif %}
 
 {% assign ent = wrapped_entropy | plus: 0 | divided_by: 1024.0 | plus: 0.5 | floor | append: '' | split: '.' %}
 <P>
-Estimate of message entropy in <A HREF=wrapped.txt>compiled form</A>:
+Estimating message entropy by compressing this message, we get:
 <B>{{ ent.first }} kB</B>.
+This message form has some major revisions pending to ease
+comprehension.
+Please be forgiving.
+It'll all get fixed in an instant of galactic time.
 </P>
 
+<h2>General structure</h2>
+
 <P>
-There are bugs and rough edges in the message.  Please be forgiving.
-It'll all get fixed in an instant of galactic time.  The structure
-is as follows:
+The message is organized as follows:
 </P>
 
 
@@ -113,39 +121,38 @@ transmit simulations whose behavior can be examined and discussed, and
 to introduce higher-level notions in terms of those simulations.</li>
 </ul>
 
-<p>The generated message currently consists of a sequence of 4 symbols.</p>
+<p>The message uses the following syntax (shown in plain-text form):</p>
 
 <pre class="happy-block">
-  number   symbol   meaning
-    0         .     binary digit zero
-    1         :     binary digit one
-    2         (     marks beginning of an expression
-    3         )     marks end of an expression
+  symbol   meaning
+     (     marks beginning of an expression
+     )     marks end of an expression
+     |     opens a parenthesis which will self-close at the next parenthesis.
+           (A B | C | D) is another way to write (A B (C (D))).
+           This greatly simplifies complex expressions.
+     $     $A is shorthand for (A).
+     ;     marks end of a statement
 </pre>
 
-<P>And two pseudo-symbols coded using the above:</P>
 
-<PRE class="happy-block">
-  sequence  symbol   meaning
-    .()        /     opens an implicit paren, which will close at next paren
-                     (A B / C / D) is another way to write (A B (C (D)))
-                     This greatly simplifies complex expressions.
-    (())       ;     marks end of sentence
-</PRE>
-
-<p>Numbers are encoded as binary digits between parentheses, e.g.  (:::.)
-is 1110 base 2 which is 14 in decimal.  A set of numbers between
-parentheses constitutes an expression.  Expressions can be nested.
-Expressions followed by a semicolon should evaluate to be true, once
-the rules for evaluation have been introduced.
+<p>There are also numbers and arbitrary symbols.  If there's no
+other syntax between two of these, they must be separated
+from each other by whitespace.
+How all of this is encoded is subject to change.  Originally,
+CosmicOS converted all arbitrary symbols into numbers, and
+encoded numbers in binary.  The message will remain compatible
+with this, but the encoding of symbols is being changed.
 </p>
 
-<P>In the human-readable form of the message, decimal numbers can be
-used.  There are converted to binary.  Identifiers can also be
-used.  Identifiers are mapped onto arbitrarily assigned numbers.
-In the message, there is nothing to distinguish identifiers from 
-numbers.  The actual language is carefully constructed so that
-this distinction is never necessary.</P>
+<h2>Posts</h2>
+
+<ul class="index">
+  {% for post in site.posts %}
+    <li>
+      <h3><a href="{{site.baseurl}}{{ post.url }}"><b>{{ post.title }}</b>, {{ post.date | date: "%B %Y" }}</a></h3>
+    </li>
+  {% endfor %}
+</ul>
 
 <h2>License</h2>
 

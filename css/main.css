@@ -437,3 +437,8 @@ ul.index li a:hover {
   border: 1px solid blue;
   background: #000;
 }
+
+.latest { 
+  float: right;
+  padding-left: 20px;          
+}

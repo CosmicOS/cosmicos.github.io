@@ -31,8 +31,8 @@ extra_css: css/jqconsole.css
  }
  
  CosCon.prototype.builtins = [
-   { name: "?", value: null, tip: "create an anonymous function", example: "? x / - $x 1" },
-   { name: "@", value: null, tip: "store an expression in memory", example: "@ dec / ? x / - $x 1" },
+   { name: "?", value: null, tip: "create an anonymous function", example: "? x | - $x 1" },
+   { name: "@", value: null, tip: "store an expression in memory", example: "@ dec | ? x | - $x 1" },
    { name: "if", value: null, tip: "conditional evaluation", example: "if (> $x 0) (dec $x) $x" },
    {
      name: "+",
@@ -74,25 +74,25 @@ extra_css: css/jqconsole.css
 
  CosCon.prototype.examples = [
    "+ 3 (* 10 2);",
-   "+ 3 / * 10 2;",
+   "+ 3 | * 10 2;",
    "+ 3 18;",
-   "@ square / ? x / * $x $x;",
+   "@ square | ? x | * $x $x;",
    "square 10;",
-   "@ factorial / ? n / if (= $n 0) 1 / * $n / factorial (- $n 1);",
+   "@ factorial | ? n | if (= $n 0) 1 | * $n | factorial (- $n 1);",
    "factorial 5;",
-   "@ first / ? x / ? y / x;",
-   "@ second / ? x / ? y / y;",
-   "@ cons / ? x / ? y / ? f / f $x $y;",
-   "@ car / ? f / f $first;",
-   "@ cdr / ? f / f $second;",
-   "car / cons 10 15;",
-   "cdr / cons 10 15;"
+   "@ first | ? x | ? y | x;",
+   "@ second | ? x | ? y | y;",
+   "@ cons | ? x | ? y | ? f | f $x $y;",
+   "@ car | ? f | f $first;",
+   "@ cdr | ? f | f $second;",
+   "car | cons 10 15;",
+   "cdr | cons 10 15;"
  ];
 
  CosCon.prototype.additions = [
-  "@ not / ? x / if $x 0 1;",
-  "@ and / ? x / ? y / if $x $y 0;",
-  "@ or / ? x / ? y / if $x 1 $y;"
+  "@ not | ? x | if $x 0 1;",
+  "@ and | ? x | ? y | if $x $y 0;",
+  "@ or | ? x | ? y | if $x 1 $y;"
  ];
 
  CosCon.prototype.addNumeric = function(name) {
@@ -121,7 +121,8 @@ extra_css: css/jqconsole.css
        level++;
        if (level==1) continue;
      }
-     if (ch=='/' && level==0) {
+     if (ch=='/') alert("yo");
+     if (ch=='|' && level==0) {
        level = 1;
        continue;
      }
@@ -249,7 +250,7 @@ extra_css: css/jqconsole.css
 	   out+= "  Space-separated lists of integers with nesting e.g.: 1 2 3 (4 5) (6 7 (8 9))\n";
 	   out+= "  Shorthand: symbols (listed below) can be used to stand for integers.\n";
 	   out+= "  Shorthand: \"$x\" is equivalent to \"(x)\"\n";
-	   out+= "  Shorthand: \"/\" nests to end of expression: (1 2 / 3 4) is equiv. to (1 2 (3 4))\n";
+	   out+= "  Shorthand: \"|\" nests to end of expression: (1 2 | 3 4) is equiv. to (1 2 (3 4))\n";
 	   out+= "  Lists are evaluated by calling the first element with each of the others in turn.\n";
 	   out+= "  If the first element of the list is a number, it is treated as a variable lookup.\n";
 	   out+= "Index Symbol  Meaning                           Example\n";
