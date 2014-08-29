@@ -442,3 +442,21 @@ ul.index li a:hover {
   float: right;
   padding-left: 20px;          
 }
+
+.next .koan { 
+  font-size: 15px;
+}
+
+.next .s { 
+  color: #ccc;
+}
+
+.next img { 
+  height: 15px;
+  vertical-align: middle;
+}
+
+.next pre { 
+  color: #080;
+  font-size: 10px;
+}
