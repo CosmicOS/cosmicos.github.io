@@ -460,3 +460,23 @@ ul.index li a:hover {
   color: #080;
   font-size: 10px;
 }
+
+.next div.ack { 
+  padding-top: 1em;
+  font-size: 10px;
+  max-width: 400px;
+}
+
+.next div.ack ul { 
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+.next div.ack li { 
+  display: inline-block;
+  background: #eee;
+  padding: 4px;
+  margin: 2px;
+  border-radius: 4px;
+}
