@@ -88,20 +88,45 @@ p {
   text-align: justify;
 }
 
-h2 {
-  font-size: 200%;
+h1, h2 {
   color: #333;
   text-shadow: 3px 3px 15px #999;
+}
+
+h1 {
+  font-size: 300%;
+}
+
+h2 {
+  font-size: 200%;
 }
 
 pre, tt, code, div.highlight, div.preish { 
   font-family: "inconsolataregular", "Courier New", Courier, monospace;
 }
 
+blockquote { 
+  display: table;
+}
+
 tt, code {
   background: #dfc;
   padding-left: 3px;
   padding-right: 3px;
+}
+
+.bq { 
+  background: #dfc;
+}
+
+blockquote p, blockquote table {
+  background: #dfc;
+  padding: 20px;
+}
+
+blockquote table td {
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .happy-block, div.highlight pre {
@@ -479,4 +504,14 @@ ul.index li a:hover {
   padding: 4px;
   margin: 2px;
   border-radius: 4px;
+}
+
+.exp { 
+  padding-left: 10px;
+  font-style: italic;
+  color: #888;
+}
+
+div.midpic { 
+  text-align: center;
 }
