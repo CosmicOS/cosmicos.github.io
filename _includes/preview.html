@@ -1408,7 +1408,7 @@
 # 'if' does not evaluate branch-not-taken, TODO show this.
 </pre>
 <div class='koan' data-id='478'>
-  <img src='svg/define.svg'/><span class='s'>_</span>*<<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span>n<span class='s'>_</span>|<span class='s'>_</span><img src='svg/true.svg'/><img src='svg/false.svg'/><span class='s'>_</span>(<<span class='s'>_</span>$n<span class='s'>_</span>1)<span class='s'>_</span>1<span class='s'>_</span>|<span class='s'>_</span>*<span class='s'>_</span>$n<span class='s'>_</span>|<span class='s'>_</span>*<<span class='s'>_</span>|<span class='s'>_</span>-<span class='s'>_</span>$n<span class='s'>_</span>1&nbsp;&nbsp;<span class='s'>~</span>
+  <img src='svg/define.svg'/><span class='s'>_</span>*<<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/true.svg'/><img src='svg/false.svg'/><span class='s'>_</span>(<<span class='s'>_</span>$<img src='svg/x.svg'/><span class='s'>_</span>1)<span class='s'>_</span>1<span class='s'>_</span>|<span class='s'>_</span>*<span class='s'>_</span>$<img src='svg/x.svg'/><span class='s'>_</span>|<span class='s'>_</span>*<<span class='s'>_</span>|<span class='s'>_</span>-<span class='s'>_</span>$<img src='svg/x.svg'/><span class='s'>_</span>1&nbsp;&nbsp;<span class='s'>~</span>
 </div>
 <div class='koan' data-id='479'>
   <img src='svg/_equals_.svg'/><span class='s'>_</span>1<span class='s'>_</span>|<span class='s'>_</span>*<<span class='s'>_</span>1&nbsp;&nbsp;<span class='s'>~</span>
@@ -1764,6 +1764,141 @@
 <div class='koan' data-id='598'>
   <<img src='svg/_equals_.svg'/><span class='s'>_</span>2<span class='s'>_</span>2&nbsp;&nbsp;<span class='s'>~</span>
 </div>
+<pre>
+# MATH illustrate pairs
+</pre>
+<div class='koan' data-id='601'>
+  <img src='svg/define.svg'/><span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/y.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/z.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/z.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/><span class='s'>_</span>$<img src='svg/y.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='602'>
+  <img src='svg/define.svg'/><span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/z.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/z.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/y.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='603'>
+  <img src='svg/define.svg'/><span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/z.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/z.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/_lambda_.svg'/><span class='s'>_</span><img src='svg/y.svg'/><span class='s'>_</span>$<img src='svg/y.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='604'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>0<span class='s'>_</span>4)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>0<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='605'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>0<span class='s'>_</span>4)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>4<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='606'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>6<span class='s'>_</span>2)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>6<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='607'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>6<span class='s'>_</span>2)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>2<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='608'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>3<span class='s'>_</span>9)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>3<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='609'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>3<span class='s'>_</span>9)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>9<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='610'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>7<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>10<span class='s'>_</span>2)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>7<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='611'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>7<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>10<span class='s'>_</span>2)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>10<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='612'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>7<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>10<span class='s'>_</span>2)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>2<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='613'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>1<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>15<span class='s'>_</span>17)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>1<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='614'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>1<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>15<span class='s'>_</span>17)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>15<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='615'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>1<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>15<span class='s'>_</span>17)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>17<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='616'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>8<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>14<span class='s'>_</span>9)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>8<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='617'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>8<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>14<span class='s'>_</span>9)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>14<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='618'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>8<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>14<span class='s'>_</span>9)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>9<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='619'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>3<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>0<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>2<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>4<span class='s'>_</span>1)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>3<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='620'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>3<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>0<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>2<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>4<span class='s'>_</span>1)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>0<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='621'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>3<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>0<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>2<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>4<span class='s'>_</span>1)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>2<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='622'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>3<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>0<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>2<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>4<span class='s'>_</span>1)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>4<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/begin.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='623'>
+  <img src='svg/assign.svg'/><span class='s'>_</span><img src='svg/x.svg'/><span class='s'>_</span>(<img src='svg/pair.svg'/><span class='s'>_</span>3<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>0<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>2<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><span class='s'>_</span>4<span class='s'>_</span>1)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/_equals_.svg'/><span class='s'>_</span>1<span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/pair.svg'/><img src='svg/end.svg'/><span class='s'>_</span>$<img src='svg/x.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<pre>
+# MATH introduce mutable objects, and side-effects
+</pre>
+<div class='koan' data-id='626'>
+  <img src='svg/intro.svg'/><span class='s'>_</span><img src='svg/cell.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='627'>
+  <img src='svg/intro.svg'/><span class='s'>_</span><img src='svg/cell.svg'/><img src='svg/define.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='628'>
+  <img src='svg/intro.svg'/><span class='s'>_</span><img src='svg/cell.svg'/><img src='svg/emerge.svg'/>&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='629'>
+  <img src='svg/define.svg'/><span class='s'>_</span><img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/cell.svg'/><span class='s'>_</span>14&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='630'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>14&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='631'>
+  <img src='svg/cell.svg'/><img src='svg/define.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/><span class='s'>_</span>15&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='632'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>15&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='633'>
+  <img src='svg/cell.svg'/><img src='svg/define.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/><span class='s'>_</span>5&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='634'>
+  <img src='svg/cell.svg'/><img src='svg/define.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/><span class='s'>_</span>7&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='635'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>7&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='636'>
+  <img src='svg/define.svg'/><span class='s'>_</span><img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/y.svg'/><span class='s'>_</span>|<span class='s'>_</span><img src='svg/cell.svg'/><span class='s'>_</span>11&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='637'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/y.svg'/>)<span class='s'>_</span>11&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='638'>
+  <img src='svg/cell.svg'/><img src='svg/define.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/y.svg'/><span class='s'>_</span>22&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='639'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/y.svg'/>)<span class='s'>_</span>22&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='640'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>7&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='641'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>29<span class='s'>_</span>(+<span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>|<span class='s'>_</span><img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/y.svg'/>)&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='642'>
+  <img src='svg/true.svg'/><img src='svg/false.svg'/><span class='s'>_</span>(<img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>7)<span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/define.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/><span class='s'>_</span>88)<span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/define.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/><span class='s'>_</span>99)&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='643'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>88&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='644'>
+  <img src='svg/true.svg'/><img src='svg/false.svg'/><span class='s'>_</span>(<img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>7)<span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/define.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/><span class='s'>_</span>88)<span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/define.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/><span class='s'>_</span>99)&nbsp;&nbsp;<span class='s'>~</span>
+</div>
+<div class='koan' data-id='645'>
+  <img src='svg/_equals_.svg'/><span class='s'>_</span>(<img src='svg/cell.svg'/><img src='svg/emerge.svg'/><span class='s'>_</span>$<img src='svg/demo.svg'/><img src='svg/cell.svg'/><img src='svg/x.svg'/>)<span class='s'>_</span>99&nbsp;&nbsp;<span class='s'>~</span>
+</div>
 <div class='ack'><div>Icons used under CC BY, credits:</div><ul>
 <li><a href='http://thenounproject.com/term/sunrise/6050/'>Razlan Hanafiah</a></li>
 <li><a href='http://thenounproject.com/term/scale/31639/'>Raj Mohanlal</a></li>
@@ -1778,4 +1913,6 @@
 <li><a href='http://thenounproject.com/term/towel/62902/'>Arthur Shlain</a></li>
 <li><a href='http://thenounproject.com/term/circle/10055/'>Leinad Lehmko</a></li>
 <li><a href='http://thenounproject.com/term/no/3897/'>Katie M Westbrook</a></li>
+<li><a href='http://thenounproject.com/term/map-marker/2848/'>P.J. Onori</a></li>
+<li><a href='http://thenounproject.com/term/theater/49882/'>Murali Krishna</a></li>
 </ul></div>
