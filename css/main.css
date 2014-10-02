@@ -469,7 +469,8 @@ ul.index li a:hover {
 }
 
 .next .koan { 
-  font-size: 15px;
+  font-size: 12px;
+  font-family: Courier;
 }
 
 .next .s { 
