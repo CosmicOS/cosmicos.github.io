@@ -26,6 +26,7 @@ title: "CosmicOS: full message in human-readable form"
 {% endunless %}{% endfor %}</pre>
     {% endif %}
   {% else %}
+<div class="scrawl">{{stanza.spider}}</div>
 <pre class="msg-line">{% for line in stanza.lines %}{{line | escape}}
 {% endfor %}</pre>
 <div class="msg-code" data-code="{{stanza.code}}"><a class="show" href="#">{{stanza.code | truncate: 40}}</a><a class="hear" href="#">hear</a></div>

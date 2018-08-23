@@ -319,6 +319,13 @@ a.sim-button:hover {
   color: black;
 }
 
+p.scrawl {
+  margin: 0;
+  padding: 3px;
+  color: blue;
+  font-size: 170%;
+}
+
 .breakable { 
   word-break: break-all;
 }

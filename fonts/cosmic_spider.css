@@ -1,0 +1,176 @@
+/*
+  Icon Font: cosmic_spider
+*/
+
+@font-face {
+  font-family: "cosmic_spider";
+  src: url("./cosmic_spider.eot");
+  src: url("./cosmic_spider.eot?#iefix") format("embedded-opentype"),
+       url("./cosmic_spider.woff2") format("woff2"),
+       url("./cosmic_spider.woff") format("woff"),
+       url("./cosmic_spider.ttf") format("truetype"),
+       url("./cosmic_spider.svg#cosmic_spider") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "cosmic_spider";
+    src: url("./cosmic_spider.svg#cosmic_spider") format("svg");
+  }
+}
+
+[data-icon]:before { content: attr(data-icon); }
+
+[data-icon]:before,
+.icon-coschar_000000:before,
+.icon-coschar_000001:before,
+.icon-coschar_000010:before,
+.icon-coschar_000011:before,
+.icon-coschar_000100:before,
+.icon-coschar_000101:before,
+.icon-coschar_000110:before,
+.icon-coschar_000111:before,
+.icon-coschar_001000:before,
+.icon-coschar_001001:before,
+.icon-coschar_001010:before,
+.icon-coschar_001011:before,
+.icon-coschar_001100:before,
+.icon-coschar_001101:before,
+.icon-coschar_001110:before,
+.icon-coschar_001111:before,
+.icon-coschar_00____:before,
+.icon-coschar_010000:before,
+.icon-coschar_010001:before,
+.icon-coschar_010010:before,
+.icon-coschar_010011:before,
+.icon-coschar_010100:before,
+.icon-coschar_010101:before,
+.icon-coschar_010110:before,
+.icon-coschar_010111:before,
+.icon-coschar_011000:before,
+.icon-coschar_011001:before,
+.icon-coschar_011010:before,
+.icon-coschar_011011:before,
+.icon-coschar_011100:before,
+.icon-coschar_011101:before,
+.icon-coschar_011110:before,
+.icon-coschar_011111:before,
+.icon-coschar_01____:before,
+.icon-coschar_100000:before,
+.icon-coschar_100001:before,
+.icon-coschar_100010:before,
+.icon-coschar_100011:before,
+.icon-coschar_100100:before,
+.icon-coschar_100101:before,
+.icon-coschar_100110:before,
+.icon-coschar_100111:before,
+.icon-coschar_101000:before,
+.icon-coschar_101001:before,
+.icon-coschar_101010:before,
+.icon-coschar_101011:before,
+.icon-coschar_101100:before,
+.icon-coschar_101101:before,
+.icon-coschar_101110:before,
+.icon-coschar_101111:before,
+.icon-coschar_10____:before,
+.icon-coschar_110000:before,
+.icon-coschar_110001:before,
+.icon-coschar_110010:before,
+.icon-coschar_110011:before,
+.icon-coschar_110100:before,
+.icon-coschar_110101:before,
+.icon-coschar_110110:before,
+.icon-coschar_110111:before,
+.icon-coschar_111000:before,
+.icon-coschar_111001:before,
+.icon-coschar_111010:before,
+.icon-coschar_111011:before,
+.icon-coschar_111100:before,
+.icon-coschar_111101:before,
+.icon-coschar_111110:before,
+.icon-coschar_111111:before,
+.icon-coschar_11____:before {
+  display: inline-block;
+  font-family: "cosmic_spider";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+.icon-coschar_000000:before { content: "\f100"; }
+.icon-coschar_000001:before { content: "\f101"; }
+.icon-coschar_000010:before { content: "\f102"; }
+.icon-coschar_000011:before { content: "\f103"; }
+.icon-coschar_000100:before { content: "\f104"; }
+.icon-coschar_000101:before { content: "\f105"; }
+.icon-coschar_000110:before { content: "\f106"; }
+.icon-coschar_000111:before { content: "\f107"; }
+.icon-coschar_001000:before { content: "\f108"; }
+.icon-coschar_001001:before { content: "\f109"; }
+.icon-coschar_001010:before { content: "\f10a"; }
+.icon-coschar_001011:before { content: "\f10b"; }
+.icon-coschar_001100:before { content: "\f10c"; }
+.icon-coschar_001101:before { content: "\f10d"; }
+.icon-coschar_001110:before { content: "\f10e"; }
+.icon-coschar_001111:before { content: "\f10f"; }
+.icon-coschar_00____:before { content: "\f110"; }
+.icon-coschar_010000:before { content: "\f111"; }
+.icon-coschar_010001:before { content: "\f112"; }
+.icon-coschar_010010:before { content: "\f113"; }
+.icon-coschar_010011:before { content: "\f114"; }
+.icon-coschar_010100:before { content: "\f115"; }
+.icon-coschar_010101:before { content: "\f116"; }
+.icon-coschar_010110:before { content: "\f117"; }
+.icon-coschar_010111:before { content: "\f118"; }
+.icon-coschar_011000:before { content: "\f119"; }
+.icon-coschar_011001:before { content: "\f11a"; }
+.icon-coschar_011010:before { content: "\f11b"; }
+.icon-coschar_011011:before { content: "\f11c"; }
+.icon-coschar_011100:before { content: "\f11d"; }
+.icon-coschar_011101:before { content: "\f11e"; }
+.icon-coschar_011110:before { content: "\f11f"; }
+.icon-coschar_011111:before { content: "\f120"; }
+.icon-coschar_01____:before { content: "\f121"; }
+.icon-coschar_100000:before { content: "\f122"; }
+.icon-coschar_100001:before { content: "\f123"; }
+.icon-coschar_100010:before { content: "\f124"; }
+.icon-coschar_100011:before { content: "\f125"; }
+.icon-coschar_100100:before { content: "\f126"; }
+.icon-coschar_100101:before { content: "\f127"; }
+.icon-coschar_100110:before { content: "\f128"; }
+.icon-coschar_100111:before { content: "\f129"; }
+.icon-coschar_101000:before { content: "\f12a"; }
+.icon-coschar_101001:before { content: "\f12b"; }
+.icon-coschar_101010:before { content: "\f12c"; }
+.icon-coschar_101011:before { content: "\f12d"; }
+.icon-coschar_101100:before { content: "\f12e"; }
+.icon-coschar_101101:before { content: "\f12f"; }
+.icon-coschar_101110:before { content: "\f130"; }
+.icon-coschar_101111:before { content: "\f131"; }
+.icon-coschar_10____:before { content: "\f132"; }
+.icon-coschar_110000:before { content: "\f133"; }
+.icon-coschar_110001:before { content: "\f134"; }
+.icon-coschar_110010:before { content: "\f135"; }
+.icon-coschar_110011:before { content: "\f136"; }
+.icon-coschar_110100:before { content: "\f137"; }
+.icon-coschar_110101:before { content: "\f138"; }
+.icon-coschar_110110:before { content: "\f139"; }
+.icon-coschar_110111:before { content: "\f13a"; }
+.icon-coschar_111000:before { content: "\f13b"; }
+.icon-coschar_111001:before { content: "\f13c"; }
+.icon-coschar_111010:before { content: "\f13d"; }
+.icon-coschar_111011:before { content: "\f13e"; }
+.icon-coschar_111100:before { content: "\f13f"; }
+.icon-coschar_111101:before { content: "\f140"; }
+.icon-coschar_111110:before { content: "\f141"; }
+.icon-coschar_111111:before { content: "\f142"; }
+.icon-coschar_11____:before { content: "\f143"; }
