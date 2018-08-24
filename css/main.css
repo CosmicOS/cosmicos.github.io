@@ -1,10 +1,23 @@
+html { 
+  background-color: black;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  color: #000000;
-  background: #ffffff;
-  padding: 0px;
-  margin: 0px;
+  margin: 0;
+  padding: 0;
+  font-family: 'Voltaire', sans-serif;
+  background-color: black;
+  background: url("/images/party_planet.jpg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center top;
+}
+
+body {
   font-family: arial, Helvetica, 'Bitstream Vera Sans', 'Luxi Sans', Verdana, Sans-Serif;
-  font-size: 80%;
 }
 
 a:link, a:visited, a:hover {
@@ -19,13 +32,13 @@ a:visited {
 }
 
 .top {
-  background: #000;
+  xx-background: #000;
   width: 100%;
   margin: 0;
   padding: 0;
-  background-image:url('../images/header.jpg');
-  background-repeat:no-repeat;
-  background-position:right;
+  xx-background-image:url('../images/header.jpg');
+  xx-background-repeat:no-repeat;
+  xx-background-position:right;
 }
 
 .top a.logo {
@@ -54,11 +67,20 @@ a:visited {
 }
 
 .top a {
+  display: inline-block;
+}
+
+.top { 
+  text-align: center;
+}
+
+.top a {
   color: white;
   display: block;
-  padding: 5px;
+  padding: 0.5em;
   margin: 5px;
-  border-radius: 5px;
+  border-radius: 1em;
+  border: 0.1em solid yellow;
   background: #111;
   font-weight: bold;
 }
@@ -71,6 +93,9 @@ a:visited {
   background: #00f;
 }
 
+.menu-logo {
+  font-size: 200%;
+}
 
 .top a:hover {
   background: #333;
@@ -78,10 +103,12 @@ a:visited {
 }
 
 div.content {
+  background: white;
   padding: 20px;
+}
 
-  margin-left: 20px;
-  margin-right: 20px;
+div.content-index {
+  background: none;
 }
 
 p {
@@ -322,7 +349,7 @@ a.sim-button:hover {
 p.scrawl {
   margin: 0;
   padding: 3px;
-  color: blue;
+  color: yellow;
   font-size: 170%;
 }
 

@@ -1,6 +1,7 @@
 {% include header.html %}
 
-<div class="content">
+{% assign a = page.name | split: '.' %}
+<div class="content content-{{a[0]}}">
 
 {{content}}
 

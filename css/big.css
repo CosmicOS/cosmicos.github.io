@@ -1,6 +1,6 @@
 div.content { 
-  padding-left: 0px;
-  padding-right: 0px;
+  padding-left: 20px;
+  padding-right: 20px;
   width: 760px;
   margin: 0 auto;
 }
@@ -13,11 +13,7 @@ div.content {
   font-size: 130%;
 }
 
-.top ul a {
-  padding: 8px;
-  border-radius: 8px;
-}
-
-#github-ribbon { 
-  display: initial;
+.top ul a { 
+  padding: 20px;
+  border-radius: 40px;
 }
