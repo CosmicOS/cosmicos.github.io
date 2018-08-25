@@ -1,0 +1,12 @@
+---
+layout: part
+---
+<div class="show-message-gate">
+{% for stanza in site.data.msg %}
+  {% if stanza.role == "gate" %}
+  <div>
+  <a href="/{{stanza.page}}"><img src="/{{stanza.thumbnail}}" /></a>
+  </div>
+  {% endif %}
+{% endfor %}
+</div>

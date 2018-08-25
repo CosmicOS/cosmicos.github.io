@@ -7,17 +7,13 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Voltaire', sans-serif;
+  font-family: arial, Helvetica, 'Bitstream Vera Sans', 'Luxi Sans', Verdana, Sans-Serif;
   background-color: black;
   background: url("/images/party_planet.jpg");
   background-size: contain;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center top;
-}
-
-body {
-  font-family: arial, Helvetica, 'Bitstream Vera Sans', 'Luxi Sans', Verdana, Sans-Serif;
 }
 
 a:link, a:visited, a:hover {
@@ -32,13 +28,9 @@ a:visited {
 }
 
 .top {
-  xx-background: #000;
   width: 100%;
   margin: 0;
   padding: 0;
-  xx-background-image:url('../images/header.jpg');
-  xx-background-repeat:no-repeat;
-  xx-background-position:right;
 }
 
 .top a.logo {
@@ -105,9 +97,18 @@ a:visited {
 div.content {
   background: white;
   padding: 20px;
+  min-height: 100vh;
 }
 
 div.content-index {
+  background: none;
+}
+
+div.content-gate {
+  background: none;
+}
+
+div.content-text {
   background: none;
 }
 
@@ -329,6 +330,61 @@ a.sim-button:hover {
 
 }
 
+.show-message { 
+  color: yellow;
+}
+
+.show-message-four { 
+  font-family: "inconsolataregular", "Courier New", Courier, monospace;
+  text-align: center;
+}
+
+.show-message-gate { 
+  text-align: center;
+}
+
+.show-message-gate img { 
+  display: inline-block;
+  padding: 0.05em;
+  margin: 1em;
+  box-shadow: 0px 0px 2em yellow;
+}
+
+.show-message-gate a {
+  opacity: 0.9;
+}
+
+.show-message-gate a:hover { 
+  opacity: 1.0;
+}
+
+.show-message-text pre { 
+  color: yellow;
+}
+
+
+#msg-choice {
+  text-align: center;
+  font-size: 300%;
+  color: black;
+}
+
+#msg-choice a {
+  color: black;
+  opacity: 0.5;
+  text-shadow: 3px 3px 15px #999;
+}
+
+#msg-choice a:hover {
+  color: white;
+  text-decoration: none;
+  text-shadow: 3px 3px 15px #fff;
+}
+
+#msg-choice a.msg-active { 
+  color: white;
+  opacity: 1.0;
+}
 
 .scrawl {
   font-family: "fontcustom";
@@ -343,13 +399,11 @@ a.sim-button:hover {
   webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
   word-break: break-all;
-  color: black;
 }
 
 p.scrawl {
   margin: 0;
   padding: 3px;
-  color: yellow;
   font-size: 170%;
 }
 
@@ -549,4 +603,14 @@ ul.index li a:hover {
 
 div.midpic { 
   text-align: center;
+}
+
+@keyframes fadeIn {
+   0% {opacity: 0;}
+   100% {opacity: 1;}
+} 
+
+.fadeIn {
+  animation-name: fadeIn;
+  animation-duration: 2s;
 }

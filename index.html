@@ -3,10 +3,15 @@ layout: default
 title: "CosmicOS: a next-generation Contact message"
 ---
 
+<div id="msg-choice">
+</div>
+
+<div id="show-message-container">
+<div class="show-message">
 {% for stanza in site.data.msg %}
   {% if stanza.role == "code" %}
     <p class="scrawl">{{stanza.spider}}</p>
   {% endif %}
 {% endfor %}
-
+</div>
 </div>

@@ -1,0 +1,11 @@
+---
+layout: part
+---
+<div class="show-message-text">
+{% for stanza in site.data.msg %}
+  {% if stanza.role == "code" %}
+<pre>{% for line in stanza.lines %}{{line | escape}}
+{% endfor %}</pre>
+  {% endif %}
+{% endfor %}
+</div>
