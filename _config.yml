@@ -1,8 +1,8 @@
 name: CosmicOS
-markdown: redcarpet
+markdown: kramdown
 highlighter: pygments
 baseurl: 
 #baseurl: /cosmicos
 include: [_equals_.svg,  _gt_.svg,  _lambda_.svg,  _lt_.svg]
-redcarpet:
+kramdown:
   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
