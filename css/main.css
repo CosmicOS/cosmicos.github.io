@@ -343,6 +343,15 @@ a.sim-button:hover {
   text-align: center;
 }
 
+.show-message-hear { 
+  text-align: center;
+}
+
+.show-message-hear iframe { 
+  margin-top: 2em;
+}
+
+
 .show-message-gate img { 
   display: inline-block;
   padding: 0.05em;

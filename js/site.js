@@ -1,7 +1,7 @@
 (function() {
 
 var ev = null;
-var parts = ["spider", "four", "gate", "text"];
+var parts = ["spider", "four", "gate", "text", "hear"];
 var partIndex = 1;
 
 function showMessagePart(name, callback) {
@@ -19,18 +19,25 @@ function showMessagePart(name, callback) {
           $("#msg-choice-" + i).removeClass('msg-active');
         }
       }
-      if (callback) { callback(); }
+      if (callback) {
+        setupVideo();
+        callback();
+      }
     }
   };
   request.send();
   return false;
 }
 
-function selectPart(i) {
+function stopCarousel() {
   if (ev) {
     clearTimeout(ev);
     ev = null;
   }
+}
+
+function selectPart(i) {
+  stopCarousel();
   showMessagePart(parts[i], null);
 }
 
@@ -40,7 +47,7 @@ function switchPart() {
   showMessagePart(part, function() { ev = setTimeout(switchPart, 5000); });
 }
 
-function setup() {
+function setupCarousel() {
   var show = $('.show-message');
   if (show.length === 0) { return; }
   var choices = "";
@@ -58,6 +65,35 @@ function setup() {
     });
   }
   ev = setTimeout(switchPart, 5000);
+}
+
+function setupVideo() {
+  var show = $('iframe.show-video');
+  if (show.length === 0) { return; }
+
+  function onPlayerStateChange(event) {
+    stopCarousel();
+  }
+
+  var player;
+  var init = function() {
+    player = new YT.Player('player', {
+      events: {
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  };
+  if (!window.onYouTubePlayerAPIReady) {
+    window.onYouTubePlayerAPIReady = init;
+    init();
+  } else {
+    init();
+  }
+}
+
+function setup() {
+  setupCarousel();
+  setupVideo();
 }
 
 $(document).ready(setup);
