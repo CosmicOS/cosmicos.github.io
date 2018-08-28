@@ -1,7 +1,7 @@
 (function() {
 
 var ev = null;
-var parts = ["spider", "four", "gate", "text", "hear"];
+var parts = ["spider", "four", "iconic", "text", "gate", "hear"];
 var partIndex = 1;
 
 function showMessagePart(name, callback) {
