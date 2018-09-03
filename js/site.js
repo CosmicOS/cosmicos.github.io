@@ -76,8 +76,14 @@ function setupVideo() {
   }
 
   var player;
+  var player2;
   var init = function() {
     player = new YT.Player('player', {
+      events: {
+        'onStateChange': onPlayerStateChange
+      }
+    });
+    player2 = new YT.Player('player2', {
       events: {
         'onStateChange': onPlayerStateChange
       }
