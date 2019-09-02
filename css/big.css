@@ -1,7 +1,7 @@
 div.content { 
   padding-left: 20px;
   padding-right: 20px;
-  width: 760px;
+  max-width: 760px;
   margin: 0 auto;
 }
 

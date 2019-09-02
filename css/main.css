@@ -409,7 +409,8 @@ a.sim-button:hover {
   moz-osx-font-smoothing: grayscale;
   webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
-  word-break: break-all;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 p.scrawl {
@@ -419,7 +420,6 @@ p.scrawl {
 }
 
 .breakable { 
-  word-break: break-all;
 }
 
 table.msg-index {
@@ -466,7 +466,8 @@ table.msg-index {
 }
 
 .msg-line {
-  font-family: "inconsolataregular", "Courier New", Courier, monospace;
+    font-family: "inconsolataregular", "Courier New", Courier, monospace;
+    overflow: auto;
 }
 
 .msg-code {
@@ -475,7 +476,6 @@ table.msg-index {
   color: #aaa;
   padding-bottom: 6px;
   margin-bottom: 0;
-  word-break:break-all;
 }
 
 .msg-code a.show:before {
@@ -624,4 +624,9 @@ div.midpic {
 .fadeIn {
   animation-name: fadeIn;
   animation-duration: 2s;
+}
+
+.content-message {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
