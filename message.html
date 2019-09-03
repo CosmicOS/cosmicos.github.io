@@ -9,22 +9,24 @@ title: "CosmicOS: full message in human-readable form"
 
 <br />
 
+{% capture newline %}
+{% endcapture %}
 {% for stanza in site.data.msg %}
   {% if stanza.section_description %}
   <h3 class='msg'><a name="section{{stanza.section_index}}" href="#">{{stanza.section_index}}. {{stanza.section_description}}</a></h3>
   {% endif %}
   {% if stanza.role == "file" %}
+  {% elsif stanza.role == "doc" %}
+  <div class="doc">{{ stanza.lines | join: newline | markdownify }}</div>
   {% elsif stanza.role == "gate" %}
   <a href="{{stanza.page}}"><img src="{{stanza.thumbnail}}" /></a><br />
   <a href="{{stanza.page}}">Run simulator</a>
   {% elsif stanza.role == "comment" %}
-    {% assign nominal_size = stanza.lines.size %}
-    {% if stanza.section_description %}{% assign nominal_size = nominal_size | minus: 1 %}{% endif %}
-    {% if nominal_size >= 1  %}
+{% if stanza.lines[0] %}
 <pre class="happy-block">
-{% for line in stanza.lines %}{% unless forloop.first and stanza.section_description %}{{line | escape}}
-{% endunless %}{% endfor %}</pre>
-    {% endif %}
+{% for line in stanza.lines %}{{line | escape}}
+{% endfor %}</pre>
+{% endif %}
   {% else %}
 <div class="scrawl">{{stanza.spider}}</div>
 <pre class="msg-line">{% for line in stanza.lines %}{{line | escape}}

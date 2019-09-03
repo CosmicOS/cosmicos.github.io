@@ -139,6 +139,15 @@ blockquote {
 
 tt, code {
   background: #dfc;
+}
+
+pre > code {
+    border: 1px solid white;
+    display: block;
+    padding: 3px;
+}
+
+tt {
   padding-left: 3px;
   padding-right: 3px;
 }
@@ -155,6 +164,15 @@ blockquote p, blockquote table {
 blockquote table td {
   padding-left: 2px;
   padding-right: 2px;
+}
+
+.doc {
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  background: #eee;
+  margin-bottom: 1em;
 }
 
 .happy-block, div.highlight pre {
