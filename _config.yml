@@ -1,6 +1,6 @@
 name: CosmicOS
 markdown: kramdown
-highlighter: pygments
+highlighter: rouge
 baseurl: 
 #baseurl: /cosmicos
 include: [_equals_.svg,  _gt_.svg,  _lambda_.svg,  _lt_.svg]
