@@ -1,6 +1,8 @@
 ---
 layout: default
 title: "CosmicOS: full message in human-readable form"
+extra_js: js/jqconsole.js
+extra_css: css/console.css
 ---
 
 <h2>CosmicOS full message</h2>
@@ -27,15 +29,77 @@ title: "CosmicOS: full message in human-readable form"
 {% for line in stanza.lines %}{{line | escape}}
 {% endfor %}</pre>
 {% endif %}
-  {% else %}
+{% else %}
+<div class="msg-holder">
 <div class="scrawl">{{stanza.spider}}</div>
 <pre class="msg-line">{% for line in stanza.lines %}{{line | escape}}
 {% endfor %}</pre>
 <div class="msg-code" data-code="{{stanza.code}}"><a class="show" href="#">{{stanza.code | truncate: 40}}</a><a class="hear" href="#">hear</a></div>
+</div>
   {% endif %}
 {% endfor %}
 
 <script>
+ function CosCon() {
+   var cc = this.cc = new cosmicos.Evaluate(null,true);
+   cc.applyOldOrder();
+   cc.addStd();
+ }
+
+ CosCon.prototype.setup = function() {
+ }
+
+ CosCon.prototype.process = function(line) {
+   return this.cc.evaluateLine(line);
+ }
+
+
+ var jqconsole = null;
+ var startPrompt = null;
+ var interpreter = null;
+
+ var interpreterTick = null;
+ var messageIterator = null; 
+
+ function updateConsole() {
+   if (!jqconsole) { return; }
+   if (messageIterator === null) {
+     messageIterator = document.createNodeIterator(document.body, NodeFilter.SHOW_ELEMENT,
+                                                   function(n) { return n.classList.contains('msg-line'); });
+   }
+   var at = messageIterator.nextNode();
+   var txt = $(at).text();
+   function finish() {
+     interpreter.process(txt);
+     jqconsole.Write(txt, 'jqconsole-output');
+     if (!$(at).hasClass('mark-mark')) {
+       interpreterTick = setTimeout(updateConsole, 1);
+     }
+   }
+   if (txt.indexOf("primer") >= 0) {
+     $.getJSON("primer.json", function(primer) {
+       interpreter.cc.addPrimer(primer);
+       finish();
+     });
+   } else {
+     finish();
+   }
+ }
+
+  function reset() {
+    $('.console').remove();
+    $('.msg-expand').removeClass("msg-expand");
+    $('.mark-mark').removeClass('mark-mark');
+    interpreter = null;
+    jqconsole = null;
+    startPrompt = null;
+    if (interpreterTick) {
+      clearTimeout(interpreterTick);
+      interpreterTick = null;
+    }
+    messageIterator = null;
+  }
+  
  $(function() {
    $("h3 a").each(function(index,e) {
      var target = "#toc_" + $(this).attr('name');
@@ -45,13 +109,41 @@ title: "CosmicOS: full message in human-readable form"
      });
    });
    $(".msg-code a.show").each(function(index,e) {
-     $(this).click(function() { 
+     $(this).click(function(event) { 
+       event.preventDefault();
        var p = $(this).parent();
        if (!p.hasClass("msg-expand")) {
+         reset();
+         p.parent().find('.msg-line').addClass("mark-mark");
+         var c = $("<div></div>");
+         p.append(c);
+         c.addClass('console');
 	 p.addClass("msg-expand");
 	 $(this).text(p.data('code'));
+         interpreter = new CosCon();
+         interpreter.setup();
+         jqconsole = c.jqconsole('', '>>> ');
+         startPrompt = function () {
+           jqconsole.Prompt(true, function (input) {
+             var out = "";
+             try {
+	       out = interpreter.process(input) + "\n";
+             } catch (e) {
+	       out = e + "\n";
+             }
+             jqconsole.Write(out, 'jqconsole-output');
+             startPrompt();
+           });
+         };
+         startPrompt();
+         jqconsole.Focus();
+         updateConsole();
        } else {
-	 $(this).parent().removeClass("msg-expand");
+         var p = $(this).parent();
+         p.find('.console').remove();
+         p.removeClass("msg-expand");
+         p.focus();
+         reset();
        }
        return false;
      });
