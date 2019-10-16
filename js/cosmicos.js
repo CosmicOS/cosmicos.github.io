@@ -1932,7 +1932,7 @@ cosmicos_Evaluate.prototype = {
 		this.vocab.check("set!",28);
 		this.vocab.check("get!",29);
 		this.vocab.check("all",30);
-		this.vocab.check("natural-set",31);
+		this.vocab.check("set:int:+",31);
 		this.vocab.check("undefined",32);
 		this.vocab.check("!",33);
 		this.vocab.check("div",34);
@@ -2054,7 +2054,7 @@ cosmicos_Evaluate.prototype = {
 		this.mem.add(this.vocab.get("sqrt"),function(x11) {
 			return Math.sqrt(x11);
 		});
-		this.mem.add(this.vocab.get("natural-set"),(this.mem.get(this.vocab.get("all")))(function(x12) {
+		this.mem.add(this.vocab.get("set:int:+"),(this.mem.get(this.vocab.get("all")))(function(x12) {
 			return x12 >= 0;
 		}));
 		this.mem.add(this.vocab.get("div"),function(x13) {
@@ -2087,6 +2087,7 @@ cosmicos_Evaluate.prototype = {
 		this.evaluateLine("@ has-square-divisor-within | ? top | ? x | if (< $top 0) 0 | if (= $x | * $top $top) 1 | has-square-divisor-within (- $top 1) $x");
 		this.evaluateLine("@ is:square | ? x | has-square-divisor-within $x $x");
 		this.evaluateLine("@ undefined 999");
+		this.evaluateLine("@ even | ? x | = 0 | - $x | * 2 | div $x 2");
 		this.id_lambda0 = this.vocab.get("??");
 	}
 	,addStdMin: function() {
@@ -2615,13 +2616,7 @@ cosmicos_ManuscriptStyle.prototype = {
 			this.out.push("");
 			return;
 		}
-		var lst = x.split(":");
-		var _g = 0;
-		while(_g < lst.length) {
-			var e = lst[_g];
-			++_g;
-			this.out.push(e);
-		}
+		this.out.push(x);
 		this.nws();
 	}
 	,renderNest: function(x,nested) {
@@ -2961,7 +2956,7 @@ cosmicos_Parse.looksLikeMutation = function(v) {
 				return true;
 			}
 		}
-	} else if(v == "define" || v == "set!") {
+	} else if(v == "define" || v == "set!" || v == "class" || v == "act") {
 		return true;
 	}
 	return false;

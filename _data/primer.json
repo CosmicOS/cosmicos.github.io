@@ -10064,7 +10064,7 @@
   ],
   [
     "@",
-    "list-i",
+    "list:n",
     [
       "?",
       "n",
@@ -10095,7 +10095,7 @@
             "?",
             "x",
             [
-              "list-i",
+              "list:n",
               [
                 "-",
                 [
@@ -10157,7 +10157,7 @@
           0
         ],
         [
-          "list-i",
+          "list:n",
           [
             "n"
           ],
@@ -10216,7 +10216,7 @@
     "head",
     [
       "?",
-      "v",
+      "x:list",
       [
         "if",
         [
@@ -10225,7 +10225,7 @@
           [
             "car",
             [
-              "v"
+              "x:list"
             ]
           ]
         ],
@@ -10240,14 +10240,14 @@
             [
               "car",
               [
-                "v"
+                "x:list"
               ]
             ]
           ],
           [
             "cdr",
             [
-              "v"
+              "x:list"
             ]
           ],
           [
@@ -10255,7 +10255,7 @@
             [
               "cdr",
               [
-                "v"
+                "x:list"
               ]
             ]
           ]
@@ -10268,7 +10268,7 @@
     "tail",
     [
       "?",
-      "v",
+      "x:list",
       [
         "if",
         [
@@ -10277,7 +10277,7 @@
           [
             "car",
             [
-              "v"
+              "x:list"
             ]
           ]
         ],
@@ -10292,7 +10292,7 @@
             [
               "car",
               [
-                "v"
+                "x:list"
               ]
             ]
           ],
@@ -10308,7 +10308,7 @@
               [
                 "car",
                 [
-                  "v"
+                  "x:list"
                 ]
               ],
               1
@@ -10318,7 +10318,7 @@
               [
                 "cdr",
                 [
-                  "v"
+                  "x:list"
                 ]
               ]
             ]
@@ -10770,7 +10770,7 @@
     "list-ref",
     [
       "?",
-      "v",
+      "x:list",
       [
         "?",
         "n",
@@ -10782,7 +10782,7 @@
             [
               "car",
               [
-                "v"
+                "x:list"
               ]
             ]
           ],
@@ -10801,7 +10801,7 @@
             [
               "head",
               [
-                "v"
+                "x:list"
               ]
             ],
             [
@@ -10809,7 +10809,7 @@
               [
                 "tail",
                 [
-                  "v"
+                  "x:list"
                 ]
               ],
               [
@@ -11952,7 +11952,7 @@
       "x",
       [
         "?",
-        "v",
+        "x:list",
         [
           "cons",
           [
@@ -11960,7 +11960,7 @@
             [
               "car",
               [
-                "v"
+                "x:list"
               ]
             ],
             1
@@ -11972,7 +11972,7 @@
               [
                 "car",
                 [
-                  "v"
+                  "x:list"
                 ]
               ],
               0
@@ -11988,7 +11988,7 @@
               [
                 "cdr",
                 [
-                  "v"
+                  "x:list"
                 ]
               ]
             ]
@@ -12226,11 +12226,11 @@
     "first",
     [
       "?",
-      "lst",
+      "x:list",
       [
         "head",
         [
-          "lst"
+          "x:list"
         ]
       ]
     ]
@@ -12240,13 +12240,13 @@
     "second",
     [
       "?",
-      "lst",
+      "x:list",
       [
         "head",
         [
           "tail",
           [
-            "lst"
+            "x:list"
           ]
         ]
       ]
@@ -12377,10 +12377,10 @@
     "map",
     [
       "?",
-      "p",
+      "x:?",
       [
         "?",
-        "lst",
+        "x:list",
         [
           "if",
           [
@@ -12389,7 +12389,7 @@
             [
               "list-length",
               [
-                "lst"
+                "x:list"
               ]
             ]
           ],
@@ -12400,23 +12400,23 @@
           [
             "prepend",
             [
-              "p",
+              "x:?",
               [
                 "head",
                 [
-                  "lst"
+                  "x:list"
                 ]
               ]
             ],
             [
               "map",
               [
-                "p"
+                "x:?"
               ],
               [
                 "tail",
                 [
-                  "lst"
+                  "x:list"
                 ]
               ]
             ]
@@ -12707,13 +12707,13 @@
   ],
   [
     "@",
-    "crunch",
+    "reduce",
     [
       "?",
-      "p",
+      "x:?",
       [
         "?",
-        "lst",
+        "x:list",
         [
           "if",
           [
@@ -12722,7 +12722,7 @@
             [
               "list-length",
               [
-                "lst"
+                "x:list"
               ]
             ]
           ],
@@ -12737,33 +12737,33 @@
               [
                 "list-length",
                 [
-                  "lst"
+                  "x:list"
                 ]
               ]
             ],
             [
               "head",
               [
-                "lst"
+                "x:list"
               ]
             ],
             [
-              "p",
+              "x:?",
               [
                 "head",
                 [
-                  "lst"
+                  "x:list"
                 ]
               ],
               [
-                "crunch",
+                "reduce",
                 [
-                  "p"
+                  "x:?"
                 ],
                 [
                   "tail",
                   [
-                    "lst"
+                    "x:list"
                   ]
                 ]
               ]
@@ -12777,7 +12777,7 @@
     "=",
     21,
     [
-      "crunch",
+      "reduce",
       [
         "+"
       ],
@@ -12796,7 +12796,7 @@
     "=",
     43,
     [
-      "crunch",
+      "reduce",
       [
         "+"
       ],
@@ -12816,7 +12816,7 @@
     "=",
     41,
     [
-      "crunch",
+      "reduce",
       [
         "+"
       ],
@@ -12837,7 +12837,7 @@
     "=",
     50,
     [
-      "crunch",
+      "reduce",
       [
         "+"
       ],
@@ -13046,7 +13046,7 @@
   ],
   [
     "@",
-    "epsilon",
+    "demo:epsilon",
     [
       "frac",
       1,
@@ -13058,7 +13058,7 @@
     "within",
     [
       "?",
-      "t",
+      "epsilon",
       [
         "?",
         "x",
@@ -13080,7 +13080,7 @@
               ]
             ],
             [
-              "t"
+              "epsilon"
             ]
           ]
         ]
@@ -13092,7 +13092,7 @@
     [
       "within",
       [
-        "epsilon"
+        "demo:epsilon"
       ],
       1,
       2
@@ -13103,7 +13103,7 @@
     [
       "within",
       [
-        "epsilon"
+        "demo:epsilon"
       ],
       2,
       1
@@ -13112,7 +13112,7 @@
   [
     "within",
     [
-      "epsilon"
+      "demo:epsilon"
     ],
     2,
     2
@@ -13120,7 +13120,7 @@
   [
     "within",
     [
-      "epsilon"
+      "demo:epsilon"
     ],
     2,
     [
@@ -13129,7 +13129,7 @@
       [
         "frac",
         [
-          "epsilon"
+          "demo:epsilon"
         ],
         2
       ]
@@ -13140,7 +13140,7 @@
     [
       "within",
       [
-        "epsilon"
+        "demo:epsilon"
       ],
       2,
       [
@@ -13149,7 +13149,7 @@
         [
           "*",
           [
-            "epsilon"
+            "demo:epsilon"
           ],
           2
         ]
@@ -13165,19 +13165,19 @@
     "range",
     [
       "?",
-      "lo",
+      "x:-",
       [
         "?",
-        "hi",
+        "x:+",
         [
           "if",
           [
             "<=",
             [
-              "hi"
+              "x:+"
             ],
             [
-              "lo"
+              "x:-"
             ]
           ],
           [
@@ -13187,7 +13187,7 @@
           [
             "prepend",
             [
-              "lo"
+              "x:-"
             ],
             [
               "range",
@@ -13195,11 +13195,11 @@
                 "+",
                 1,
                 [
-                  "lo"
+                  "x:-"
                 ]
               ],
               [
-                "hi"
+                "x:+"
               ]
             ]
           ]
@@ -13211,7 +13211,7 @@
     "=",
     6,
     [
-      "crunch",
+      "reduce",
       [
         "+"
       ],
@@ -13226,7 +13226,7 @@
     "=",
     12,
     [
-      "crunch",
+      "reduce",
       [
         "+"
       ],
@@ -13254,35 +13254,6 @@
   [
     "intro",
     "even"
-  ],
-  [
-    "@",
-    "even",
-    [
-      "?",
-      "x",
-      [
-        "=",
-        0,
-        [
-          "-",
-          [
-            "x"
-          ],
-          [
-            "*",
-            2,
-            [
-              "div",
-              [
-                "x"
-              ],
-              2
-            ]
-          ]
-        ]
-      ]
-    ]
   ],
   [
     "not",
@@ -13363,13 +13334,13 @@
     "float",
     [
       "?",
-      "lst",
+      "x:list",
       [
         "?",
-        "f",
+        "y",
         [
           "?",
-          "v",
+          "z",
           [
             "if",
             [
@@ -13379,7 +13350,7 @@
                 "list-length",
                 [
                   [
-                    "lst"
+                    "x:list"
                   ]
                 ]
               ]
@@ -13390,12 +13361,12 @@
               [
                 "*",
                 [
-                  "v"
+                  "z"
                 ],
                 [
                   "head",
                   [
-                    "lst"
+                    "x:list"
                   ]
                 ]
               ],
@@ -13404,19 +13375,19 @@
                 [
                   "tail",
                   [
-                    "lst"
+                    "x:list"
                   ]
                 ],
                 [
-                  "f"
+                  "y"
                 ],
                 [
                   "*",
                   [
-                    "f"
+                    "y"
                   ],
                   [
-                    "v"
+                    "z"
                   ]
                 ]
               ]
@@ -13431,19 +13402,19 @@
     "decimal",
     [
       "?",
-      "i",
+      "x",
       [
         "?",
-        "lst",
+        "x:list",
         [
           "+",
           [
-            "i"
+            "x"
           ],
           [
             "float",
             [
-              "lst"
+              "x:list"
             ],
             [
               "frac",
@@ -13463,7 +13434,7 @@
   [
     "within",
     [
-      "epsilon"
+      "demo:epsilon"
     ],
     [
       "frac",
@@ -13490,7 +13461,7 @@
   [
     "within",
     [
-      "epsilon"
+      "demo:epsilon"
     ],
     [
       "frac",
@@ -13520,9 +13491,9 @@
   ],
   [
     "@",
-    "e-hat",
+    "e:hat",
     [
-      "crunch",
+      "reduce",
       [
         "+"
       ],
@@ -13553,19 +13524,19 @@
   [
     "within",
     [
-      "epsilon"
+      "demo:epsilon"
     ],
     [
       "e"
     ],
     [
-      "e-hat"
+      "e:hat"
     ]
   ],
   [
     "within",
     [
-      "epsilon"
+      "demo:epsilon"
     ],
     [
       "e"
@@ -13592,7 +13563,7 @@
   ],
   [
     "@",
-    "pi-term",
+    "pi:part",
     [
       "?",
       "x",
@@ -13652,7 +13623,7 @@
   ],
   [
     "@",
-    "pi-hat",
+    "pi:hat",
     [
       "+",
       3,
@@ -13660,14 +13631,14 @@
         "*",
         4,
         [
-          "crunch",
+          "reduce",
           [
             "+"
           ],
           [
             "map",
             [
-              "pi-term"
+              "pi:part"
             ],
             [
               "range",
@@ -13682,19 +13653,19 @@
   [
     "within",
     [
-      "epsilon"
+      "demo:epsilon"
     ],
     [
       "pi"
     ],
     [
-      "pi-hat"
+      "pi:hat"
     ]
   ],
   [
     "within",
     [
-      "epsilon"
+      "demo:epsilon"
     ],
     [
       "pi"
@@ -13726,7 +13697,7 @@
   ],
   [
     "@",
-    "base-translate",
+    "translate:begin",
     [
       "translate"
     ]
@@ -13748,7 +13719,7 @@
         ],
         64,
         [
-          "base-translate",
+          "translate:begin",
           [
             "x"
           ]
@@ -13774,7 +13745,7 @@
     "@",
     "translate",
     [
-      "base-translate"
+      "translate:begin"
     ]
   ],
   [
@@ -13803,13 +13774,16 @@
       [
         "if",
         [
-          "single?",
+          "not",
           [
-            "x"
+            "function?",
+            [
+              "x"
+            ]
           ]
         ],
         [
-          "base-translate",
+          "translate:begin",
           [
             "x"
           ]
@@ -13830,7 +13804,7 @@
             ]
           ],
           [
-            "base-translate",
+            "translate:begin",
             [
               "x"
             ]
@@ -13887,16 +13861,16 @@
   ],
   [
     "@",
-    "list-find-helper",
+    "list:find:0",
     [
       "?",
-      "lst",
+      "x:list",
       [
         "?",
-        "key",
+        "y",
         [
           "?",
-          "idx",
+          "n",
           [
             "if",
             [
@@ -13904,7 +13878,7 @@
               [
                 "list-length",
                 [
-                  "lst"
+                  "x:list"
                 ]
               ],
               0
@@ -13919,31 +13893,31 @@
                 [
                   "head",
                   [
-                    "lst"
+                    "x:list"
                   ]
                 ],
                 [
-                  "key"
+                  "y"
                 ]
               ],
               [
-                "idx"
+                "n"
               ],
               [
-                "list-find-helper",
+                "list:find:0",
                 [
                   "tail",
                   [
-                    "lst"
+                    "x:list"
                   ]
                 ],
                 [
-                  "key"
+                  "y"
                 ],
                 [
                   "+",
                   [
-                    "idx"
+                    "n"
                   ],
                   1
                 ]
@@ -13956,20 +13930,20 @@
   ],
   [
     "@",
-    "list-find",
+    "list:find",
     [
       "?",
-      "lst",
+      "x:list",
       [
         "?",
-        "key",
+        "y",
         [
-          "list-find-helper",
+          "list:find:0",
           [
-            "lst"
+            "x:list"
           ],
           [
-            "key"
+            "y"
           ],
           0
         ]
@@ -13979,7 +13953,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -13997,7 +13971,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14019,7 +13993,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14042,7 +14016,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14062,7 +14036,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14083,7 +14057,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14098,7 +14072,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14119,7 +14093,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14137,7 +14111,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14159,7 +14133,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14181,7 +14155,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14201,7 +14175,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14223,7 +14197,7 @@
   [
     "=",
     [
-      "list-find",
+      "list:find",
       [
         [
           "list",
@@ -14349,11 +14323,95 @@
     ]
   ],
   [
+    "intro",
+    "list:reverse"
+  ],
+  [
+    "@",
+    "list:reverse",
+    [
+      "?",
+      "x:list",
+      [
+        "if",
+        [
+          "<=",
+          [
+            "list-length",
+            [
+              "x:list"
+            ]
+          ],
+          1
+        ],
+        [
+          "x:list"
+        ],
+        [
+          "prepend",
+          [
+            "last",
+            [
+              "x:list"
+            ]
+          ],
+          [
+            "list:reverse",
+            [
+              "except-last",
+              [
+                "x:list"
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "list=",
+    [
+      "list:reverse",
+      [
+        "vector",
+        1,
+        2,
+        3
+      ]
+    ],
+    [
+      "vector",
+      3,
+      2,
+      1
+    ]
+  ],
+  [
+    "list=",
+    [
+      "list:reverse",
+      [
+        "vector",
+        50,
+        1,
+        33,
+        99
+      ]
+    ],
+    [
+      "vector",
+      99,
+      33,
+      1,
+      50
+    ]
+  ],
+  [
     "@",
     "all-equal",
     [
       "?",
-      "lst",
+      "x:list",
       [
         "if",
         [
@@ -14362,7 +14420,7 @@
           [
             "list-length",
             [
-              "lst"
+              "x:list"
             ]
           ]
         ],
@@ -14376,14 +14434,14 @@
             [
               "list-ref",
               [
-                "lst"
+                "x:list"
               ],
               0
             ],
             [
               "list-ref",
               [
-                "lst"
+                "x:list"
               ],
               1
             ]
@@ -14393,7 +14451,7 @@
             [
               "tail",
               [
-                "lst"
+                "x:list"
               ]
             ]
           ]
@@ -14450,7 +14508,7 @@
     "@",
     "sum",
     [
-      "crunch",
+      "reduce",
       [
         "+"
       ]
@@ -14693,20 +14751,20 @@
   ],
   [
     "@",
-    "translate-pre-let",
+    "translate:let:begin",
     [
       "translate"
     ]
   ],
   [
     "@",
-    "translate-with-let",
+    "translate:let",
     [
       "?",
       "x",
       [
         "?",
-        "body",
+        "y",
         [
           "if",
           [
@@ -14722,11 +14780,11 @@
           [
             "translate",
             [
-              "body"
+              "y"
             ]
           ],
           [
-            "translate-with-let",
+            "translate:let",
             [
               "tail",
               [
@@ -14758,7 +14816,7 @@
                 ]
               ],
               [
-                "body"
+                "y"
               ]
             ]
           ]
@@ -14775,13 +14833,16 @@
       [
         "if",
         [
-          "single?",
+          "not",
           [
-            "x"
+            "function?",
+            [
+              "x"
+            ]
           ]
         ],
         [
-          "translate-pre-let",
+          "translate:let:begin",
           [
             "x"
           ]
@@ -14802,13 +14863,13 @@
             ]
           ],
           [
-            "translate-pre-let",
+            "translate:let:begin",
             [
               "x"
             ]
           ],
           [
-            "translate-with-let",
+            "translate:let",
             [
               "head",
               [
@@ -15037,7 +15098,7 @@
   ],
   [
     "@",
-    "prev-translate",
+    "translate:lambda:begin",
     [
       "translate"
     ]
@@ -15049,9 +15110,9 @@
       "let",
       [
         [
-          "prev",
+          "x:translate",
           [
-            "prev-translate"
+            "translate:lambda:begin"
           ]
         ]
       ],
@@ -15061,13 +15122,16 @@
         [
           "if",
           [
-            "single?",
+            "not",
             [
-              "x"
+              "function?",
+              [
+                "x"
+              ]
             ]
           ],
           [
-            "prev",
+            "x:translate",
             [
               "x"
             ]
@@ -15088,7 +15152,7 @@
               ]
             ],
             [
-              "prev",
+              "x:translate",
               [
                 "x"
               ]
@@ -15097,7 +15161,7 @@
               "let",
               [
                 [
-                  "formals",
+                  "x:list",
                   [
                     "head",
                     [
@@ -15109,7 +15173,7 @@
                   ]
                 ],
                 [
-                  "body",
+                  "y",
                   [
                     "head",
                     [
@@ -15132,14 +15196,14 @@
                   [
                     "list-length",
                     [
-                      "formals"
+                      "x:list"
                     ]
                   ]
                 ],
                 [
                   "translate",
                   [
-                    "body"
+                    "y"
                   ]
                 ],
                 [
@@ -15150,7 +15214,7 @@
                     [
                       "except-last",
                       [
-                        "formals"
+                        "x:list"
                       ]
                     ],
                     [
@@ -15159,11 +15223,11 @@
                       [
                         "last",
                         [
-                          "formals"
+                          "x:list"
                         ]
                       ],
                       [
-                        "body"
+                        "y"
                       ]
                     ]
                   ]
@@ -15301,7 +15365,7 @@
   ],
   [
     "@",
-    "pure-if",
+    "pure:if",
     [
       "?",
       "x",
@@ -15326,7 +15390,7 @@
   ],
   [
     "@",
-    "pure-true",
+    "pure:true",
     [
       "?",
       "y",
@@ -15341,7 +15405,7 @@
   ],
   [
     "@",
-    "pure-false",
+    "pure:false",
     [
       "?",
       "y",
@@ -15356,7 +15420,7 @@
   ],
   [
     "@",
-    "pure-cons",
+    "pure:cons",
     [
       "?",
       "x",
@@ -15367,7 +15431,7 @@
           "?",
           "z",
           [
-            "pure-if",
+            "pure:if",
             [
               "z"
             ],
@@ -15384,38 +15448,38 @@
   ],
   [
     "@",
-    "pure-car",
+    "pure:car",
     [
       "?",
       "x",
       [
         "x",
         [
-          "pure-true"
+          "pure:true"
         ]
       ]
     ]
   ],
   [
     "@",
-    "pure-cdr",
+    "pure:cdr",
     [
       "?",
       "x",
       [
         "x",
         [
-          "pure-false"
+          "pure:false"
         ]
       ]
     ]
   ],
   [
     "@",
-    "zero",
+    "pure:0",
     [
       "?",
-      "f",
+      "y",
       [
         "?",
         "x",
@@ -15427,15 +15491,15 @@
   ],
   [
     "@",
-    "one",
+    "pure:1",
     [
       "?",
-      "f",
+      "y",
       [
         "?",
         "x",
         [
-          "f",
+          "y",
           [
             "x"
           ]
@@ -15445,17 +15509,17 @@
   ],
   [
     "@",
-    "two",
+    "pure:2",
     [
       "?",
-      "f",
+      "y",
       [
         "?",
         "x",
         [
-          "f",
+          "y",
           [
-            "f",
+            "y",
             [
               "x"
             ]
@@ -15466,23 +15530,23 @@
   ],
   [
     "@",
-    "succ",
+    "pure:next",
     [
       "?",
       "n",
       [
         "?",
-        "f",
+        "y",
         [
           "?",
           "x",
           [
-            "f",
+            "y",
             [
               [
                 "n",
                 [
-                  "f"
+                  "y"
                 ]
               ],
               [
@@ -15496,22 +15560,22 @@
   ],
   [
     "@",
-    "add",
+    "pure:+",
     [
       "?",
-      "a",
+      "x",
       [
         "?",
-        "b",
+        "y",
         [
           [
-            "a",
+            "x",
             [
-              "succ"
+              "pure:next"
             ]
           ],
           [
-            "b"
+            "y"
           ]
         ]
       ]
@@ -15519,25 +15583,25 @@
   ],
   [
     "@",
-    "mult",
+    "pure:*",
     [
       "?",
-      "a",
+      "x",
       [
         "?",
-        "b",
+        "y",
         [
           [
-            "a",
+            "x",
             [
-              "add",
+              "pure:+",
               [
-                "b"
+                "y"
               ]
             ]
           ],
           [
-            "zero"
+            "pure:0"
           ]
         ]
       ]
@@ -15545,45 +15609,45 @@
   ],
   [
     "@",
-    "pred",
+    "pure:prev",
     [
       "?",
-      "n",
+      "x:pure",
       [
-        "pure-cdr",
+        "pure:cdr",
         [
           [
-            "n",
+            "x:pure",
             [
               "?",
-              "p",
+              "x:?",
               [
-                "pure-cons",
+                "pure:cons",
                 [
-                  "succ",
+                  "pure:next",
                   [
-                    "pure-car",
+                    "pure:car",
                     [
-                      "p"
+                      "x:?"
                     ]
                   ]
                 ],
                 [
-                  "pure-car",
+                  "pure:car",
                   [
-                    "p"
+                    "x:?"
                   ]
                 ]
               ]
             ]
           ],
           [
-            "pure-cons",
+            "pure:cons",
             [
-              "zero"
+              "pure:0"
             ],
             [
-              "zero"
+              "pure:0"
             ]
           ]
         ]
@@ -15592,22 +15656,22 @@
   ],
   [
     "@",
-    "is-zero",
+    "pure:=:0",
     [
       "?",
-      "n",
+      "x:pure",
       [
         [
-          "n",
+          "x:pure",
           [
             "?",
-            "dummy",
+            "y",
             [
-              "pure-false"
+              "pure:false"
             ]
           ],
           [
-            "pure-true"
+            "pure:true"
           ]
         ]
       ]
@@ -15618,30 +15682,30 @@
     "fixed-point",
     [
       "?",
-      "f",
+      "x",
       [
         [
           "?",
-          "x",
+          "y",
           [
-            "f",
+            "x",
             [
-              "x",
+              "y",
               [
-                "x"
+                "y"
               ]
             ]
           ]
         ],
         [
           "?",
-          "x",
+          "y",
           [
-            "f",
+            "x",
             [
-              "x",
+              "y",
               [
-                "x"
+                "y"
               ]
             ]
           ]
@@ -15651,12 +15715,12 @@
   ],
   [
     "@",
-    "unchurch",
+    "pure:int:get",
     [
       "?",
-      "c",
+      "y",
       [
-        "c",
+        "y",
         [
           "?",
           "x",
@@ -15676,9 +15740,9 @@
     "=",
     0,
     [
-      "unchurch",
+      "pure:int:get",
       [
-        "zero"
+        "pure:0"
       ]
     ]
   ],
@@ -15686,9 +15750,9 @@
     "=",
     1,
     [
-      "unchurch",
+      "pure:int:get",
       [
-        "one"
+        "pure:1"
       ]
     ]
   ],
@@ -15696,15 +15760,15 @@
     "=",
     2,
     [
-      "unchurch",
+      "pure:int:get",
       [
-        "two"
+        "pure:2"
       ]
     ]
   ],
   [
     "@",
-    "church",
+    "int:pure:get",
     [
       "?",
       "x",
@@ -15718,12 +15782,12 @@
           ]
         ],
         [
-          "zero"
+          "pure:0"
         ],
         [
-          "succ",
+          "pure:next",
           [
-            "church",
+            "int:pure:get",
             [
               "-",
               [
@@ -16203,23 +16267,22 @@
       "x",
       [
         "?",
-        "lst",
+        "y:list",
         [
           "not",
           [
             "=",
             [
-              "list-find-helper",
+              "undefined"
+            ],
+            [
+              "list:find",
               [
-                "lst"
+                "y:list"
               ],
               [
                 "x"
-              ],
-              1
-            ],
-            [
-              "undefined"
+              ]
             ]
           ]
         ]
@@ -16228,50 +16291,26 @@
   ],
   [
     "element",
-    0,
+    1,
     [
       "vector",
-      0,
-      4,
+      3,
       8,
-      3,
-      5
-    ]
-  ],
-  [
-    "element",
-    5,
-    [
-      "vector",
-      0,
-      4,
-      8,
-      3,
-      5
-    ]
-  ],
-  [
-    "element",
-    3,
-    [
-      "vector",
-      0,
-      4,
-      8,
-      3,
-      5
-    ]
-  ],
-  [
-    "element",
-    3,
-    [
-      "vector",
-      3,
-      5,
+      2,
       1,
-      0,
-      9
+      0
+    ]
+  ],
+  [
+    "element",
+    3,
+    [
+      "vector",
+      3,
+      8,
+      2,
+      1,
+      0
     ]
   ],
   [
@@ -16280,35 +16319,82 @@
     [
       "vector",
       3,
-      5,
-      1,
-      0,
-      9
-    ]
-  ],
-  [
-    "element",
-    5,
-    [
-      "vector",
-      3,
-      5,
-      1,
-      0,
-      9
-    ]
-  ],
-  [
-    "element",
-    5,
-    [
-      "vector",
       8,
-      1,
-      6,
       2,
+      1,
+      0
+    ]
+  ],
+  [
+    "element",
+    4,
+    [
+      "vector",
+      9,
+      5,
+      4,
       0,
-      5
+      8
+    ]
+  ],
+  [
+    "element",
+    8,
+    [
+      "vector",
+      9,
+      5,
+      4,
+      0,
+      8
+    ]
+  ],
+  [
+    "element",
+    4,
+    [
+      "vector",
+      9,
+      5,
+      4,
+      0,
+      8
+    ]
+  ],
+  [
+    "element",
+    0,
+    [
+      "vector",
+      0,
+      8,
+      5,
+      4,
+      2
+    ]
+  ],
+  [
+    "element",
+    0,
+    [
+      "vector",
+      0,
+      8,
+      5,
+      4,
+      2
+    ]
+  ],
+  [
+    "element",
+    8,
+    [
+      "vector",
+      0,
+      8,
+      5,
+      4,
+      2
     ]
   ],
   [
@@ -16316,90 +16402,23 @@
     6,
     [
       "vector",
-      8,
-      1,
-      6,
-      2,
-      0,
-      5
-    ]
-  ],
-  [
-    "element",
-    5,
-    [
-      "vector",
-      8,
-      1,
-      6,
-      2,
-      0,
-      5
-    ]
-  ],
-  [
-    "element",
-    5,
-    [
-      "vector",
       5,
-      3,
       8,
-      6,
-      2,
-      9
-    ]
-  ],
-  [
-    "element",
-    5,
-    [
-      "vector",
-      5,
-      3,
-      8,
-      6,
-      2,
-      9
-    ]
-  ],
-  [
-    "element",
-    9,
-    [
-      "vector",
-      5,
-      3,
-      8,
-      6,
-      2,
-      9
-    ]
-  ],
-  [
-    "element",
-    7,
-    [
-      "vector",
-      1,
       7,
-      2,
       6,
-      4,
-      5
+      2
     ]
   ],
   [
     "element",
-    2,
+    8,
     [
       "vector",
-      1,
+      5,
+      8,
       7,
-      2,
       6,
-      4,
-      5
+      2
     ]
   ],
   [
@@ -16407,26 +16426,47 @@
     6,
     [
       "vector",
-      1,
+      5,
+      8,
       7,
-      2,
       6,
-      4,
-      5
+      2
     ]
   ],
   [
-    "not",
+    "element",
+    3,
     [
-      "element",
-      7,
-      [
-        "vector",
-        8,
-        3,
-        9,
-        6
-      ]
+      "vector",
+      0,
+      3,
+      9,
+      2,
+      1
+    ]
+  ],
+  [
+    "element",
+    0,
+    [
+      "vector",
+      0,
+      3,
+      9,
+      2,
+      1
+    ]
+  ],
+  [
+    "element",
+    0,
+    [
+      "vector",
+      0,
+      3,
+      9,
+      2,
+      1
     ]
   ],
   [
@@ -16436,36 +16476,9 @@
       1,
       [
         "vector",
-        8,
+        5,
         6,
         3,
-        5,
-        4
-      ]
-    ]
-  ],
-  [
-    "not",
-    [
-      "element",
-      2,
-      [
-        "vector",
-        9,
-        5,
-        6
-      ]
-    ]
-  ],
-  [
-    "not",
-    [
-      "element",
-      5,
-      [
-        "vector",
-        2,
-        0,
         7
       ]
     ]
@@ -16474,17 +16487,61 @@
     "not",
     [
       "element",
-      6,
+      1,
       [
         "vector",
-        3,
+        9,
+        8,
+        5,
+        3
+      ]
+    ]
+  ],
+  [
+    "not",
+    [
+      "element",
+      4,
+      [
+        "vector",
+        6,
+        9,
+        1,
+        7
+      ]
+    ]
+  ],
+  [
+    "not",
+    [
+      "element",
+      2,
+      [
+        "vector",
+        1,
+        5,
+        6,
+        4
+      ]
+    ]
+  ],
+  [
+    "not",
+    [
+      "element",
+      3,
+      [
+        "vector",
+        6,
+        9,
+        7,
         5
       ]
     ]
   ],
   [
     "@",
-    "set-subset",
+    "set:<=",
     [
       "?",
       "x",
@@ -16494,14 +16551,17 @@
         [
           "if",
           [
-            ">",
+            "=",
+            0,
             [
               "list-length",
               [
                 "x"
               ]
-            ],
-            0
+            ]
+          ],
+          [
+            "true"
           ],
           [
             "and",
@@ -16518,7 +16578,7 @@
               ]
             ],
             [
-              "set-subset",
+              "set:<=",
               [
                 "tail",
                 [
@@ -16529,9 +16589,6 @@
                 "y"
               ]
             ]
-          ],
-          [
-            "true"
           ]
         ]
       ]
@@ -16539,7 +16596,7 @@
   ],
   [
     "@",
-    "set=",
+    "set:=",
     [
       "?",
       "x",
@@ -16549,7 +16606,7 @@
         [
           "and",
           [
-            "set-subset",
+            "set:<=",
             [
               "x"
             ],
@@ -16558,7 +16615,7 @@
             ]
           ],
           [
-            "set-subset",
+            "set:<=",
             [
               "y"
             ],
@@ -16571,7 +16628,7 @@
     ]
   ],
   [
-    "set=",
+    "set:=",
     [
       "vector",
       1,
@@ -16586,7 +16643,7 @@
     ]
   ],
   [
-    "set=",
+    "set:=",
     [
       "vector",
       1,
@@ -16603,7 +16660,7 @@
   [
     "not",
     [
-      "set=",
+      "set:=",
       [
         "vector",
         1,
@@ -16627,14 +16684,14 @@
         "x",
         [
           "=",
+          15,
           [
             "+",
             [
               "x"
             ],
             10
-          ],
-          15
+          ]
         ]
       ]
     ]
@@ -16669,7 +16726,7 @@
   ],
   [
     "@",
-    "empty-set",
+    "set:0",
     [
       "vector"
     ]
@@ -16678,7 +16735,7 @@
     "element",
     0,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
@@ -16694,7 +16751,7 @@
             "x"
           ],
           [
-            "natural-set"
+            "set:int:+"
           ]
         ],
         [
@@ -16707,7 +16764,7 @@
             1
           ],
           [
-            "natural-set"
+            "set:int:+"
           ]
         ]
       ]
@@ -16717,68 +16774,68 @@
     "element",
     1,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     2,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     3,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     4,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     5,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     6,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     7,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     8,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     9,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "@",
-    "boolean-set",
+    "set:true:false",
     [
       "vector",
       [
@@ -16795,7 +16852,7 @@
       "true"
     ],
     [
-      "boolean-set"
+      "set:true:false"
     ]
   ],
   [
@@ -16804,12 +16861,12 @@
       "false"
     ],
     [
-      "boolean-set"
+      "set:true:false"
     ]
   ],
   [
     "@",
-    "even-natural-set",
+    "set:even",
     [
       "all",
       [
@@ -16828,20 +16885,20 @@
                   "y"
                 ],
                 [
-                  "natural-set"
+                  "set:int:+"
                 ]
               ],
               [
                 "=",
+                [
+                  "x"
+                ],
                 [
                   "*",
                   2,
                   [
                     "y"
                   ]
-                ],
-                [
-                  "x"
                 ]
               ]
             ]
@@ -16854,21 +16911,21 @@
     "element",
     0,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     0,
     [
-      "even-natural-set"
+      "set:even"
     ]
   ],
   [
     "element",
     1,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
@@ -16877,7 +16934,7 @@
       "element",
       1,
       [
-        "even-natural-set"
+        "set:even"
       ]
     ]
   ],
@@ -16885,21 +16942,21 @@
     "element",
     2,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     2,
     [
-      "even-natural-set"
+      "set:even"
     ]
   ],
   [
     "element",
     3,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
@@ -16908,7 +16965,7 @@
       "element",
       3,
       [
-        "even-natural-set"
+        "set:even"
       ]
     ]
   ],
@@ -16916,21 +16973,21 @@
     "element",
     4,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     4,
     [
-      "even-natural-set"
+      "set:even"
     ]
   ],
   [
     "element",
     5,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
@@ -16939,7 +16996,7 @@
       "element",
       5,
       [
-        "even-natural-set"
+        "set:even"
       ]
     ]
   ],
@@ -16947,41 +17004,41 @@
     "element",
     6,
     [
-      "natural-set"
+      "set:int:+"
     ]
   ],
   [
     "element",
     6,
     [
-      "even-natural-set"
+      "set:even"
     ]
   ],
   [
     "@",
-    "make-graph",
+    "graph:make",
     [
       "lambda",
       [
-        "nodes",
-        "links"
+        "x:graph:1",
+        "x:graph:2"
       ],
       [
         "pair",
         [
-          "nodes"
+          "x:graph:1"
         ],
         [
-          "links"
+          "x:graph:2"
         ]
       ]
     ]
   ],
   [
     "@",
-    "test-graph",
+    "demo:graph",
     [
-      "make-graph",
+      "graph:make",
       [
         "vector",
         1,
@@ -16992,17 +17049,17 @@
       [
         "vector",
         [
-          "vector",
+          "pair",
           1,
           2
         ],
         [
-          "vector",
+          "pair",
           2,
           3
         ],
         [
-          "vector",
+          "pair",
           1,
           4
         ]
@@ -17011,46 +17068,49 @@
   ],
   [
     "@",
-    "graph-linked",
+    "exists:graph:2",
     [
       "lambda",
       [
-        "g",
-        "n1",
-        "n2"
+        "x:graph",
+        "y:graph:1",
+        "z:graph:1"
       ],
       [
         "exists",
         [
           "?",
-          "idx",
+          "n",
           [
             "if",
             [
-              "and",
+              "or",
               [
-                ">=",
+                "<",
                 [
-                  "idx"
+                  "n"
                 ],
                 0
               ],
               [
-                "<",
+                ">=",
                 [
-                  "idx"
+                  "n"
                 ],
                 [
                   "list-length",
                   [
                     "list-ref",
                     [
-                      "g"
+                      "x:graph"
                     ],
                     1
                   ]
                 ]
               ]
+            ],
+            [
+              "false"
             ],
             [
               "list=",
@@ -17059,26 +17119,23 @@
                 [
                   "list-ref",
                   [
-                    "g"
+                    "x:graph"
                   ],
                   1
                 ],
                 [
-                  "idx"
+                  "n"
                 ]
               ],
               [
-                "vector",
+                "pair",
                 [
-                  "n1"
+                  "y:graph:1"
                 ],
                 [
-                  "n2"
+                  "z:graph:1"
                 ]
               ]
-            ],
-            [
-              "false"
             ]
           ]
         ]
@@ -17086,66 +17143,62 @@
     ]
   ],
   [
-    "=",
+    "exists:graph:2",
     [
-      "graph-linked",
-      [
-        "test-graph"
-      ],
-      1,
-      2
+      "demo:graph"
     ],
-    [
-      "true"
-    ]
+    1,
+    2
   ],
   [
-    "=",
+    "not",
     [
-      "graph-linked",
+      "exists:graph:2",
       [
-        "test-graph"
+        "demo:graph"
       ],
       1,
       3
-    ],
-    [
-      "false"
     ]
   ],
   [
-    "=",
+    "not",
     [
-      "graph-linked",
+      "exists:graph:2",
       [
-        "test-graph"
+        "demo:graph"
       ],
       2,
       4
-    ],
-    [
-      "false"
     ]
   ],
   [
+    "exists:graph:2",
+    [
+      "demo:graph"
+    ],
+    1,
+    4
+  ],
+  [
     "@",
-    "graph-linked*",
+    "exists:graph:2:list",
     [
       "lambda",
       [
-        "g",
-        "n1",
-        "n2"
+        "x:graph",
+        "y:graph:1",
+        "z:graph:1"
       ],
       [
         "if",
         [
           "=",
           [
-            "n1"
+            "y:graph:1"
           ],
           [
-            "n2"
+            "z:graph:1"
           ]
         ],
         [
@@ -17154,15 +17207,15 @@
         [
           "if",
           [
-            "graph-linked",
+            "exists:graph:2",
             [
-              "g"
+              "x:graph"
             ],
             [
-              "n1"
+              "y:graph:1"
             ],
             [
-              "n2"
+              "z:graph:1"
             ]
           ],
           [
@@ -17172,35 +17225,38 @@
             "exists",
             [
               "?",
-              "n3",
+              "n:graph:1",
               [
                 "if",
                 [
-                  "graph-linked",
+                  "not",
                   [
-                    "g"
-                  ],
-                  [
-                    "n1"
-                  ],
-                  [
-                    "n3"
-                  ]
-                ],
-                [
-                  "graph-linked*",
-                  [
-                    "g"
-                  ],
-                  [
-                    "n3"
-                  ],
-                  [
-                    "n2"
+                    "exists:graph:2",
+                    [
+                      "x:graph"
+                    ],
+                    [
+                      "y:graph:1"
+                    ],
+                    [
+                      "n:graph:1"
+                    ]
                   ]
                 ],
                 [
                   "false"
+                ],
+                [
+                  "exists:graph:2:list",
+                  [
+                    "x:graph"
+                  ],
+                  [
+                    "n:graph:1"
+                  ],
+                  [
+                    "z:graph:1"
+                  ]
                 ]
               ]
             ]
@@ -17210,45 +17266,30 @@
     ]
   ],
   [
-    "=",
+    "exists:graph:2:list",
     [
-      "graph-linked*",
-      [
-        "test-graph"
-      ],
-      1,
-      2
+      "demo:graph"
     ],
-    [
-      "true"
-    ]
+    1,
+    2
   ],
   [
-    "=",
+    "exists:graph:2:list",
     [
-      "graph-linked*",
-      [
-        "test-graph"
-      ],
-      1,
-      3
+      "demo:graph"
     ],
-    [
-      "true"
-    ]
+    1,
+    3
   ],
   [
-    "=",
+    "not",
     [
-      "graph-linked*",
+      "exists:graph:2:list",
       [
-        "test-graph"
+        "demo:graph"
       ],
       2,
       4
-    ],
-    [
-      "false"
     ]
   ],
   [
@@ -17257,69 +17298,9 @@
   ],
   [
     "@",
-    "prev-translate",
+    "translate:begin:prev",
     [
       "translate"
-    ]
-  ],
-  [
-    "@",
-    "reverse",
-    [
-      "?",
-      "x",
-      [
-        "if",
-        [
-          ">=",
-          [
-            "list-length",
-            [
-              "x"
-            ]
-          ],
-          1
-        ],
-        [
-          "prepend",
-          [
-            "last",
-            [
-              "x"
-            ]
-          ],
-          [
-            "reverse",
-            [
-              "except-last",
-              [
-                "x"
-              ]
-            ]
-          ]
-        ],
-        [
-          "x"
-        ]
-      ]
-    ]
-  ],
-  [
-    "list=",
-    [
-      "vector",
-      1,
-      2,
-      3
-    ],
-    [
-      "reverse",
-      [
-        "vector",
-        3,
-        2,
-        1
-      ]
     ]
   ],
   [
@@ -17331,7 +17312,7 @@
         [
           "prev",
           [
-            "prev-translate"
+            "translate:begin:prev"
           ]
         ]
       ],
@@ -17341,9 +17322,12 @@
         [
           "if",
           [
-            "single?",
+            "not",
             [
-              "x"
+              "function?",
+              [
+                "x"
+              ]
             ]
           ],
           [
@@ -17355,14 +17339,23 @@
           [
             "if",
             [
-              "=",
+              "not",
               [
-                "head",
+                "=",
                 [
-                  "x"
-                ]
-              ],
-              "begin"
+                  "head",
+                  [
+                    "x"
+                  ]
+                ],
+                "begin"
+              ]
+            ],
+            [
+              "prev",
+              [
+                "x"
+              ]
             ],
             [
               "translate",
@@ -17392,12 +17385,6 @@
                   ]
                 ]
               ]
-            ],
-            [
-              "prev",
-              [
-                "x"
-              ]
             ]
           ]
         ]
@@ -17406,17 +17393,18 @@
   ],
   [
     "=",
+    4,
     [
       "begin",
       1,
       7,
       2,
       4
-    ],
-    4
+    ]
   ],
   [
     "=",
+    6,
     [
       "begin",
       [
@@ -17439,11 +17427,11 @@
           "demo:make-cell:x"
         ]
       ]
-    ],
-    6
+    ]
   ],
   [
     "=",
+    88,
     [
       "begin",
       [
@@ -17466,11 +17454,11 @@
           "demo:make-cell:y"
         ]
       ]
-    ],
-    88
+    ]
   ],
   [
     "=",
+    4,
     [
       "begin",
       [
@@ -17494,8 +17482,7 @@
         ]
       ],
       4
-    ],
-    4
+    ]
   ],
   [
     "@",
@@ -17503,7 +17490,7 @@
     [
       "lambda",
       [
-        "h",
+        "x:hash",
         "x",
         "y",
         "z"
@@ -17523,7 +17510,7 @@
           "y"
         ],
         [
-          "h",
+          "x:hash",
           [
             "z"
           ]
@@ -17537,11 +17524,11 @@
     [
       "lambda",
       [
-        "h",
+        "x:hash",
         "x"
       ],
       [
-        "h",
+        "x:hash",
         [
           "x"
         ]
@@ -17576,7 +17563,7 @@
   ],
   [
     "@",
-    "test-hash",
+    "demo:hash",
     [
       "hash-add",
       [
@@ -17596,7 +17583,7 @@
     [
       "hash-ref",
       [
-        "test-hash"
+        "demo:hash"
       ],
       4
     ],
@@ -17607,7 +17594,7 @@
     [
       "hash-ref",
       [
-        "test-hash"
+        "demo:hash"
       ],
       3
     ],
@@ -17618,7 +17605,7 @@
     [
       "hash-ref",
       [
-        "test-hash"
+        "demo:hash"
       ],
       8
     ],
@@ -17631,7 +17618,7 @@
     [
       "hash-ref",
       [
-        "test-hash"
+        "demo:hash"
       ],
       15
     ],
@@ -17646,7 +17633,7 @@
       [
         "hash-add",
         [
-          "test-hash"
+          "demo:hash"
         ],
         15,
         33
@@ -17660,7 +17647,7 @@
     [
       "hash-ref",
       [
-        "test-hash"
+        "demo:hash"
       ],
       15
     ],
@@ -17784,12 +17771,12 @@
     "mutable-struct",
     [
       "?",
-      "lst",
+      "x:list",
       [
         "let",
         [
           [
-            "data",
+            "cell:list",
             [
               "map",
               [
@@ -17801,26 +17788,26 @@
                 ]
               ],
               [
-                "lst"
+                "x:list"
               ]
             ]
           ]
         ],
         [
           "?",
-          "key",
+          "x:find",
           [
             "list-ref",
             [
-              "data"
+              "cell:list"
             ],
             [
-              "list-find",
+              "list:find",
               [
-                "lst"
+                "x:list"
               ],
               [
-                "key"
+                "x:find"
               ]
             ]
           ]
@@ -17830,272 +17817,51 @@
   ],
   [
     "@",
-    "test-struct1",
+    "demo:mutable-struct",
     [
       "mutable-struct",
       [
         "vector",
-        "item1",
-        "item2",
-        "item3"
+        "x:1",
+        "x:2",
+        "x:3"
       ]
     ]
   ],
   [
     "set!",
     [
-      "test-struct1",
-      "item1"
+      "demo:mutable-struct",
+      "x:1"
     ],
     15
   ],
   [
     "=",
+    15,
     [
       "get!",
       [
-        "test-struct1",
-        "item1"
-      ]
-    ],
-    15
-  ],
-  [
-    "@",
-    "add-method",
-    [
-      "lambda",
-      [
-        "object",
-        "name",
-        "method"
-      ],
-      [
-        "hash-add",
-        [
-          "object"
-        ],
-        [
-          "name"
-        ],
-        [
-          "?",
-          "dummy",
-          [
-            "method",
-            [
-              "object"
-            ]
-          ]
-        ]
+        "demo:mutable-struct",
+        "x:1"
       ]
     ]
   ],
   [
     "@",
-    "call",
-    [
-      "?",
-      "x",
-      [
-        "x",
-        0
-      ]
-    ]
-  ],
-  [
-    "@",
-    "test-struct2",
-    [
-      "mutable-struct",
-      [
-        "vector",
-        "x",
-        "y"
-      ]
-    ]
-  ],
-  [
-    "set!",
-    [
-      "test-struct2",
-      "x"
-    ],
-    10
-  ],
-  [
-    "set!",
-    [
-      "test-struct2",
-      "y"
-    ],
-    20
-  ],
-  [
-    "=",
-    [
-      "get!",
-      [
-        "test-struct2",
-        "x"
-      ]
-    ],
-    10
-  ],
-  [
-    "=",
-    [
-      "get!",
-      [
-        "test-struct2",
-        "y"
-      ]
-    ],
-    20
-  ],
-  [
-    "@",
-    "test-struct3",
-    [
-      "add-method",
-      [
-        "test-struct2"
-      ],
-      "sum",
-      [
-        "?",
-        "self",
-        [
-          "+",
-          [
-            "get!",
-            [
-              "self",
-              "x"
-            ]
-          ],
-          [
-            "get!",
-            [
-              "self",
-              "y"
-            ]
-          ]
-        ]
-      ]
-    ]
-  ],
-  [
-    "=",
-    [
-      "get!",
-      [
-        "test-struct3",
-        "x"
-      ]
-    ],
-    10
-  ],
-  [
-    "=",
-    [
-      "get!",
-      [
-        "test-struct3",
-        "y"
-      ]
-    ],
-    20
-  ],
-  [
-    "=",
-    [
-      "call",
-      [
-        "test-struct3",
-        "sum"
-      ]
-    ],
-    30
-  ],
-  [
-    "set!",
-    [
-      "test-struct3",
-      "y"
-    ],
-    10
-  ],
-  [
-    "=",
-    [
-      "call",
-      [
-        "test-struct3",
-        "sum"
-      ]
-    ],
-    20
-  ],
-  [
-    "set!",
-    [
-      "test-struct2",
-      "y"
-    ],
-    5
-  ],
-  [
-    "=",
-    [
-      "call",
-      [
-        "test-struct3",
-        "sum"
-      ]
-    ],
-    15
-  ],
-  [
-    "@",
-    "safe-tail",
+    "tape:tail",
     [
       "?",
       "x",
       [
         "if",
         [
-          ">",
+          ">=",
+          1,
           [
             "list-length",
             [
               "x"
-            ]
-          ],
-          0
-        ],
-        [
-          "if",
-          [
-            ">",
-            [
-              "list-length",
-              [
-                "x"
-              ]
-            ],
-            1
-          ],
-          [
-            "tail",
-            [
-              "x"
-            ]
-          ],
-          [
-            "vector",
-            [
-              "vector"
             ]
           ]
         ],
@@ -18104,79 +17870,58 @@
           [
             "vector"
           ]
+        ],
+        [
+          "tail",
+          [
+            "x"
+          ]
         ]
       ]
     ]
   ],
   [
     "@",
-    "safe-head",
+    "tape:head",
     [
       "?",
       "x",
       [
         "if",
         [
-          ">",
+          "=",
+          0,
           [
             "list-length",
             [
               "x"
             ]
-          ],
-          0
+          ]
+        ],
+        [
+          "vector"
         ],
         [
           "head",
           [
             "x"
           ]
-        ],
-        [
-          "vector"
         ]
       ]
     ]
   ],
   [
     "@",
-    "tape-read",
+    "tape:get",
     [
       "?",
       "tape",
       [
-        "let",
+        "tape:head",
         [
+          "second",
           [
-            "x",
-            [
-              "second",
-              [
-                "tape"
-              ]
-            ]
-          ]
-        ],
-        [
-          "if",
-          [
-            ">",
-            [
-              "list-length",
-              [
-                "x"
-              ]
-            ],
-            0
-          ],
-          [
-            "head",
-            [
-              "x"
-            ]
-          ],
-          [
-            "vector"
+            "tape"
           ]
         ]
       ]
@@ -18184,20 +17929,20 @@
   ],
   [
     "@",
-    "tape-transition",
+    "tape:next",
     [
       "lambda",
       [
         "tape",
-        "shift",
-        "value"
+        "n",
+        "x"
       ],
       [
         "if",
         [
           "=",
           [
-            "shift"
+            "n"
           ],
           1
         ],
@@ -18206,7 +17951,7 @@
           [
             "prepend",
             [
-              "value"
+              "x"
             ],
             [
               "first",
@@ -18216,7 +17961,7 @@
             ]
           ],
           [
-            "safe-tail",
+            "tape:tail",
             [
               "second",
               [
@@ -18230,14 +17975,14 @@
           [
             "=",
             [
-              "shift"
+              "n"
             ],
             0
           ],
           [
             "pair",
             [
-              "safe-tail",
+              "tape:tail",
               [
                 "first",
                 [
@@ -18248,7 +17993,7 @@
             [
               "prepend",
               [
-                "safe-head",
+                "tape:head",
                 [
                   "first",
                   [
@@ -18259,10 +18004,10 @@
               [
                 "prepend",
                 [
-                  "value"
+                  "x"
                 ],
                 [
-                  "safe-tail",
+                  "tape:tail",
                   [
                     "second",
                     [
@@ -18284,10 +18029,10 @@
             [
               "prepend",
               [
-                "value"
+                "x"
               ],
               [
-                "safe-tail",
+                "tape:tail",
                 [
                   "second",
                   [
@@ -18303,13 +18048,13 @@
   ],
   [
     "@",
-    "turing",
+    "tape:do",
     [
       "lambda",
       [
-        "machine",
+        "x:function",
         "current",
-        "last",
+        "end",
         "tape"
       ],
       [
@@ -18320,7 +18065,7 @@
             "current"
           ],
           [
-            "last"
+            "end"
           ]
         ],
         [
@@ -18332,12 +18077,12 @@
             [
               "next",
               [
-                "machine",
+                "x:function",
                 [
                   "current"
                 ],
                 [
-                  "tape-read",
+                  "tape:get",
                   [
                     "tape"
                   ]
@@ -18346,9 +18091,9 @@
             ]
           ],
           [
-            "turing",
+            "tape:do",
             [
-              "machine"
+              "x:function"
             ],
             [
               "list-ref",
@@ -18358,10 +18103,10 @@
               0
             ],
             [
-              "last"
+              "end"
             ],
             [
-              "tape-transition",
+              "tape:next",
               [
                 "tape"
               ],
@@ -18387,7 +18132,7 @@
   ],
   [
     "@",
-    "make-tape",
+    "tape:make",
     [
       "?",
       "x",
@@ -18404,57 +18149,60 @@
   ],
   [
     "@",
-    "remove-trail",
+    "tape:-:tail",
     [
       "?",
       "x",
       [
         "?",
-        "lst",
+        "x:list",
         [
           "if",
           [
-            ">",
+            "=",
+            0,
             [
               "list-length",
               [
-                "lst"
+                "x:list"
               ]
-            ],
-            0
+            ]
+          ],
+          [
+            "x:list"
           ],
           [
             "if",
             [
-              "equal",
+              "not",
               [
-                "last",
+                "equal",
                 [
-                  "lst"
+                  "x"
+                ],
+                [
+                  "last",
+                  [
+                    "x:list"
+                  ]
                 ]
-              ],
-              [
-                "x"
               ]
             ],
             [
-              "remove-trail",
+              "x:list"
+            ],
+            [
+              "tape:-:tail",
               [
                 "x"
               ],
               [
                 "except-last",
                 [
-                  "lst"
+                  "x:list"
                 ]
               ]
-            ],
-            [
-              "lst"
             ]
-          ],
-          [
-            "lst"
           ]
         ]
       ]
@@ -18462,12 +18210,12 @@
   ],
   [
     "@",
-    "extract-tape",
+    "tape:result",
     [
       "?",
       "x",
       [
-        "remove-trail",
+        "tape:-:tail",
         [
           "vector"
         ],
@@ -18482,14 +18230,14 @@
   ],
   [
     "@",
-    "tm-binary-increment",
+    "demo:tape:function:+:1",
     [
       "make-hash",
       [
         "vector",
         [
           "pair",
-          "right",
+          "next",
           [
             "make-hash",
             [
@@ -18499,7 +18247,7 @@
                 0,
                 [
                   "vector",
-                  "right",
+                  "next",
                   1,
                   0
                 ]
@@ -18509,7 +18257,7 @@
                 1,
                 [
                   "vector",
-                  "right",
+                  "next",
                   1,
                   1
                 ]
@@ -18521,7 +18269,7 @@
                 ],
                 [
                   "vector",
-                  "inc",
+                  "+:1",
                   0,
                   [
                     "vector"
@@ -18533,7 +18281,7 @@
         ],
         [
           "pair",
-          "inc",
+          "+:1",
           [
             "make-hash",
             [
@@ -18543,7 +18291,7 @@
                 0,
                 [
                   "vector",
-                  "noinc",
+                  "not:+:1",
                   0,
                   1
                 ]
@@ -18553,7 +18301,7 @@
                 1,
                 [
                   "vector",
-                  "inc",
+                  "+:1",
                   0,
                   0
                 ]
@@ -18565,7 +18313,7 @@
                 ],
                 [
                   "vector",
-                  "halt",
+                  "end",
                   2,
                   1
                 ]
@@ -18575,7 +18323,7 @@
         ],
         [
           "pair",
-          "noinc",
+          "not:+:1",
           [
             "make-hash",
             [
@@ -18585,7 +18333,7 @@
                 0,
                 [
                   "vector",
-                  "noinc",
+                  "not:+:1",
                   0,
                   0
                 ]
@@ -18595,7 +18343,7 @@
                 1,
                 [
                   "vector",
-                  "noinc",
+                  "not:+:1",
                   0,
                   1
                 ]
@@ -18607,7 +18355,7 @@
                 ],
                 [
                   "vector",
-                  "halt",
+                  "end",
                   1,
                   [
                     "vector"
@@ -18619,7 +18367,7 @@
         ],
         [
           "pair",
-          "halt",
+          "end",
           [
             "make-hash",
             [
@@ -18633,16 +18381,23 @@
   [
     "list=",
     [
-      "extract-tape",
+      "vector",
+      1,
+      0,
+      1,
+      0
+    ],
+    [
+      "tape:result",
       [
-        "turing",
+        "tape:do",
         [
-          "tm-binary-increment"
+          "demo:tape:function:+:1"
         ],
-        "right",
-        "halt",
+        "next",
+        "end",
         [
-          "make-tape",
+          "tape:make",
           [
             "vector",
             1,
@@ -18652,28 +18407,28 @@
           ]
         ]
       ]
-    ],
-    [
-      "vector",
-      1,
-      0,
-      1,
-      0
     ]
   ],
   [
     "list=",
     [
-      "extract-tape",
+      "vector",
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      "tape:result",
       [
-        "turing",
+        "tape:do",
         [
-          "tm-binary-increment"
+          "demo:tape:function:+:1"
         ],
-        "right",
-        "halt",
+        "next",
+        "end",
         [
-          "make-tape",
+          "tape:make",
           [
             "vector",
             1,
@@ -18682,28 +18437,33 @@
           ]
         ]
       ]
-    ],
-    [
-      "vector",
-      1,
-      0,
-      0,
-      0
     ]
   ],
   [
     "list=",
     [
-      "extract-tape",
+      "vector",
+      1,
+      1,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      "tape:result",
       [
-        "turing",
+        "tape:do",
         [
-          "tm-binary-increment"
+          "demo:tape:function:+:1"
         ],
-        "right",
-        "halt",
+        "next",
+        "end",
         [
-          "make-tape",
+          "tape:make",
           [
             "vector",
             1,
@@ -18718,44 +18478,375 @@
           ]
         ]
       ]
+    ]
+  ],
+  [
+    "@",
+    "quote-f",
+    [
+      "?",
+      "key",
+      [
+        "?",
+        "x",
+        [
+          "if",
+          [
+            "not",
+            [
+              "function?",
+              [
+                "x"
+              ]
+            ]
+          ],
+          [
+            "x"
+          ],
+          [
+            "if",
+            [
+              "=",
+              [
+                "key"
+              ],
+              [
+                "list-ref",
+                [
+                  "x"
+                ],
+                0
+              ]
+            ],
+            [
+              "tail",
+              [
+                "x"
+              ]
+            ],
+            [
+              "prepend",
+              "vector",
+              [
+                "map",
+                [
+                  "quote-f",
+                  [
+                    "key"
+                  ]
+                ],
+                [
+                  "x"
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "=",
+    [
+      "quote-f",
+      "x",
+      1
+    ],
+    1
+  ],
+  [
+    "list=",
+    [
+      "quote-f",
+      "x",
+      [
+        "vector",
+        1
+      ]
+    ],
+    [
+      "vector",
+      "vector",
+      1
+    ]
+  ],
+  [
+    "list=",
+    [
+      "quote-f",
+      "x",
+      [
+        "vector",
+        1,
+        2,
+        3
+      ]
+    ],
+    [
+      "vector",
+      "vector",
+      1,
+      2,
+      3
+    ]
+  ],
+  [
+    "list=",
+    [
+      "quote-f",
+      "x",
+      [
+        "vector",
+        1,
+        [
+          "vector",
+          5,
+          2
+        ],
+        3
+      ]
+    ],
+    [
+      "vector",
+      "vector",
+      1,
+      [
+        "vector",
+        "vector",
+        5,
+        2
+      ],
+      3
+    ]
+  ],
+  [
+    "list=",
+    [
+      "quote-f",
+      "x",
+      [
+        "vector",
+        1,
+        [
+          "vector",
+          5,
+          2
+        ],
+        [
+          "vector",
+          "x",
+          "+",
+          5,
+          2
+        ]
+      ]
+    ],
+    [
+      "vector",
+      "vector",
+      1,
+      [
+        "vector",
+        "vector",
+        5,
+        2
+      ],
+      [
+        "vector",
+        "+",
+        5,
+        2
+      ]
+    ]
+  ],
+  [
+    "@",
+    "translate",
+    [
+      "assign",
+      "prev",
+      [
+        "translate"
+      ],
+      [
+        "?",
+        "x",
+        [
+          "if",
+          [
+            "not",
+            [
+              "function?",
+              [
+                "x"
+              ]
+            ]
+          ],
+          [
+            "x"
+          ],
+          [
+            "if",
+            [
+              "not",
+              [
+                "=",
+                "quote",
+                [
+                  "head",
+                  [
+                    "x"
+                  ]
+                ]
+              ]
+            ],
+            [
+              "prev",
+              [
+                "x"
+              ]
+            ],
+            [
+              "translate",
+              [
+                "quote-f",
+                [
+                  "list-ref",
+                  [
+                    "x"
+                  ],
+                  1
+                ],
+                [
+                  "list-ref",
+                  [
+                    "x"
+                  ],
+                  2
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "=",
+    [
+      "quote",
+      "x",
+      1
+    ],
+    1
+  ],
+  [
+    "list=",
+    [
+      "quote",
+      "x",
+      [
+        1
+      ]
+    ],
+    [
+      "vector",
+      1
+    ]
+  ],
+  [
+    "list=",
+    [
+      "quote",
+      "x",
+      [
+        1,
+        2,
+        3
+      ]
     ],
     [
       "vector",
       1,
+      2,
+      3
+    ]
+  ],
+  [
+    "list=",
+    [
+      "quote",
+      "x",
+      [
+        1,
+        [
+          5,
+          2
+        ],
+        3
+      ]
+    ],
+    [
+      "vector",
       1,
+      [
+        "vector",
+        5,
+        2
+      ],
+      3
+    ]
+  ],
+  [
+    "list=",
+    [
+      "quote",
+      "x",
+      [
+        1,
+        [
+          5,
+          2
+        ],
+        [
+          "x",
+          "+",
+          5,
+          2
+        ]
+      ]
+    ],
+    [
+      "vector",
       1,
-      0,
-      0,
-      1,
-      0,
-      0,
-      0
+      [
+        "vector",
+        5,
+        2
+      ],
+      7
     ]
   ],
   [
     "@",
     "make-integer",
     [
-      "lambda",
+      "?",
+      "x",
       [
-        "v"
-      ],
-      [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "n",
         [
           "if",
           [
             "=",
             [
-              "x"
+              "n"
             ],
             "int"
           ],
           [
-            "v"
+            "x"
           ],
           0
         ]
@@ -18771,72 +18862,21 @@
       [
         "if",
         [
-          "single?",
-          [
-            "x"
-          ]
-        ],
-        [
-          "make-integer",
+          "function?",
           [
             "x"
           ]
         ],
         [
           "x"
-        ]
-      ]
-    ]
-  ],
-  [
-    "@",
-    "instanceof",
-    [
-      "lambda",
-      [
-        "T",
-        "t"
-      ],
-      [
-        "if",
-        [
-          "single?",
-          [
-            "t"
-          ]
         ],
         [
-          "=",
+          "make-integer",
           [
-            "T"
-          ],
-          "int"
-        ],
-        [
-          "not",
-          [
-            "single?",
-            [
-              [
-                "objectify",
-                [
-                  "t"
-                ]
-              ],
-              [
-                "T"
-              ]
-            ]
+            "x"
           ]
         ]
       ]
-    ]
-  ],
-  [
-    "@",
-    "prev-translate",
-    [
-      "translate"
     ]
   ],
   [
@@ -18848,7 +18888,7 @@
         [
           "prev",
           [
-            "prev-translate"
+            "translate"
           ]
         ]
       ],
@@ -18858,9 +18898,12 @@
         [
           "if",
           [
-            "single?",
+            "not",
             [
-              "x"
+              "function?",
+              [
+                "x"
+              ]
             ]
           ],
           [
@@ -18872,14 +18915,23 @@
           [
             "if",
             [
-              "=",
+              "not",
               [
-                "head",
+                "=",
+                "lambda",
                 [
-                  "x"
+                  "head",
+                  [
+                    "x"
+                  ]
                 ]
-              ],
-              "lambda"
+              ]
+            ],
+            [
+              "prev",
+              [
+                "x"
+              ]
             ],
             [
               "let",
@@ -18915,23 +18967,32 @@
               [
                 "if",
                 [
-                  ">",
+                  "=",
+                  0,
                   [
                     "list-length",
                     [
                       "formals"
                     ]
-                  ],
-                  0
+                  ]
+                ],
+                [
+                  "translate",
+                  [
+                    "body"
+                  ]
                 ],
                 [
                   "if",
                   [
-                    "single?",
+                    "not",
                     [
-                      "last",
+                      "function?",
                       [
-                        "formals"
+                        "last",
+                        [
+                          "formals"
+                        ]
                       ]
                     ]
                   ],
@@ -19042,31 +19103,12 @@
                       ]
                     ]
                   ]
-                ],
-                [
-                  "translate",
-                  [
-                    "body"
-                  ]
                 ]
-              ]
-            ],
-            [
-              "prev",
-              [
-                "x"
               ]
             ]
           ]
         ]
       ]
-    ]
-  ],
-  [
-    "@",
-    "prev-translate",
-    [
-      "translate"
     ]
   ],
   [
@@ -19078,7 +19120,7 @@
         [
           "prev",
           [
-            "prev-translate"
+            "translate"
           ]
         ]
       ],
@@ -19088,9 +19130,12 @@
         [
           "if",
           [
-            "single?",
+            "not",
             [
-              "x"
+              "function?",
+              [
+                "x"
+              ]
             ]
           ],
           [
@@ -19102,14 +19147,23 @@
           [
             "if",
             [
-              "=",
+              "not",
               [
-                "head",
+                "=",
+                "cond",
                 [
-                  "x"
+                  "head",
+                  [
+                    "x"
+                  ]
                 ]
-              ],
-              "cond"
+              ]
+            ],
+            [
+              "prev",
+              [
+                "x"
+              ]
             ],
             [
               "let",
@@ -19142,14 +19196,20 @@
               [
                 "if",
                 [
-                  ">",
+                  "=",
+                  0,
                   [
                     "list-length",
                     [
                       "rem"
                     ]
-                  ],
-                  0
+                  ]
+                ],
+                [
+                  "translate",
+                  [
+                    "cnd"
+                  ]
                 ],
                 [
                   "translate",
@@ -19176,19 +19236,7 @@
                       ]
                     ]
                   ]
-                ],
-                [
-                  "translate",
-                  [
-                    "cnd"
-                  ]
                 ]
-              ]
-            ],
-            [
-              "prev",
-              [
-                "x"
               ]
             ]
           ]
@@ -19304,14 +19352,17 @@
       [
         "if",
         [
-          ">",
+          "=",
+          0,
           [
             "list-length",
             [
               "lst"
             ]
-          ],
-          0
+          ]
+        ],
+        [
+          "lst"
         ],
         [
           "if",
@@ -19357,9 +19408,6 @@
               ]
             ]
           ]
-        ],
-        [
-          "lst"
         ]
       ]
     ]
@@ -19368,17 +19416,13 @@
     "@",
     "remove-element",
     [
-      "lambda",
-      [
-        "x"
-      ],
+      "?",
+      "x",
       [
         "remove-match",
         [
-          "lambda",
-          [
-            "y"
-          ],
+          "?",
+          "y",
           [
             "=",
             [
@@ -19440,30 +19484,76 @@
   ],
   [
     "@",
-    "return",
+    "instanceof",
     [
-      "lambda",
+      "?",
+      "T",
       [
-        "T",
-        "t"
-      ],
-      [
-        "let",
+        "?",
+        "t",
         [
+          "if",
           [
-            "obj",
+            "not",
             [
-              "objectify",
+              "function?",
               [
                 "t"
               ]
             ]
-          ]
-        ],
-        [
-          "obj",
+          ],
           [
-            "T"
+            "=",
+            [
+              "T"
+            ],
+            "int"
+          ],
+          [
+            "function?",
+            [
+              [
+                "objectify",
+                [
+                  "t"
+                ]
+              ],
+              [
+                "T"
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "@",
+    "return",
+    [
+      "?",
+      "T",
+      [
+        "?",
+        "t",
+        [
+          "let",
+          [
+            [
+              "obj",
+              [
+                "objectify",
+                [
+                  "t"
+                ]
+              ]
+            ]
+          ],
+          [
+            "obj",
+            [
+              "T"
+            ]
           ]
         ]
       ]
@@ -19500,6 +19590,11 @@
     ]
   ],
   [
+    "instanceof",
+    "int",
+    10
+  ],
+  [
     "=",
     42,
     [
@@ -19527,23 +19622,17 @@
     "@",
     "reflective",
     [
-      "lambda",
-      [
-        "f"
-      ],
+      "?",
+      "f",
       [
         [
-          "lambda",
-          [
-            "x"
-          ],
+          "?",
+          "x",
           [
             "f",
             [
-              "lambda",
-              [
-                "y"
-              ],
+              "?",
+              "y",
               [
                 [
                   "x",
@@ -19559,17 +19648,13 @@
           ]
         ],
         [
-          "lambda",
-          [
-            "x"
-          ],
+          "?",
+          "x",
           [
             "f",
             [
-              "lambda",
-              [
-                "y"
-              ],
+              "?",
+              "y",
               [
                 [
                   "x",
@@ -19586,6 +19671,44 @@
         ]
       ]
     ]
+  ],
+  [
+    "@",
+    "woop",
+    [
+      "reflective",
+      [
+        "?",
+        "self",
+        [
+          "?",
+          "x",
+          [
+            "if",
+            [
+              "=",
+              [
+                "x"
+              ],
+              10
+            ],
+            22,
+            [
+              "self",
+              10
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "=",
+    [
+      "woop",
+      1
+    ],
+    22
   ],
   [
     "@",
@@ -19810,10 +19933,12 @@
     "=",
     33,
     [
-      "point1",
-      "+",
       [
-        "point2"
+        "point1",
+        "+",
+        [
+          "point2"
+        ]
       ],
       "y"
     ]
@@ -19897,21 +20022,15 @@
     "@",
     "container",
     [
-      "lambda",
+      "?",
+      "x",
       [
-        "x"
-      ],
-      [
-        "let",
+        "assign",
+        "contents",
         [
+          "make-cell",
           [
-            "contents",
-            [
-              "make-cell",
-              [
-                "vector"
-              ]
-            ]
+            "vector"
           ]
         ],
         [
@@ -19960,26 +20079,24 @@
                   "add"
                 ],
                 [
-                  "lambda",
-                  [
-                    "x"
-                  ],
+                  "?",
+                  "x",
                   [
                     "if",
                     [
-                      "not",
+                      "element",
                       [
-                        "element",
+                        "x"
+                      ],
+                      [
+                        "get!",
                         [
-                          "x"
-                        ],
-                        [
-                          "get!",
-                          [
-                            "contents"
-                          ]
+                          "contents"
                         ]
                       ]
+                    ],
+                    [
+                      "false"
                     ],
                     [
                       "set!",
@@ -19998,9 +20115,6 @@
                           ]
                         ]
                       ]
-                    ],
-                    [
-                      "false"
                     ]
                   ]
                 ]
@@ -20014,10 +20128,8 @@
                   "remove"
                 ],
                 [
-                  "lambda",
-                  [
-                    "x"
-                  ],
+                  "?",
+                  "x",
                   [
                     "set!",
                     [
@@ -20055,7 +20167,7 @@
                     ]
                   ],
                   [
-                    "set=",
+                    "set:=",
                     [
                       "self",
                       "inventory"
@@ -20098,7 +20210,7 @@
     99
   ],
   [
-    "set=",
+    "set:=",
     [
       "pocket",
       "inventory"
@@ -20116,7 +20228,7 @@
     88
   ],
   [
-    "set=",
+    "set:=",
     [
       "pocket",
       "inventory"
@@ -20156,20 +20268,14 @@
     "@",
     "counter-container",
     [
-      "lambda",
+      "?",
+      "x",
       [
-        "x"
-      ],
-      [
-        "let",
+        "assign",
+        "super",
         [
-          [
-            "super",
-            [
-              "container",
-              "new"
-            ]
-          ]
+          "container",
+          "new"
         ],
         [
           "reflective",
@@ -20253,7 +20359,7 @@
   [
     "cc1",
     "add",
-    5
+    8
   ],
   [
     "=",
@@ -20275,14 +20381,17 @@
       [
         "if",
         [
-          ">",
+          "=",
+          0,
           [
             "list-length",
             [
               "lst1"
             ]
-          ],
-          0
+          ]
+        ],
+        [
+          "lst2"
         ],
         [
           "list-append",
@@ -20297,22 +20406,30 @@
             [
               "last",
               [
-                "lst1"
+                [
+                  "lst1"
+                ]
               ]
             ],
             [
               "lst2"
             ]
           ]
-        ],
-        [
-          "lst2"
         ]
       ]
     ]
   ],
   [
     "list=",
+    [
+      "vector",
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
     [
       "list-append",
       [
@@ -20327,63 +20444,55 @@
         5,
         6
       ]
-    ],
-    [
-      "vector",
-      1,
-      2,
-      3,
-      4,
-      5,
-      6
     ]
   ],
   [
     "@",
     "append",
     [
-      "?",
-      "x",
+      "lambda",
       [
-        "?",
-        "lst",
+        "x",
+        "lst"
+      ],
+      [
+        "if",
         [
-          "if",
+          "=",
+          0,
           [
-            ">",
+            "list-length",
             [
-              "list-length",
+              "lst"
+            ]
+          ]
+        ],
+        [
+          "vector",
+          [
+            "x"
+          ]
+        ],
+        [
+          "prepend",
+          [
+            "head",
+            [
               [
                 "lst"
-              ]
-            ],
-            0
-          ],
-          [
-            "prepend",
-            [
-              "head",
-              [
-                "lst"
-              ]
-            ],
-            [
-              "append",
-              [
-                "x"
-              ],
-              [
-                "tail",
-                [
-                  "lst"
-                ]
               ]
             ]
           ],
           [
-            "vector",
+            "append",
             [
               "x"
+            ],
+            [
+              "tail",
+              [
+                "lst"
+              ]
             ]
           ]
         ]
@@ -20393,6 +20502,12 @@
   [
     "list=",
     [
+      "vector",
+      1,
+      2,
+      5
+    ],
+    [
       "append",
       5,
       [
@@ -20400,12 +20515,6 @@
         1,
         2
       ]
-    ],
-    [
-      "vector",
-      1,
-      2,
-      5
     ]
   ],
   [
@@ -20420,21 +20529,39 @@
       [
         "if",
         [
-          ">",
+          "=",
+          0,
           [
             "list-length",
             [
               "lst"
             ]
-          ],
-          0
+          ]
+        ],
+        [
+          "lst"
         ],
         [
           "if",
           [
-            "test",
+            "not",
             [
-              "head",
+              "test",
+              [
+                "head",
+                [
+                  "lst"
+                ]
+              ]
+            ]
+          ],
+          [
+            "select-match",
+            [
+              "test"
+            ],
+            [
+              "tail",
               [
                 "lst"
               ]
@@ -20460,23 +20587,41 @@
                 ]
               ]
             ]
-          ],
-          [
-            "select-match",
-            [
-              "test"
-            ],
-            [
-              "tail",
-              [
-                "lst"
-              ]
-            ]
           ]
-        ],
-        [
-          "lst"
         ]
+      ]
+    ]
+  ],
+  [
+    "list=",
+    [
+      "vector",
+      14,
+      19,
+      13
+    ],
+    [
+      "select-match",
+      [
+        "?",
+        "x",
+        [
+          ">",
+          [
+            "x"
+          ],
+          10
+        ]
+      ],
+      [
+        "vector",
+        1,
+        14,
+        19,
+        3,
+        13,
+        0,
+        4
       ]
     ]
   ],
@@ -20484,32 +20629,22 @@
     "@",
     "unique",
     [
-      "let",
+      "assign",
+      "store",
       [
-        [
-          "store",
-          [
-            "make-cell",
-            0
-          ]
-        ]
+        "make-cell",
+        0
       ],
       [
-        "lambda",
+        "?",
+        "x",
         [
-          "x"
-        ],
-        [
-          "let",
+          "assign",
+          "id",
           [
+            "get!",
             [
-              "id",
-              [
-                "get!",
-                [
-                  "store"
-                ]
-              ]
+              "store"
             ]
           ],
           [
@@ -20537,27 +20672,27 @@
   ],
   [
     "=",
+    0,
     [
       "unique",
       "new"
-    ],
-    0
+    ]
   ],
   [
     "=",
+    1,
     [
       "unique",
       "new"
-    ],
-    1
+    ]
   ],
   [
     "=",
+    2,
     [
       "unique",
       "new"
-    ],
-    2
+    ]
   ],
   [
     "not",
@@ -20585,39 +20720,315 @@
       [
         "if",
         [
-          "single?",
+          "function?",
           [
             "this"
           ]
         ],
         [
-          "self"
+          "this"
         ],
         [
-          "this"
+          "self"
         ]
       ]
     ]
   ],
   [
     "@",
-    "prev-translate",
+    "standard-class-methods",
     [
-      "translate"
+      "?",
+      "name",
+      [
+        "quote",
+        "@@",
+        [
+          [
+            [
+              "=",
+              [
+                "method"
+              ],
+              "self"
+            ],
+            [
+              "self"
+            ]
+          ],
+          [
+            [
+              "=",
+              [
+                "method"
+              ],
+              [
+                "@@",
+                "name"
+              ]
+            ],
+            [
+              "self",
+              "self"
+            ]
+          ],
+          [
+            [
+              "=",
+              [
+                "method"
+              ],
+              "classname"
+            ],
+            [
+              "@@",
+              "name"
+            ]
+          ],
+          [
+            [
+              "=",
+              [
+                "method"
+              ],
+              "unknown"
+            ],
+            [
+              "?",
+              "x",
+              0
+            ]
+          ],
+          [
+            [
+              "=",
+              [
+                "method"
+              ],
+              "new"
+            ],
+            0
+          ],
+          [
+            [
+              "=",
+              [
+                "method"
+              ],
+              "unique-id"
+            ],
+            [
+              "unique-id"
+            ]
+          ],
+          [
+            [
+              "=",
+              [
+                "method"
+              ],
+              "=="
+            ],
+            [
+              "?",
+              "x",
+              [
+                "=",
+                [
+                  "unique-id"
+                ],
+                [
+                  "x",
+                  "unique-id"
+                ]
+              ]
+            ]
+          ],
+          [
+            "self",
+            "unknown",
+            [
+              "method"
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "@",
+    "custom-class-methods",
+    [
+      "lambda",
+      [
+        "name",
+        "args",
+        "fields"
+      ],
+      [
+        "list-append",
+        [
+          "map",
+          [
+            "?",
+            "x",
+            [
+              "quote",
+              "@@",
+              [
+                [
+                  "=",
+                  [
+                    "method"
+                  ],
+                  [
+                    "@@",
+                    "first",
+                    [
+                      "x"
+                    ]
+                  ]
+                ],
+                [
+                  "@@",
+                  "second",
+                  [
+                    "x"
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "map",
+            [
+              "tail"
+            ],
+            [
+              "select-match",
+              [
+                "?",
+                "x",
+                [
+                  "=",
+                  "method",
+                  [
+                    "first",
+                    [
+                      "x"
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "fields"
+              ]
+            ]
+          ]
+        ],
+        [
+          "map",
+          [
+            "?",
+            "x",
+            [
+              "quote",
+              "@@",
+              [
+                [
+                  "=",
+                  [
+                    "method"
+                  ],
+                  [
+                    "@@",
+                    "x"
+                  ]
+                ],
+                [
+                  [
+                    "@@",
+                    "x"
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "map",
+            [
+              "second"
+            ],
+            [
+              "select-match",
+              [
+                "?",
+                "x",
+                [
+                  "=",
+                  "field",
+                  [
+                    "first",
+                    [
+                      "x"
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "fields"
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "@",
+    "class-cond",
+    [
+      "lambda",
+      [
+        "name",
+        "args",
+        "fields"
+      ],
+      [
+        "prepend",
+        "cond",
+        [
+          "list-append",
+          [
+            "custom-class-methods",
+            [
+              "name"
+            ],
+            [
+              "args"
+            ],
+            [
+              "fields"
+            ]
+          ],
+          [
+            "standard-class-methods",
+            [
+              "name"
+            ]
+          ]
+        ]
+      ]
     ]
   ],
   [
     "@",
     "translate",
     [
-      "let",
+      "assign",
+      "prev",
       [
-        [
-          "prev",
-          [
-            "prev-translate"
-          ]
-        ]
+        "translate"
       ],
       [
         "?",
@@ -20625,9 +21036,12 @@
         [
           "if",
           [
-            "single?",
+            "not",
             [
-              "x"
+              "function?",
+              [
+                "x"
+              ]
             ]
           ],
           [
@@ -20639,14 +21053,23 @@
           [
             "if",
             [
-              "=",
+              "not",
               [
-                "head",
+                "=",
+                "class",
                 [
-                  "x"
+                  "head",
+                  [
+                    "x"
+                  ]
                 ]
-              ],
-              "class"
+              ]
+            ],
+            [
+              "prev",
+              [
+                "x"
+              ]
             ],
             [
               "let",
@@ -20690,382 +21113,109 @@
               [
                 "translate",
                 [
-                  "vector",
-                  "@",
+                  "quote",
+                  "@@",
                   [
-                    "name"
-                  ],
-                  [
-                    "vector",
-                    "lambda",
+                    "@",
                     [
-                      "prepend",
-                      "ext-this",
-                      [
-                        "args"
-                      ]
+                      "@@",
+                      "name"
                     ],
                     [
-                      "vector",
-                      "let",
+                      "lambda",
                       [
-                        "append",
+                        "@@",
+                        "prepend",
+                        "ext-this",
                         [
-                          "vector",
-                          "unique-id",
-                          [
-                            "vector",
-                            "unique",
-                            "new"
-                          ]
-                        ],
-                        [
-                          "map",
-                          [
-                            "tail"
-                          ],
-                          [
-                            "select-match",
-                            [
-                              "?",
-                              "x",
-                              [
-                                "=",
-                                [
-                                  "first",
-                                  [
-                                    "x"
-                                  ]
-                                ],
-                                "field"
-                              ]
-                            ],
-                            [
-                              "fields"
-                            ]
-                          ]
+                          "args"
                         ]
                       ],
                       [
-                        "vector",
                         "let",
                         [
-                          "vector",
+                          "@@",
+                          "append",
                           [
                             "vector",
-                            "self",
+                            "unique-id",
                             [
                               "vector",
-                              "reflective",
+                              "unique",
+                              "new"
+                            ]
+                          ],
+                          [
+                            "map",
+                            [
+                              "tail"
+                            ],
+                            [
+                              "select-match",
                               [
-                                "vector",
-                                "lambda",
+                                "?",
+                                "x",
                                 [
-                                  "vector",
-                                  "self"
-                                ],
-                                [
-                                  "vector",
-                                  "let",
+                                  "=",
+                                  "field",
                                   [
-                                    "vector",
+                                    "first",
                                     [
-                                      "vector",
-                                      "this",
-                                      [
-                                        "vector",
-                                        "setup-this",
-                                        [
-                                          "vector",
-                                          "ext-this"
-                                        ],
-                                        [
-                                          "vector",
-                                          "self"
-                                        ]
-                                      ]
+                                      "x"
                                     ]
+                                  ]
+                                ]
+                              ],
+                              [
+                                "fields"
+                              ]
+                            ]
+                          ]
+                        ],
+                        [
+                          "let",
+                          [
+                            [
+                              "self",
+                              [
+                                "reflective",
+                                [
+                                  "lambda",
+                                  [
+                                    "self"
                                   ],
                                   [
-                                    "vector",
                                     "let",
                                     [
-                                      "vector",
                                       [
-                                        "vector",
-                                        "ignore-this",
-                                        1
+                                        "this",
+                                        [
+                                          "setup-this",
+                                          [
+                                            "ext-this"
+                                          ],
+                                          [
+                                            "self"
+                                          ]
+                                        ]
                                       ]
                                     ],
                                     [
-                                      "vector",
                                       "lambda",
                                       [
-                                        "vector",
                                         "method"
                                       ],
                                       [
-                                        "list-append",
+                                        "@@",
+                                        "class-cond",
                                         [
-                                          "prepend",
-                                          "cond",
-                                          [
-                                            "list-append",
-                                            [
-                                              "map",
-                                              [
-                                                "?",
-                                                "x",
-                                                [
-                                                  "vector",
-                                                  [
-                                                    "vector",
-                                                    "=",
-                                                    [
-                                                      "vector",
-                                                      "method"
-                                                    ],
-                                                    [
-                                                      "first",
-                                                      [
-                                                        "x"
-                                                      ]
-                                                    ]
-                                                  ],
-                                                  [
-                                                    "second",
-                                                    [
-                                                      "x"
-                                                    ]
-                                                  ]
-                                                ]
-                                              ],
-                                              [
-                                                "map",
-                                                [
-                                                  "tail"
-                                                ],
-                                                [
-                                                  "select-match",
-                                                  [
-                                                    "?",
-                                                    "x",
-                                                    [
-                                                      "=",
-                                                      [
-                                                        "first",
-                                                        [
-                                                          "x"
-                                                        ]
-                                                      ],
-                                                      "method"
-                                                    ]
-                                                  ],
-                                                  [
-                                                    "fields"
-                                                  ]
-                                                ]
-                                              ]
-                                            ],
-                                            [
-                                              "map",
-                                              [
-                                                "?",
-                                                "x",
-                                                [
-                                                  "vector",
-                                                  [
-                                                    "vector",
-                                                    "=",
-                                                    [
-                                                      "vector",
-                                                      "method"
-                                                    ],
-                                                    [
-                                                      "x"
-                                                    ]
-                                                  ],
-                                                  [
-                                                    "vector",
-                                                    [
-                                                      "x"
-                                                    ]
-                                                  ]
-                                                ]
-                                              ],
-                                              [
-                                                "map",
-                                                [
-                                                  "second"
-                                                ],
-                                                [
-                                                  "select-match",
-                                                  [
-                                                    "?",
-                                                    "x",
-                                                    [
-                                                      "=",
-                                                      [
-                                                        "first",
-                                                        [
-                                                          "x"
-                                                        ]
-                                                      ],
-                                                      "field"
-                                                    ]
-                                                  ],
-                                                  [
-                                                    "fields"
-                                                  ]
-                                                ]
-                                              ]
-                                            ]
-                                          ]
+                                          "name"
                                         ],
                                         [
-                                          "vector",
-                                          [
-                                            "vector",
-                                            [
-                                              "vector",
-                                              "=",
-                                              [
-                                                "vector",
-                                                "method"
-                                              ],
-                                              "self"
-                                            ],
-                                            [
-                                              "vector",
-                                              "self"
-                                            ]
-                                          ],
-                                          [
-                                            "vector",
-                                            [
-                                              "vector",
-                                              "=",
-                                              [
-                                                "vector",
-                                                "method"
-                                              ],
-                                              [
-                                                "name"
-                                              ]
-                                            ],
-                                            [
-                                              "vector",
-                                              "self",
-                                              "self"
-                                            ]
-                                          ],
-                                          [
-                                            "vector",
-                                            [
-                                              "vector",
-                                              "=",
-                                              [
-                                                "vector",
-                                                "method"
-                                              ],
-                                              "classname"
-                                            ],
-                                            [
-                                              "name"
-                                            ]
-                                          ],
-                                          [
-                                            "vector",
-                                            [
-                                              "vector",
-                                              "=",
-                                              [
-                                                "vector",
-                                                "method"
-                                              ],
-                                              "unknown"
-                                            ],
-                                            [
-                                              "vector",
-                                              "lambda",
-                                              [
-                                                "vector",
-                                                "x"
-                                              ],
-                                              0
-                                            ]
-                                          ],
-                                          [
-                                            "vector",
-                                            [
-                                              "vector",
-                                              "=",
-                                              [
-                                                "vector",
-                                                "method"
-                                              ],
-                                              "new"
-                                            ],
-                                            0
-                                          ],
-                                          [
-                                            "vector",
-                                            [
-                                              "vector",
-                                              "=",
-                                              [
-                                                "vector",
-                                                "method"
-                                              ],
-                                              "unique-id"
-                                            ],
-                                            [
-                                              "vector",
-                                              "unique-id"
-                                            ]
-                                          ],
-                                          [
-                                            "vector",
-                                            [
-                                              "vector",
-                                              "=",
-                                              [
-                                                "vector",
-                                                "method"
-                                              ],
-                                              "=="
-                                            ],
-                                            [
-                                              "vector",
-                                              "lambda",
-                                              [
-                                                "vector",
-                                                "x"
-                                              ],
-                                              [
-                                                "vector",
-                                                "=",
-                                                [
-                                                  "vector",
-                                                  "unique-id"
-                                                ],
-                                                [
-                                                  "vector",
-                                                  "x",
-                                                  "unique-id"
-                                                ]
-                                              ]
-                                            ]
-                                          ],
-                                          [
-                                            "vector",
-                                            "self",
-                                            "unknown",
-                                            [
-                                              "vector",
-                                              "method"
-                                            ]
-                                          ]
+                                          "args"
+                                        ],
+                                        [
+                                          "fields"
                                         ]
                                       ]
                                     ]
@@ -21073,31 +21223,22 @@
                                 ]
                               ]
                             ]
-                          ]
-                        ],
-                        [
-                          "vector",
-                          "begin",
-                          [
-                            "vector",
-                            "self",
-                            "new"
                           ],
                           [
-                            "vector",
-                            "self"
+                            "begin",
+                            [
+                              "self",
+                              "new"
+                            ],
+                            [
+                              "self"
+                            ]
                           ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
-            ],
-            [
-              "prev",
-              [
-                "x"
               ]
             ]
           ]
@@ -21285,10 +21426,12 @@
     "=",
     33,
     [
-      "point1",
-      "+",
       [
-        "point2"
+        "point1",
+        "+",
+        [
+          "point2"
+        ]
       ],
       "y"
     ]
@@ -21361,107 +21504,16 @@
     ]
   ],
   [
-    "class",
-    "c1",
-    [],
-    [
-      "method",
-      "getid",
-      100
-    ],
-    [
-      "method",
-      "altid",
-      [
-        "this",
-        "getid"
-      ]
-    ]
+    "instanceof",
+    "int",
+    5
   ],
   [
-    "class",
-    "c2",
-    [],
+    "not",
     [
-      "field",
-      "super-ref",
-      [
-        "make-cell",
-        0
-      ]
-    ],
-    [
-      "method",
-      "new",
-      [
-        "set!",
-        [
-          "super-ref"
-        ],
-        [
-          "c1",
-          [
-            "this"
-          ]
-        ]
-      ]
-    ],
-    [
-      "method",
-      "super",
-      [
-        "?",
-        "x",
-        [
-          [
-            "get!",
-            [
-              "super-ref"
-            ]
-          ],
-          [
-            "x"
-          ]
-        ]
-      ]
-    ],
-    [
-      "method",
-      "unknown",
-      [
-        "?",
-        "x",
-        [
-          "self",
-          "super",
-          [
-            "x"
-          ]
-        ]
-      ]
-    ],
-    [
-      "method",
-      "getid",
-      200
-    ]
-  ],
-  [
-    "=",
-    100,
-    [
-      "c1",
-      "new",
-      "altid"
-    ]
-  ],
-  [
-    "=",
-    200,
-    [
-      "c2",
-      "new",
-      "altid"
+      "instanceof",
+      "point",
+      5
     ]
   ],
   [
@@ -21494,10 +21546,8 @@
       "method",
       "set",
       [
-        "lambda",
-        [
-          "new-value"
-        ],
+        "?",
+        "new-value",
         [
           "set!",
           [
@@ -21524,10 +21574,8 @@
       "method",
       "unknown",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           [
             "objectify",
@@ -21571,6 +21619,17 @@
     [
       "cell-test1",
       "get"
+    ]
+  ],
+  [
+    "=",
+    82,
+    [
+      "get!",
+      [
+        "cell-test1",
+        "content"
+      ]
     ]
   ],
   [
@@ -21726,33 +21785,20 @@
           ]
         ],
         [
-          "cond",
+          "or",
           [
+            "current",
+            "==",
             [
-              "current",
-              "==",
-              [
-                "src"
-              ]
-            ],
-            [
-              "true"
+              "src"
             ]
           ],
           [
+            "current",
+            "==",
             [
-              "current",
-              "==",
-              [
-                "dest"
-              ]
-            ],
-            [
-              "true"
+              "dest"
             ]
-          ],
-          [
-            "false"
           ]
         ]
       ]
@@ -21783,10 +21829,8 @@
       "method",
       "unknown",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "content",
           [
@@ -21806,16 +21850,15 @@
         "lst"
       ],
       [
-        ">",
+        "<",
+        0,
         [
           "list-length",
           [
             "select-match",
             [
-              "lambda",
-              [
-                "x"
-              ],
+              "?",
+              "x",
               [
                 "x",
                 "==",
@@ -21828,8 +21871,7 @@
               "lst"
             ]
           ]
-        ],
-        0
+        ]
       ]
     ]
   ],
@@ -21860,24 +21902,22 @@
       "method",
       "add",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "if",
           [
-            "not",
+            "object-element",
             [
-              "object-element",
-              [
-                "x"
-              ],
-              [
-                "contents",
-                "get"
-              ]
+              "x"
+            ],
+            [
+              "contents",
+              "get"
             ]
+          ],
+          [
+            "false"
           ],
           [
             "contents",
@@ -21892,9 +21932,6 @@
                 "get"
               ]
             ]
-          ],
-          [
-            "false"
           ]
         ]
       ]
@@ -21959,10 +21996,12 @@
     ]
   ],
   [
-    "door1",
-    "access-from",
     [
-      "hall"
+      "door1",
+      "access-from",
+      [
+        "hall"
+      ]
     ],
     "==",
     [
@@ -21970,24 +22009,12 @@
     ]
   ],
   [
-    "not",
     [
       "door1",
       "access-from",
       [
-        "hall"
-      ],
-      "==",
-      [
-        "hall"
+        "kitchen"
       ]
-    ]
-  ],
-  [
-    "door1",
-    "access-from",
-    [
-      "kitchen"
     ],
     "==",
     [
@@ -22112,13 +22139,14 @@
             [
               "not",
               [
-                "single?",
+                "function?",
                 [
                   "location",
                   "get"
                 ]
               ]
             ],
+            0,
             [
               "location",
               "get",
@@ -22126,8 +22154,7 @@
               [
                 "self"
               ]
-            ],
-            0
+            ]
           ],
           [
             "r",
@@ -22158,10 +22185,8 @@
       "method",
       "set-name",
       [
-        "lambda",
-        [
-          "n"
-        ],
+        "?",
+        "n",
         [
           "name",
           "set",
@@ -22200,14 +22225,17 @@
       [
         "if",
         [
-          ">",
+          "=",
+          0,
           [
             "list-length",
             [
               "lst"
             ]
-          ],
-          0
+          ]
+        ],
+        [
+          "idx"
         ],
         [
           "if",
@@ -22282,9 +22310,6 @@
               ]
             ]
           ]
-        ],
-        [
-          "idx"
         ]
       ]
     ]
@@ -22335,14 +22360,17 @@
       [
         "if",
         [
-          ">",
+          "=",
+          0,
           [
             "list-length",
             [
               "lst"
             ]
-          ],
-          0
+          ]
+        ],
+        [
+          "idx"
         ],
         [
           "if",
@@ -22417,9 +22445,6 @@
               ]
             ]
           ]
-        ],
-        [
-          "idx"
         ]
       ]
     ]
@@ -22461,10 +22486,8 @@
     [
       "find-max-idx",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "x"
         ]
@@ -22484,10 +22507,8 @@
     [
       "find-max-idx",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "x"
         ]
@@ -22507,10 +22528,8 @@
     [
       "find-max-idx",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "x"
         ]
@@ -22521,6 +22540,69 @@
         3,
         4,
         0
+      ]
+    ]
+  ],
+  [
+    "=",
+    2,
+    [
+      "find-min-idx",
+      [
+        "?",
+        "x",
+        [
+          "x"
+        ]
+      ],
+      [
+        "vector",
+        3,
+        4,
+        0,
+        2
+      ]
+    ]
+  ],
+  [
+    "=",
+    1,
+    [
+      "find-min-idx",
+      [
+        "?",
+        "x",
+        [
+          "x"
+        ]
+      ],
+      [
+        "vector",
+        3,
+        1,
+        4,
+        2
+      ]
+    ]
+  ],
+  [
+    "=",
+    0,
+    [
+      "find-min-idx",
+      [
+        "?",
+        "x",
+        [
+          "x"
+        ]
+      ],
+      [
+        "vector",
+        1,
+        3,
+        4,
+        2
       ]
     ]
   ],
@@ -22552,10 +22634,8 @@
         "cell",
         "new",
         [
-          "lambda",
-          [
-            "x"
-          ],
+          "?",
+          "x",
           0
         ]
       ]
@@ -22564,10 +22644,8 @@
       "method",
       "unknown",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "super",
           [
@@ -22580,159 +22658,143 @@
       "method",
       "update",
       [
-        "let",
+        "assign",
+        "exits",
         [
+          "select-match",
           [
-            "exits",
+            "?",
+            "x",
             [
-              "select-match",
+              "instanceof",
+              "door",
               [
-                "lambda",
-                [
-                  "x"
-                ],
-                [
-                  "instanceof",
-                  "door",
-                  [
-                    "x"
-                  ]
-                ]
-              ],
-              [
-                "self",
-                "location",
-                "inventory"
-              ]
-            ]
-          ]
-        ],
-        [
-          "let",
-          [
-            [
-              "timestamps",
-              [
-                "map",
-                [
-                  "lambda",
-                  [
-                    "x"
-                  ],
-                  [
-                    "timestamp-map",
-                    "get",
-                    [
-                      "x"
-                    ]
-                  ]
-                ],
-                [
-                  "exits"
-                ]
+                "x"
               ]
             ]
           ],
           [
-            "let",
+            "self",
+            "location",
+            "inventory"
+          ]
+        ],
+        [
+          "assign",
+          "timestamps",
+          [
+            "map",
             [
+              "?",
+              "x",
               [
-                "chosen-exit",
+                "timestamp-map",
+                "get",
                 [
-                  "list-ref",
-                  [
-                    "exits"
-                  ],
-                  [
-                    "find-min-idx",
-                    [
-                      "lambda",
-                      [
-                        "x"
-                      ],
-                      [
-                        "x"
-                      ]
-                    ],
-                    [
-                      "timestamps"
-                    ]
-                  ]
-                ]
-              ],
-              [
-                "current-tmap",
-                [
-                  "timestamp-map",
-                  "get"
-                ]
-              ],
-              [
-                "current-t",
-                [
-                  "timestamp",
-                  "get"
+                  "x"
                 ]
               ]
             ],
             [
-              "begin",
+              "exits"
+            ]
+          ],
+          [
+            "assign",
+            "chosen-exit",
+            [
+              "list-ref",
               [
-                "self",
-                "location",
-                "set",
+                "exits"
+              ],
+              [
+                "find-min-idx",
                 [
-                  "chosen-exit",
-                  "access-from",
+                  "?",
+                  "x",
+                  [
+                    "x"
+                  ]
+                ],
+                [
+                  "timestamps"
+                ]
+              ]
+            ],
+            [
+              "assign",
+              "current-tmap",
+              [
+                "timestamp-map",
+                "get"
+              ],
+              [
+                "assign",
+                "current-t",
+                [
+                  "timestamp",
+                  "get"
+                ],
+                [
+                  "begin",
                   [
                     "self",
                     "location",
-                    "get"
-                  ]
-                ]
-              ],
-              [
-                "timestamp-map",
-                "set",
-                [
-                  "lambda",
-                  [
+                    "set",
                     [
-                      "d",
-                      "door"
+                      "chosen-exit",
+                      "access-from",
+                      [
+                        "self",
+                        "location",
+                        "get"
+                      ]
                     ]
                   ],
                   [
-                    "if",
+                    "timestamp-map",
+                    "set",
                     [
-                      "d",
-                      "==",
+                      "lambda",
                       [
-                        "chosen-exit"
-                      ]
-                    ],
-                    [
-                      "current-t"
-                    ],
-                    [
-                      "current-tmap",
+                        [
+                          "d",
+                          "door"
+                        ]
+                      ],
                       [
-                        "d"
+                        "if",
+                        [
+                          "d",
+                          "==",
+                          [
+                            "chosen-exit"
+                          ]
+                        ],
+                        [
+                          "current-t"
+                        ],
+                        [
+                          "current-tmap",
+                          [
+                            "d"
+                          ]
+                        ]
                       ]
                     ]
-                  ]
-                ]
-              ],
-              [
-                "timestamp",
-                "set",
-                [
-                  "+",
+                  ],
                   [
                     "timestamp",
-                    "get"
-                  ],
-                  1
+                    "set",
+                    [
+                      "+",
+                      1,
+                      [
+                        "timestamp",
+                        "get"
+                      ]
+                    ]
+                  ]
                 ]
               ]
             ]
@@ -22825,13 +22887,16 @@
       [
         "if",
         [
-          "<",
+          ">=",
           [
             "current"
           ],
           [
             "n"
           ]
+        ],
+        [
+          "lst"
         ],
         [
           "begin",
@@ -22864,9 +22929,6 @@
               ]
             ]
           ]
-        ],
-        [
-          "lst"
         ]
       ]
     ]
@@ -23010,13 +23072,11 @@
       "?",
       "default",
       [
+        "make-cell",
         [
-          "make-cell",
+          "hash-default",
           [
-            "hash-default",
-            [
-              "default"
-            ]
+            "default"
           ]
         ]
       ]
@@ -24277,41 +24337,39 @@
         "?",
         "lst2",
         [
+          "if",
           [
-            "if",
+            "=",
+            0,
             [
-              ">",
+              "list-length",
               [
-                "list-length",
-                [
-                  "lst1"
-                ]
-              ],
-              0
-            ],
+                "lst1"
+              ]
+            ]
+          ],
+          [
+            "lst2"
+          ],
+          [
+            "prepend",
             [
-              "prepend",
+              "head",
               [
-                "head",
-                [
-                  "lst1"
-                ]
-              ],
-              [
-                "merge-list",
-                [
-                  "tail",
-                  [
-                    "lst1"
-                  ]
-                ],
-                [
-                  "lst2"
-                ]
+                "lst1"
               ]
             ],
             [
-              "lst2"
+              "merge-list",
+              [
+                "tail",
+                [
+                  "lst1"
+                ]
+              ],
+              [
+                "lst2"
+              ]
             ]
           ]
         ]
@@ -24325,10 +24383,39 @@
       "?",
       "lst",
       [
+        "if",
+        [
+          ">",
+          [
+            "list-length",
+            [
+              "lst"
+            ]
+          ],
+          2
+        ],
+        [
+          "merge-list",
+          [
+            "head",
+            [
+              "lst"
+            ]
+          ],
+          [
+            "merge-lists",
+            [
+              "tail",
+              [
+                "lst"
+              ]
+            ]
+          ]
+        ],
         [
           "if",
           [
-            ">",
+            "=",
             [
               "list-length",
               [
@@ -24346,11 +24433,13 @@
               ]
             ],
             [
-              "merge-lists",
               [
-                "tail",
+                "head",
                 [
-                  "lst"
+                  "tail",
+                  [
+                    "lst"
+                  ]
                 ]
               ]
             ]
@@ -24365,49 +24454,16 @@
                   "lst"
                 ]
               ],
-              2
+              1
             ],
             [
-              "merge-list",
+              "head",
               [
-                "head",
-                [
-                  "lst"
-                ]
-              ],
-              [
-                [
-                  "head",
-                  [
-                    "tail",
-                    [
-                      "lst"
-                    ]
-                  ]
-                ]
+                "lst"
               ]
             ],
             [
-              "if",
-              [
-                "=",
-                [
-                  "list-length",
-                  [
-                    "lst"
-                  ]
-                ],
-                1
-              ],
-              [
-                "head",
-                [
-                  "lst"
-                ]
-              ],
-              [
-                "vector"
-              ]
+              "vector"
             ]
           ]
         ]
@@ -24534,14 +24590,17 @@
         [
           "if",
           [
-            ">",
+            "=",
+            0,
             [
               "list-length",
               [
                 "lst1"
               ]
-            ],
-            0
+            ]
+          ],
+          [
+            "vector"
           ],
           [
             "merge-list",
@@ -24569,9 +24628,6 @@
                 "lst2"
               ]
             ]
-          ],
-          [
-            "vector"
           ]
         ]
       ]
@@ -24628,13 +24684,16 @@
         [
           "if",
           [
-            "<=",
+            ">",
             [
               "lo"
             ],
             [
               "hi"
             ]
+          ],
+          [
+            "vector"
           ],
           [
             "prepend",
@@ -24654,9 +24713,6 @@
                 "hi"
               ]
             ]
-          ],
-          [
-            "vector"
           ]
         ]
       ]
@@ -24699,16 +24755,22 @@
               [
                 "if",
                 [
-                  "image-get",
+                  "not",
                   [
-                    "image"
-                  ],
-                  [
-                    "ymid"
-                  ],
-                  [
-                    "xmid"
+                    "image-get",
+                    [
+                      "image"
+                    ],
+                    [
+                      "ymid"
+                    ],
+                    [
+                      "xmid"
+                    ]
                   ]
+                ],
+                [
+                  "vector"
                 ],
                 [
                   "assign",
@@ -24816,8 +24878,7 @@
                             ],
                             1,
                             [
-                              "-",
-                              0,
+                              "minus",
                               1
                             ]
                           ],
@@ -24873,49 +24934,47 @@
                                   ]
                                 ],
                                 [
+                                  "vector",
                                   [
                                     "vector",
                                     [
-                                      "vector",
+                                      "-",
                                       [
-                                        "-",
-                                        [
-                                          "xlogic"
-                                        ],
-                                        [
-                                          "dx"
-                                        ]
+                                        "xlogic"
                                       ],
                                       [
-                                        "-",
-                                        [
-                                          "ylogic"
-                                        ],
-                                        [
-                                          "dy"
-                                        ]
-                                      ],
-                                      [
-                                        "+",
-                                        [
-                                          "xlogic"
-                                        ],
-                                        [
-                                          "dx"
-                                        ]
-                                      ],
-                                      [
-                                        "+",
-                                        [
-                                          "ylogic"
-                                        ],
-                                        [
-                                          "dy"
-                                        ]
-                                      ],
-                                      [
-                                        "active"
+                                        "dx"
                                       ]
+                                    ],
+                                    [
+                                      "-",
+                                      [
+                                        "ylogic"
+                                      ],
+                                      [
+                                        "dy"
+                                      ]
+                                    ],
+                                    [
+                                      "+",
+                                      [
+                                        "xlogic"
+                                      ],
+                                      [
+                                        "dx"
+                                      ]
+                                    ],
+                                    [
+                                      "+",
+                                      [
+                                        "ylogic"
+                                      ],
+                                      [
+                                        "dy"
+                                      ]
+                                    ],
+                                    [
+                                      "active"
                                     ]
                                   ]
                                 ]
@@ -24926,9 +24985,6 @@
                       ]
                     ]
                   ]
-                ],
-                [
-                  "vector"
                 ]
               ]
             ]
@@ -30369,13 +30425,19 @@
                 [
                   "if",
                   [
-                    "equal",
+                    "not",
                     [
-                      "w"
-                    ],
-                    [
-                      "wire"
+                      "equal",
+                      [
+                        "w"
+                      ],
+                      [
+                        "wire"
+                      ]
                     ]
+                  ],
+                  [
+                    "w"
                   ],
                   [
                     "vector",
@@ -30410,9 +30472,6 @@
                     [
                       "value"
                     ]
-                  ],
-                  [
-                    "w"
                   ]
                 ]
               ],
@@ -30492,11 +30551,14 @@
           [
             "if",
             [
-              ">",
+              "=",
               [
                 "steps"
               ],
               0
+            ],
+            [
+              "circuit"
             ],
             [
               "sim",
@@ -30519,9 +30581,6 @@
               [
                 "setter"
               ]
-            ],
-            [
-              "circuit"
             ]
           ]
         ]
@@ -30823,7 +30882,7 @@
     "assign",
     "idx",
     [
-      "list-find",
+      "list:find",
       [
         "primer"
       ],
@@ -30849,22 +30908,22 @@
         ]
       ],
       [
-        "vector",
-        "equal",
+        "quote",
+        "@@",
         [
-          "vector",
-          "list-ref",
+          "equal",
+          [
+            "list-ref",
+            [
+              "primer"
+            ],
+            0
+          ],
           [
             "vector",
-            "primer"
-          ],
-          0
-        ],
-        [
-          "vector",
-          "vector",
-          "intro",
-          "unary"
+            "intro",
+            "unary"
+          ]
         ]
       ]
     ]
@@ -30877,10 +30936,8 @@
       "method",
       "add-one",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "+",
           [
@@ -30894,10 +30951,8 @@
       "method",
       "unknown",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "x"
         ]
@@ -31010,10 +31065,8 @@
       "method",
       "<init>-I-V",
       [
-        "lambda",
-        [
-          "v"
-        ],
+        "?",
+        "v",
         [
           "begin",
           [
@@ -31049,19 +31102,23 @@
       "method",
       "equals-Object-Z",
       [
-        "lambda",
-        [
-          "o"
-        ],
+        "?",
+        "o",
         [
           "if",
           [
-            "=",
+            "not",
             [
-              "o",
-              "classname"
-            ],
-            "Integer"
+              "=",
+              "Integer",
+              [
+                "o",
+                "classname"
+              ]
+            ]
+          ],
+          [
+            "false"
           ],
           [
             "=",
@@ -31074,9 +31131,6 @@
               "value",
               "get"
             ]
-          ],
-          [
-            "false"
           ]
         ]
       ]
@@ -31101,9 +31155,8 @@
       "method",
       "set",
       [
-        [
-          "lambdax"
-        ],
+        "?",
+        "x",
         [
           "value",
           "set",
@@ -31135,10 +31188,8 @@
       "method",
       "unknown",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "super",
           [
@@ -31187,10 +31238,8 @@
       "method",
       "<init>-String-V",
       [
-        "lambda",
-        [
-          "v"
-        ],
+        "?",
+        "v",
         [
           "begin",
           [
@@ -31212,10 +31261,8 @@
       "method",
       "int-init",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "begin",
           [
@@ -31249,6 +31296,51 @@
     ],
     [
       "method",
+      "equals-Object-Z",
+      [
+        "?",
+        "o",
+        [
+          "if",
+          [
+            "not",
+            [
+              "=",
+              "String",
+              [
+                "o",
+                "classname"
+              ]
+            ]
+          ],
+          [
+            "false"
+          ],
+          [
+            "=",
+            [
+              "value",
+              "get"
+            ],
+            [
+              "o",
+              "value",
+              "get"
+            ]
+          ]
+        ]
+      ]
+    ],
+    [
+      "method",
+      "equals",
+      [
+        "self",
+        "equals-Object-Z"
+      ]
+    ],
+    [
+      "method",
       "get",
       [
         "value",
@@ -31259,9 +31351,8 @@
       "method",
       "set",
       [
-        [
-          "lambdax"
-        ],
+        "?",
+        "x",
         [
           "value",
           "set",
@@ -31286,50 +31377,6 @@
     ],
     [
       "method",
-      "equals-Object-Z",
-      [
-        "lambda",
-        [
-          "o"
-        ],
-        [
-          "if",
-          [
-            "=",
-            [
-              "o",
-              "classname"
-            ],
-            "String"
-          ],
-          [
-            "=",
-            [
-              "value",
-              "get"
-            ],
-            [
-              "o",
-              "value",
-              "get"
-            ]
-          ],
-          [
-            "false"
-          ]
-        ]
-      ]
-    ],
-    [
-      "method",
-      "equals",
-      [
-        "self",
-        "equals-Object-Z"
-      ]
-    ],
-    [
-      "method",
       "classname",
       "String"
     ],
@@ -31337,10 +31384,8 @@
       "method",
       "unknown",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "super",
           [
@@ -31443,10 +31488,8 @@
       "method",
       "unknown",
       [
-        "lambda",
-        [
-          "x"
-        ],
+        "?",
+        "x",
         [
           "super",
           [
@@ -31476,10 +31519,8 @@
       "method",
       "init",
       [
-        "lambda",
-        [
-          "v"
-        ],
+        "?",
+        "v",
         [
           "begin",
           [
@@ -31499,10 +31540,8 @@
       "method",
       "set",
       [
-        "lambda",
-        [
-          "v"
-        ],
+        "?",
+        "v",
         [
           "java-content",
           "set",
@@ -31659,11 +31698,11 @@
   ],
   [
     "=",
+    60,
     [
       "state-machine-test1",
       3
-    ],
-    60
+    ]
   ],
   [
     "@",
@@ -31725,44 +31764,45 @@
   ],
   [
     "=",
+    40,
     [
       "java-test1",
       "get"
-    ],
-    40
+    ]
   ],
   [
     "@",
     "compare-object-reference",
     [
-      "lambda",
+      "?",
+      "o1",
       [
-        "o1",
-        "o2"
-      ],
-      [
-        "if",
+        "?",
+        "o2",
         [
-          "number?",
+          "if",
           [
-            "o1"
-          ]
-        ],
-        [
-          "number?",
-          [
-            "o2"
-          ]
-        ],
-        [
-          "=",
-          [
-            "o1",
-            "unique-id"
+            "number?",
+            [
+              "o1"
+            ]
           ],
           [
-            "o2",
-            "unique-id"
+            "number?",
+            [
+              "o2"
+            ]
+          ],
+          [
+            "=",
+            [
+              "o1",
+              "unique-id"
+            ],
+            [
+              "o2",
+              "unique-id"
+            ]
           ]
         ]
       ]
@@ -31772,8 +31812,7 @@
     "@",
     "minus-one",
     [
-      "-",
-      0,
+      "minus",
       1
     ]
   ],
@@ -31816,10 +31855,8 @@
                 "new"
               ],
               [
-                "lambda",
-                [
-                  "type"
-                ],
+                "?",
+                "type",
                 [
                   "stack-push",
                   [
@@ -31864,10 +31901,8 @@
                 "checkcast"
               ],
               [
-                "lambda",
-                [
-                  "t"
-                ],
+                "?",
+                "t",
                 1
               ]
             ],
@@ -31890,10 +31925,8 @@
                 ]
               ],
               [
-                "lambda",
-                [
-                  "index"
-                ],
+                "?",
+                "index",
                 [
                   "vars",
                   "set",
@@ -31935,10 +31968,8 @@
                 ]
               ],
               [
-                "lambda",
-                [
-                  "index"
-                ],
+                "?",
+                "index",
                 [
                   "stack-push",
                   [
@@ -31976,10 +32007,8 @@
                 ]
               ],
               [
-                "lambda",
-                [
-                  "val"
-                ],
+                "?",
+                "val",
                 [
                   "stack-push",
                   [
@@ -32016,10 +32045,8 @@
                 "instanceof"
               ],
               [
-                "lambda",
-                [
-                  "t"
-                ],
+                "?",
+                "t",
                 [
                   "stack-push",
                   [
@@ -32056,27 +32083,28 @@
                 "getfield"
               ],
               [
-                "lambda",
+                "?",
+                "key",
                 [
-                  "key",
-                  "ignore"
-                ],
-                [
-                  "stack-push",
+                  "?",
+                  "ignore",
                   [
-                    "stack"
-                  ],
-                  [
+                    "stack-push",
                     [
-                      "stack-pop",
+                      "stack"
+                    ],
+                    [
                       [
-                        "stack"
-                      ]
-                    ],
-                    [
-                      "key"
-                    ],
-                    "get"
+                        "stack-pop",
+                        [
+                          "stack"
+                        ]
+                      ],
+                      [
+                        "key"
+                      ],
+                      "get"
+                    ]
                   ]
                 ]
               ]
@@ -32090,25 +32118,14 @@
                 "putfield"
               ],
               [
-                "lambda",
+                "?",
+                "key",
                 [
-                  "key",
-                  "ignore"
-                ],
-                [
-                  "let",
+                  "?",
+                  "ignore",
                   [
-                    [
-                      "val",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
+                    "assign",
+                    "val",
                     [
                       "stack-pop",
                       [
@@ -32116,11 +32133,19 @@
                       ]
                     ],
                     [
-                      "key"
-                    ],
-                    "set",
-                    [
-                      "val"
+                      [
+                        "stack-pop",
+                        [
+                          "stack"
+                        ]
+                      ],
+                      [
+                        "key"
+                      ],
+                      "set",
+                      [
+                        "val"
+                      ]
                     ]
                   ]
                 ]
@@ -32135,29 +32160,21 @@
                 "imul"
               ],
               [
-                "let",
+                "assign",
+                "v2",
                 [
+                  "stack-pop",
                   [
-                    "v2",
-                    [
-                      "stack-pop",
-                      [
-                        "stack"
-                      ]
-                    ]
+                    "stack"
                   ]
                 ],
                 [
-                  "let",
+                  "assign",
+                  "v1",
                   [
+                    "stack-pop",
                     [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
+                      "stack"
                     ]
                   ],
                   [
@@ -32187,29 +32204,21 @@
                 "iadd"
               ],
               [
-                "let",
+                "assign",
+                "v2",
                 [
+                  "stack-pop",
                   [
-                    "v2",
-                    [
-                      "stack-pop",
-                      [
-                        "stack"
-                      ]
-                    ]
+                    "stack"
                   ]
                 ],
                 [
-                  "let",
+                  "assign",
+                  "v1",
                   [
+                    "stack-pop",
                     [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
+                      "stack"
                     ]
                   ],
                   [
@@ -32239,29 +32248,21 @@
                 "isub"
               ],
               [
-                "let",
+                "assign",
+                "v2",
                 [
+                  "stack-pop",
                   [
-                    "v2",
-                    [
-                      "stack-pop",
-                      [
-                        "stack"
-                      ]
-                    ]
+                    "stack"
                   ]
                 ],
                 [
-                  "let",
+                  "assign",
+                  "v1",
                   [
+                    "stack-pop",
                     [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
+                      "stack"
                     ]
                   ],
                   [
@@ -32291,10 +32292,8 @@
                 "goto"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "pc",
                   "set",
@@ -32313,10 +32312,8 @@
                 "iflt"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "if",
                   [
@@ -32349,21 +32346,19 @@
                 "ifle"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "if",
                   [
-                    "<",
+                    "<=",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
                     ],
-                    1
+                    0
                   ],
                   [
                     "pc",
@@ -32385,10 +32380,8 @@
                 "ifgt"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "if",
                   [
@@ -32421,10 +32414,8 @@
                 "ifge"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "if",
                   [
@@ -32457,10 +32448,8 @@
                 "ifne"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "if",
                   [
@@ -32496,10 +32485,8 @@
                 "ifeq"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "if",
                   [
@@ -32532,35 +32519,25 @@
                 "if_icmpne"
               ],
               [
-                "let",
+                "?",
+                "x",
                 [
+                  "assign",
+                  "v2",
                   [
-                    "v2",
+                    "stack-pop",
+                    [
+                      "stack"
+                    ]
+                  ],
+                  [
+                    "assign",
+                    "v1",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
-                    ]
-                  ]
-                ],
-                [
-                  "let",
-                  [
-                    [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    "lambda",
-                    [
-                      "x"
                     ],
                     [
                       "if",
@@ -32598,35 +32575,25 @@
                 "if_icmpeq"
               ],
               [
-                "let",
+                "?",
+                "x",
                 [
+                  "assign",
+                  "v2",
                   [
-                    "v2",
+                    "stack-pop",
+                    [
+                      "stack"
+                    ]
+                  ],
+                  [
+                    "assign",
+                    "v1",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
-                    ]
-                  ]
-                ],
-                [
-                  "let",
-                  [
-                    [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    "lambda",
-                    [
-                      "x"
                     ],
                     [
                       "if",
@@ -32661,35 +32628,25 @@
                 "if_acmpne"
               ],
               [
-                "let",
+                "?",
+                "x",
                 [
+                  "assign",
+                  "v2",
                   [
-                    "v2",
+                    "stack-pop",
+                    [
+                      "stack"
+                    ]
+                  ],
+                  [
+                    "assign",
+                    "v1",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
-                    ]
-                  ]
-                ],
-                [
-                  "let",
-                  [
-                    [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    "lambda",
-                    [
-                      "x"
                     ],
                     [
                       "if",
@@ -32727,35 +32684,25 @@
                 "if_acmpeq"
               ],
               [
-                "let",
+                "?",
+                "x",
                 [
+                  "assign",
+                  "v2",
                   [
-                    "v2",
+                    "stack-pop",
+                    [
+                      "stack"
+                    ]
+                  ],
+                  [
+                    "assign",
+                    "v1",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
-                    ]
-                  ]
-                ],
-                [
-                  "let",
-                  [
-                    [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    "lambda",
-                    [
-                      "x"
                     ],
                     [
                       "if",
@@ -32790,35 +32737,25 @@
                 "if_icmpge"
               ],
               [
-                "let",
+                "?",
+                "x",
                 [
+                  "assign",
+                  "v2",
                   [
-                    "v2",
+                    "stack-pop",
+                    [
+                      "stack"
+                    ]
+                  ],
+                  [
+                    "assign",
+                    "v1",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
-                    ]
-                  ]
-                ],
-                [
-                  "let",
-                  [
-                    [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    "lambda",
-                    [
-                      "x"
                     ],
                     [
                       "if",
@@ -32853,35 +32790,25 @@
                 "if_icmpgt"
               ],
               [
-                "let",
+                "?",
+                "x",
                 [
+                  "assign",
+                  "v2",
                   [
-                    "v2",
+                    "stack-pop",
+                    [
+                      "stack"
+                    ]
+                  ],
+                  [
+                    "assign",
+                    "v1",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
-                    ]
-                  ]
-                ],
-                [
-                  "let",
-                  [
-                    [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    "lambda",
-                    [
-                      "x"
                     ],
                     [
                       "if",
@@ -32916,35 +32843,25 @@
                 "if_icmple"
               ],
               [
-                "let",
+                "?",
+                "x",
                 [
+                  "assign",
+                  "v2",
                   [
-                    "v2",
+                    "stack-pop",
+                    [
+                      "stack"
+                    ]
+                  ],
+                  [
+                    "assign",
+                    "v1",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
-                    ]
-                  ]
-                ],
-                [
-                  "let",
-                  [
-                    [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    "lambda",
-                    [
-                      "x"
                     ],
                     [
                       "if",
@@ -32979,35 +32896,25 @@
                 "if_icmplt"
               ],
               [
-                "let",
+                "?",
+                "x",
                 [
+                  "assign",
+                  "v2",
                   [
-                    "v2",
+                    "stack-pop",
+                    [
+                      "stack"
+                    ]
+                  ],
+                  [
+                    "assign",
+                    "v1",
                     [
                       "stack-pop",
                       [
                         "stack"
                       ]
-                    ]
-                  ]
-                ],
-                [
-                  "let",
-                  [
-                    [
-                      "v1",
-                      [
-                        "stack-pop",
-                        [
-                          "stack"
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    "lambda",
-                    [
-                      "x"
                     ],
                     [
                       "if",
@@ -33042,10 +32949,8 @@
                 "ifnull"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "if",
                   [
@@ -33077,10 +32982,8 @@
                 "ifnonnull"
               ],
               [
-                "lambda",
-                [
-                  "x"
-                ],
+                "?",
+                "x",
                 [
                   "if",
                   [
@@ -33201,28 +33104,6 @@
                 [
                   "op"
                 ],
-                "goto"
-              ],
-              [
-                "lambda",
-                [
-                  "target"
-                ],
-                [
-                  "pc",
-                  "set",
-                  [
-                    "target"
-                  ]
-                ]
-              ]
-            ],
-            [
-              [
-                "=",
-                [
-                  "op"
-                ],
                 "invokevirtual"
               ],
               [
@@ -33233,33 +33114,33 @@
                   "n"
                 ],
                 [
-                  "let",
+                  "assign",
+                  "result",
                   [
+                    "stack-call",
                     [
-                      "result",
-                      [
-                        "stack-call",
-                        [
-                          "stack"
-                        ],
-                        [
-                          "target"
-                        ],
-                        [
-                          "m"
-                        ]
-                      ]
+                      "stack"
+                    ],
+                    [
+                      "target"
+                    ],
+                    [
+                      "m"
                     ]
                   ],
                   [
                     "if",
                     [
-                      "=",
+                      "not",
                       [
-                        "n"
-                      ],
-                      1
+                        "=",
+                        [
+                          "n"
+                        ],
+                        1
+                      ]
                     ],
+                    0,
                     [
                       "stack-push",
                       [
@@ -33268,8 +33149,7 @@
                       [
                         "result"
                       ]
-                    ],
-                    0
+                    ]
                   ]
                 ]
               ]
@@ -33291,33 +33171,33 @@
                   "ignore"
                 ],
                 [
-                  "let",
+                  "assign",
+                  "result",
                   [
+                    "stack-call",
                     [
-                      "result",
-                      [
-                        "stack-call",
-                        [
-                          "stack"
-                        ],
-                        [
-                          "target"
-                        ],
-                        [
-                          "m"
-                        ]
-                      ]
+                      "stack"
+                    ],
+                    [
+                      "target"
+                    ],
+                    [
+                      "m"
                     ]
                   ],
                   [
                     "if",
                     [
-                      "=",
+                      "not",
                       [
-                        "n"
-                      ],
-                      1
+                        "=",
+                        [
+                          "n"
+                        ],
+                        1
+                      ]
                     ],
+                    0,
                     [
                       "stack-push",
                       [
@@ -33326,8 +33206,7 @@
                       [
                         "result"
                       ]
-                    ],
-                    0
+                    ]
                   ]
                 ]
               ]
@@ -33348,41 +33227,41 @@
                   "n"
                 ],
                 [
-                  "let",
+                  "assign",
+                  "result",
                   [
+                    "stack-call-special",
                     [
-                      "result",
+                      "stack"
+                    ],
+                    [
+                      "hash-ref",
                       [
-                        "stack-call-special",
-                        [
-                          "stack"
-                        ],
-                        [
-                          "hash-ref",
-                          [
-                            "vars",
-                            "get"
-                          ],
-                          0
-                        ],
-                        [
-                          "target"
-                        ],
-                        [
-                          "m"
-                        ]
-                      ]
+                        "vars",
+                        "get"
+                      ],
+                      0
+                    ],
+                    [
+                      "target"
+                    ],
+                    [
+                      "m"
                     ]
                   ],
                   [
                     "if",
                     [
-                      "=",
+                      "not",
                       [
-                        "n"
-                      ],
-                      1
+                        "=",
+                        [
+                          "n"
+                        ],
+                        1
+                      ]
                     ],
+                    0,
                     [
                       "stack-push",
                       [
@@ -33391,8 +33270,7 @@
                       [
                         "result"
                       ]
-                    ],
-                    0
+                    ]
                   ]
                 ]
               ]
@@ -33434,16 +33312,12 @@
           ]
         ],
         [
-          "let",
+          "assign",
+          "arg",
           [
+            "stack-pop",
             [
-              "arg",
-              [
-                "stack-pop",
-                [
-                  "stack"
-                ]
-              ]
+              "stack"
             ]
           ],
           [
@@ -33845,9 +33719,7 @@
       "field",
       "x",
       [
-        [
-          "int"
-        ],
+        "int",
         "new"
       ]
     ],
@@ -33855,9 +33727,7 @@
       "field",
       "y",
       [
-        [
-          "int"
-        ],
+        "int",
         "new"
       ]
     ]
@@ -34136,6 +34006,7 @@
   ],
   [
     "=",
+    33,
     [
       "state-machine",
       [
@@ -34187,8 +34058,7 @@
           ]
         ]
       ]
-    ],
-    33
+    ]
   ],
   [
     "stack-push",
@@ -35850,12 +35720,10 @@
     "@",
     "make-table",
     [
-      "lambda",
+      "?",
+      "lst",
       [
-        "lst"
-      ],
-      [
-        "crunch",
+        "reduce",
         [
           "?",
           "x",
@@ -36406,10 +36274,8 @@
       "method",
       "find",
       [
-        "lambda",
-        [
-          "n"
-        ],
+        "?",
+        "n",
         [
           "names",
           "get",
@@ -36425,39 +36291,24 @@
       "method",
       "reachable",
       [
-        "lambda",
+        "?",
+        "place",
         [
-          "place"
-        ],
-        [
-          "let",
+          "assign",
+          "exits",
           [
+            "select-match",
             [
-              "exits",
+              "instanceof",
+              "door"
+            ],
+            [
+              "places",
+              "get",
               [
-                "select-match",
-                [
-                  "lambda",
-                  [
-                    "x"
-                  ],
-                  [
-                    "instanceof",
-                    "door",
-                    [
-                      "x"
-                    ]
-                  ]
-                ],
-                [
-                  "places",
-                  "get",
-                  [
-                    "place"
-                  ],
-                  "inventory"
-                ]
-              ]
+                "place"
+              ],
+              "inventory"
             ]
           ],
           [

@@ -426,12 +426,22 @@ a.sim-button:hover {
   font-smoothing: antialiased;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  letter-spacing: 5px;
 }
 
 p.scrawl {
-  margin: 0;
-  padding: 3px;
-  font-size: 170%;
+    margin: 0;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    font-size: 250%;
+    background-color: rgba(0,0,0,0.5);
+    -moz-transform: scale(-1, 1);
+    -webkit-transform: scale(-1, 1);
+    -o-transform: scale(-1, 1);
+    -ms-transform: scale(-1, 1);
+    transform: scale(-1, 1);
 }
 
 .breakable { 
