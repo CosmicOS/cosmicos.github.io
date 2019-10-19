@@ -72,16 +72,11 @@ a:visited {
   padding: 0.5em;
   margin: 5px;
   border-radius: 1em;
-  background: #111;
-  font-weight: bold;
+  background: rgba(0,0,0,0.75);
+  font-family: "inconsolataregular", "Courier New", Courier, monospace;
 }
 
 .top li.menu-source a {
-  background: #33a;
-}
-
-.top li.menu-source a:hover {
-  background: #00f;
 }
 
 .menu-logo {
@@ -94,8 +89,6 @@ a:visited {
 }
 
 div.content {
-  background: white;
-  padding: 20px;
   min-height: 100vh;
 }
 
@@ -111,13 +104,22 @@ div.content-text {
   background: none;
 }
 
+div.readable {
+  padding: 20px;
+  background: white;
+  margin-bottom: 10px;
+}
+
 p {
   text-align: justify;
 }
 
-h1, h2 {
-  color: #333;
-  text-shadow: 3px 3px 15px #999;
+h1, h2, h3 {
+    display: block;
+    color: white;
+    font-family: "inconsolataregular", "Courier New", Courier, monospace;
+    font-weight: normal;
+    text-shadow: 2px 2px 2px black;
 }
 
 h1 {
@@ -548,7 +550,12 @@ pre.msg-line {
 }
 
 h3.msg a {
-  color: initial !important;
+  color: white !important;
+}
+
+div.post h3, div.post h2 {
+    color: black;
+    text-shadow: none;
 }
 
 .bottom div { 

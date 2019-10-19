@@ -7,7 +7,8 @@ extra_css: css/console.css
 
 <h2>CosmicOS full message</h2>
 
-{% include sections.html %}
+<div class="readable">
+  {% include sections.html %}
 
 <br />
 
@@ -15,7 +16,9 @@ extra_css: css/console.css
 {% endcapture %}
 {% for stanza in site.data.msg %}
   {% if stanza.section_description %}
+  </div>
   <h3 class='msg'><a name="section{{stanza.section_index}}" href="#">{{stanza.section_index}}. {{stanza.section_description}}</a></h3>
+  <div class="readable">
   {% endif %}
   {% if stanza.role == "file" %}
   {% elsif stanza.role == "doc" %}
@@ -38,6 +41,8 @@ extra_css: css/console.css
 </div>
   {% endif %}
 {% endfor %}
+
+</div>
 
 <script>
  function CosCon() {
