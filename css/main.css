@@ -66,9 +66,9 @@ a:visited {
   text-align: center;
 }
 
-.top a {
+.top a, .top .no-a {
   color: white;
-  display: block;
+  display: inline-block;
   padding: 0.5em;
   margin: 5px;
   border-radius: 1em;
