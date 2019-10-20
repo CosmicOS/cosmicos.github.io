@@ -3,8 +3,10 @@ layout: part
 ---
 <div class="show-message-spider">
 {% for stanza in site.data.msg %}
+  {% if forloop.index0 < 256 %}
   {% if stanza.role == "code" %}
     <p class="scrawl">{{stanza.spider}}</p>
+  {% endif %}
   {% endif %}
 {% endfor %}
 </div>

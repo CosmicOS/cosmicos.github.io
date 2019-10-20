@@ -4,5 +4,5 @@ layout: part
 <div class="show-message-four">
 {% capture wrapped %}{% include wrapped.txt %}{% endcapture %}{% capture newline %}
 {% endcapture %}{% capture replacement %}<br />
-{% endcapture %}{{wrapped | replace:newline,replacement}}
+{% endcapture %}{{wrapped | replace:newline,replacement | truncate:40000}}
 </div>
