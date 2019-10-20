@@ -448,47 +448,58 @@ p.scrawl {
 .breakable { 
 }
 
-table.msg-index {
+.msg-index {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
   clear: none;
-  border-collapse: collapse;
   background: none;
 }
 
-.msg-index th,td {  
-  text-align: left;                
-  vertical-align: top;
-  padding: 0;
+.msg-index .sect {  
+    background-color: rgba(0,0,0,0.75);
+    border-top-left-radius: 1em;
+    border-bottom-right-radius: 1em;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border: 1px solid green;
 }
 
-.msg-index td.sectnum {
-  text-align: right;
-  padding-right: 4px;
-  color: #888;
+.msg-index .sectnum {
+    display: float;
+    float: left;
+    width: 30px;
+    text-align: right;
+    padding-right: 4px;
+    color: #888;
   padding: 10px;
 }
 
-.msg-index td.sectcat {
-  padding-left: 4px;
-  color: #888;
-  padding: 10px;
+.msg-index .sect-intro {
+    display: inline-block;
+    color: #aaa;
+    margin-right: 10px;
+    font-style: italic;
+    font-family: "inconsolataregular", "Courier New", Courier, monospace;
+}
+
+.msg-tags {
+    padding-left: 50px;
 }
 
 .msg-index a {
   display: block;
-  color: black;
+  color: white;
   padding: 9px;
-  border-radius: 8px;
+  border-top-left-radius: 1em;
   margin: 1px;
-  background: #eee;
 }
 
 .msg-index a:hover {
-  display: block;
-  background: #ccc;
-  text-decoration: none;
+    display: block;
+    color: black;
+    background: white;
+    text-decoration: none;
 }
 
 .msg-line {

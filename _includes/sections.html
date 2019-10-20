@@ -1,4 +1,5 @@
-<table class="msg-index">
-  {% for c in site.data.msg %}{% if c.section_category %}
-  <tr><td class="sectnum" id="toc_section{{c.section_index}}">{{c.section_index}}</td><td><a href="message.html#section{{c.section_index}}">{{c.section_description}}</a></td><td class="sectcat">{{c.section_category}}</td></tr>{% endif %}{% endfor %}
-</table>
+<div class="msg-index">
+  <div><div>
+    {% for c in site.data.msg %}{% if c.section_category %}</div></div>
+<div class="sect"><span class="sectnum" id="toc_section{{c.section_index}}">{{c.section_index}}</span><a href="message.html#section{{c.section_index}}">{{c.section_description}}</a><div class="msg-tags">{% endif %}{% for l in c.lines %}{% assign parts = l | replace: ';', ' ' | split: ' ' %}{% if parts[0] == 'intro' %}<span class="sect-intro">{{ parts[1] }}</span>{% endif %}{% endfor %}{% endfor %}</div></div>
+</div>
