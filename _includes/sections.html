@@ -1,5 +1,6 @@
+{% assign options = "part1 part2 part3 part4" | split: " " %}
 <div class="msg-index">
   <div><div>
-    {% for c in site.data.msg %}{% if c.section_category %}</div></div>
-<div class="sect"><span class="sectnum" id="toc_section{{c.section_index}}">{{c.section_index}}</span><a href="message.html#section{{c.section_index}}">{{c.section_description}}</a><div class="msg-tags">{% endif %}{% for l in c.lines %}{% assign parts = l | replace: ';', ' ' | split: ' ' %}{% if parts[0] == 'intro' %}<span class="sect-intro">{{ parts[1] }}</span>{% endif %}{% endfor %}{% endfor %}</div></div>
+    {% for c in site.data.msg %}{% if c.section_category %}{% if c.section_description contains "end of part"  %}{% else %}</div></div>
+<div class="sect"><span class="sectnum" id="toc_section{{c.section_index}}">{{c.section_index}}</span><a href="message.html#section{{c.section_index}}">{{c.section_description}}</a><div class="msg-tags">{% endif %}{% endif %}{% for l in c.lines %}{% assign parts = l | replace: ';', ' ' | split: ' ' %}{% if parts[0] == 'intro' %}{% if options contains parts[1] %}{% else %}<span class="sect-intro">{{ parts[1] }}</span>{% endif %}{% endif %}{% endfor %}{% endfor %}</div></div>
 </div>
