@@ -108,6 +108,8 @@ div.readable {
   padding: 20px;
   background: white;
   margin-bottom: 10px;
+  border-top-left-radius: 1em;
+  border-bottom-right-radius: 1em;
 }
 
 p {
@@ -169,7 +171,9 @@ blockquote table td {
   padding-right: 1em;
   padding-top: 3px;
   padding-bottom: 3px;
-  background: #eee;
+  background: #fafafa;
+  border-right: 1px solid #dfc;
+  border-left: 1px solid #dfc;
   margin-bottom: 1em;
 }
 
