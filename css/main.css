@@ -542,6 +542,16 @@ a:focus {
   outline: 0;
 }
 
+.msg-assume {
+    color: #aaa;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.msg-assume .msg-code {
+    display: none;
+}
+
 .msg-expand {
   border: 1px solid #aaa;
   padding: 10px;

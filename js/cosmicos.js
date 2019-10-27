@@ -1562,6 +1562,9 @@ cosmicos_Cons.deconsify = function(e) {
 	if(js_Boot.__instanceof(e,cosmicos_BitString)) {
 		return e;
 	}
+	if(typeof(e) == "number") {
+		return e;
+	}
 	var c = new cosmicos_Cursor(e);
 	var lst = [];
 	var len = c.length();
@@ -1721,7 +1724,7 @@ cosmicos_Evaluate.prototype = {
 				}
 				return str;
 			}
-			if(typeof(e0) == "number" && ((e0 | 0) === e0) || js_Boot.__instanceof(e0,cosmicos_BigInteger) || js_Boot.__instanceof(e0,cosmicos_BitString) || typeof(e0) == "string") {
+			if(typeof(e0) == "number" && ((e0 | 0) === e0) || js_Boot.__instanceof(e0,cosmicos_BigInteger) || js_Boot.__instanceof(e0,cosmicos_BitString) || typeof(e0) == "string" || typeof(e0) == "number") {
 				return e0;
 			}
 			var cursor = new cosmicos_Cursor(e0);
@@ -1943,60 +1946,63 @@ cosmicos_Evaluate.prototype = {
 		this.mem.add(this.vocab.get("intro"),function(x) {
 			return 1;
 		});
+		this.mem.add(this.vocab.get("assume"),function(x1) {
+			return x1;
+		});
 		this.addStdMin();
 		this.evaluateLine("@ 1 1");
 		this.evaluateLine("@ true 1");
 		this.addDefinition("not","? 0 | if $0 0 1");
 		this.addDefinition("and","? 0 | ? 1 | if $0 $1 0");
 		this.addDefinition("or","? 0 | ? 1 | if $0 1 $1");
-		this.mem.add(this.vocab.get("make-cell"),function(x1) {
-			return { data : x1};
+		this.mem.add(this.vocab.get("make-cell"),function(x2) {
+			return { data : x2};
 		});
-		this.mem.add(this.vocab.get("get!"),function(x2) {
-			return x2.data;
+		this.mem.add(this.vocab.get("get!"),function(x3) {
+			return x3.data;
 		});
-		this.mem.add(this.vocab.get("set!"),function(x3) {
+		this.mem.add(this.vocab.get("set!"),function(x4) {
 			return function(y) {
-				x3.data = y;
+				x4.data = y;
 				return 1;
 			};
 		});
-		this.mem.add(this.vocab.get("number?"),function(x4) {
-			if(!(typeof(x4) == "number" && ((x4 | 0) === x4))) {
-				return js_Boot.__instanceof(x4,cosmicos_BigInteger);
+		this.mem.add(this.vocab.get("number?"),function(x5) {
+			if(!(typeof(x5) == "number" && ((x5 | 0) === x5))) {
+				return js_Boot.__instanceof(x5,cosmicos_BigInteger);
 			} else {
 				return true;
 			}
 		});
-		this.mem.add(this.vocab.get("symbol?"),function(x5) {
-			return typeof(x5) == "string";
+		this.mem.add(this.vocab.get("symbol?"),function(x6) {
+			return typeof(x6) == "string";
 		});
-		this.mem.add(this.vocab.get("single?"),function(x6) {
-			if(!(typeof(x6) == "number" && ((x6 | 0) === x6) || typeof(x6) == "number" || js_Boot.__instanceof(x6,cosmicos_BigInteger) || typeof(x6) == "string" || js_Boot.__instanceof(x6,cosmicos_BitString))) {
-				return typeof(x6) == "boolean";
+		this.mem.add(this.vocab.get("single?"),function(x7) {
+			if(!(typeof(x7) == "number" && ((x7 | 0) === x7) || typeof(x7) == "number" || js_Boot.__instanceof(x7,cosmicos_BigInteger) || typeof(x7) == "string" || js_Boot.__instanceof(x7,cosmicos_BitString))) {
+				return typeof(x7) == "boolean";
 			} else {
 				return true;
 			}
 		});
-		this.mem.add(this.vocab.get("function?"),function(x7) {
-			return !(typeof(x7) == "number" && ((x7 | 0) === x7) || typeof(x7) == "number" || js_Boot.__instanceof(x7,cosmicos_BigInteger) || typeof(x7) == "string" || js_Boot.__instanceof(x7,cosmicos_BitString) || typeof(x7) == "boolean");
+		this.mem.add(this.vocab.get("function?"),function(x8) {
+			return !(typeof(x8) == "number" && ((x8 | 0) === x8) || typeof(x8) == "number" || js_Boot.__instanceof(x8,cosmicos_BigInteger) || typeof(x8) == "string" || js_Boot.__instanceof(x8,cosmicos_BitString) || typeof(x8) == "boolean");
 		});
-		this.mem.add(this.vocab.get("type?"),function(x8) {
-			return "type " + Std.string(typeof(x8) == "number" && ((x8 | 0) === x8)) + " " + Std.string(typeof(x8) == "number") + " " + Std.string(typeof(x8) == "boolean");
+		this.mem.add(this.vocab.get("type?"),function(x9) {
+			return "type " + Std.string(typeof(x9) == "number" && ((x9 | 0) === x9)) + " " + Std.string(typeof(x9) == "number") + " " + Std.string(typeof(x9) == "boolean");
 		});
-		this.mem.add(this.vocab.get("translate"),function(x9) {
-			if(typeof(x9) == "number" && ((x9 | 0) === x9) || js_Boot.__instanceof(x9,cosmicos_BigInteger) || typeof(x9) == "string" || js_Boot.__instanceof(x9,cosmicos_BitString)) {
-				return x9;
+		this.mem.add(this.vocab.get("translate"),function(x10) {
+			if(typeof(x10) == "number" && ((x10 | 0) === x10) || js_Boot.__instanceof(x10,cosmicos_BigInteger) || typeof(x10) == "string" || js_Boot.__instanceof(x10,cosmicos_BitString) || typeof(x10) == "number") {
+				return x10;
 			}
-			var rep = function(x10) {
+			var rep = function(x11) {
 			};
-			var len = cosmicos_Cons.car(x9);
+			var len = cosmicos_Cons.car(x10);
 			if(len == 0) {
-				return x9;
+				return x10;
 			}
 			var current = _gthis.mem.get(_gthis.id_translate);
 			if(len == 1) {
-				var tmp = cosmicos_Cons.cdr(x9);
+				var tmp = cosmicos_Cons.cdr(x10);
 				return cosmicos_Cons.cons(1,current(tmp));
 			}
 			var rep1 = function(r,len1,rec) {
@@ -2009,7 +2015,7 @@ cosmicos_Evaluate.prototype = {
 				var rep5 = cosmicos_Cons.car(r);
 				return cosmicos_Cons.cons(current(rep5),rec(cosmicos_Cons.cdr(r),len1 - 1,rec));
 			};
-			return cosmicos_Cons.cons(len,rep1(cosmicos_Cons.cdr(x9),len,rep1));
+			return cosmicos_Cons.cons(len,rep1(cosmicos_Cons.cdr(x10),len,rep1));
 		});
 		this.mem.add(this.vocab.get("forall"),function(f) {
 			if(f(-5) != 0 && f(10) != 0 && f(15) != 0 && f(18) != 0) {
@@ -2051,30 +2057,30 @@ cosmicos_Evaluate.prototype = {
 			}
 			return cosmicos_Cons.consify(lst);
 		});
-		this.mem.add(this.vocab.get("sqrt"),function(x11) {
-			return Math.sqrt(x11);
+		this.mem.add(this.vocab.get("sqrt"),function(x12) {
+			return Math.sqrt(x12);
 		});
-		this.mem.add(this.vocab.get("set:int:+"),(this.mem.get(this.vocab.get("all")))(function(x12) {
-			return x12 >= 0;
+		this.mem.add(this.vocab.get("set:int:+"),(this.mem.get(this.vocab.get("all")))(function(x13) {
+			return x13 >= 0;
 		}));
-		this.mem.add(this.vocab.get("div"),function(x13) {
+		this.mem.add(this.vocab.get("div"),function(x14) {
 			return function(y1) {
-				if(cosmicos_Evaluate.isBi2(x13,y1)) {
-					return cosmicos_Evaluate.bi(x13).div(cosmicos_Evaluate.bi(y1));
+				if(cosmicos_Evaluate.isBi2(x14,y1)) {
+					return cosmicos_Evaluate.bi(x14).div(cosmicos_Evaluate.bi(y1));
 				}
-				return x13 / y1 | 0;
+				return x14 / y1 | 0;
 			};
 		});
-		this.mem.add(this.vocab.get("frac"),function(x14) {
+		this.mem.add(this.vocab.get("frac"),function(x15) {
 			return function(y2) {
-				if(cosmicos_Evaluate.isBi2(x14,y2)) {
+				if(cosmicos_Evaluate.isBi2(x15,y2)) {
 					throw new js__$Boot_HaxeError("real division cannot deal with bigints yet");
 				}
-				return x14 / y2;
+				return x15 / y2;
 			};
 		});
-		this.mem.add(this.vocab.get("demo"),function(x15) {
-			return x15;
+		this.mem.add(this.vocab.get("demo"),function(x16) {
+			return x16;
 		});
 		this.mem.add(this.vocab.get("e"),Math.exp(1.0));
 		this.mem.add(this.vocab.get("pi"),Math.PI);
@@ -2979,7 +2985,7 @@ cosmicos_Parse.encodeSymbols = function(e,vocab,numeric) {
 			var str = v;
 			var ch0 = str.charAt(0);
 			if(ch0 < "0" || ch0 > "9") {
-				if(ch0 == ":" || ch0 == ".") {
+				if((ch0 == ":" || ch0 == ".") && str.length > 1) {
 					v = new cosmicos_BitString(str);
 				} else if(ch0 == "U" && new EReg("^U1*U$","").match(str)) {
 					v = HxOverrides.substr(str,1,str.length - 2);
@@ -3006,6 +3012,8 @@ cosmicos_Parse.encodeSymbols = function(e,vocab,numeric) {
 						v = vocab.get(v);
 					}
 				}
+			} else if(str.charAt(str.length - 1) == "f") {
+				v = parseFloat(HxOverrides.substr(str,0,str.length - 1));
 			} else {
 				v = Std.parseInt(str);
 			}

@@ -32,7 +32,7 @@ extra_css: css/console.css
 {% endfor %}</pre>
 {% endif %}
 {% else %}
-<div class="msg-holder">
+<div class="msg-holder{% if stanza.assume %} msg-assume{% endif %}">
 <div class="scrawl">{{stanza.spider}}</div>
 <pre class="msg-line{% if stanza.dt %} msg-dt{% endif %}">{% for line in stanza.lines %}{{line | escape}}
 {% endfor %}</pre>
