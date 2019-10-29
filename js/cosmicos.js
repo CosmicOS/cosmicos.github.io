@@ -1474,6 +1474,9 @@ cosmicos_Complex.prototype = {
 	,mul: function(alt) {
 		return new cosmicos_Complex(this.re * alt.re - this.im * alt.im,this.re * alt.im + alt.re * this.im);
 	}
+	,div: function(alt) {
+		return new cosmicos_Complex((this.re * alt.re + this.im * alt.im) / (alt.re * alt.re + alt.im * alt.im),(this.im * alt.re - this.re * alt.im) / (alt.re * alt.re + alt.im * alt.im));
+	}
 	,add: function(alt) {
 		return new cosmicos_Complex(this.re + alt.re,this.im + alt.im);
 	}
@@ -1696,7 +1699,7 @@ cosmicos_Evaluate.bi = function(x) {
 	return cosmicos_BigInteger.ofInt(x);
 };
 cosmicos_Evaluate.complex = function(x) {
-	if(typeof(x) == "number" && ((x | 0) === x)) {
+	if(typeof(x) == "number" && ((x | 0) === x) || typeof(x) == "number") {
 		return new cosmicos_Complex(x);
 	}
 	return x;
@@ -2060,27 +2063,35 @@ cosmicos_Evaluate.prototype = {
 		this.mem.add(this.vocab.get("sqrt"),function(x12) {
 			return Math.sqrt(x12);
 		});
-		this.mem.add(this.vocab.get("set:int:+"),(this.mem.get(this.vocab.get("all")))(function(x13) {
-			return x13 >= 0;
-		}));
-		this.mem.add(this.vocab.get("div"),function(x14) {
+		this.mem.add(this.vocab.get("pow"),function(x13) {
 			return function(y1) {
-				if(cosmicos_Evaluate.isBi2(x14,y1)) {
-					return cosmicos_Evaluate.bi(x14).div(cosmicos_Evaluate.bi(y1));
-				}
-				return x14 / y1 | 0;
+				return Math.pow(x13,y1);
 			};
 		});
-		this.mem.add(this.vocab.get("frac"),function(x15) {
+		this.mem.add(this.vocab.get("set:int:+"),(this.mem.get(this.vocab.get("all")))(function(x14) {
+			return x14 >= 0;
+		}));
+		this.mem.add(this.vocab.get("div"),function(x15) {
 			return function(y2) {
 				if(cosmicos_Evaluate.isBi2(x15,y2)) {
-					throw new js__$Boot_HaxeError("real division cannot deal with bigints yet");
+					return cosmicos_Evaluate.bi(x15).div(cosmicos_Evaluate.bi(y2));
 				}
-				return x15 / y2;
+				return x15 / y2 | 0;
 			};
 		});
-		this.mem.add(this.vocab.get("demo"),function(x16) {
-			return x16;
+		this.mem.add(this.vocab.get("frac"),function(x16) {
+			return function(y3) {
+				if(cosmicos_Evaluate.isBi2(x16,y3)) {
+					throw new js__$Boot_HaxeError("real division cannot deal with bigints yet");
+				}
+				if(cosmicos_Evaluate.isComplex2(x16,y3)) {
+					return cosmicos_Evaluate.complex(x16).div(cosmicos_Evaluate.complex(y3));
+				}
+				return x16 / y3;
+			};
+		});
+		this.mem.add(this.vocab.get("demo"),function(x17) {
+			return x17;
 		});
 		this.mem.add(this.vocab.get("e"),Math.exp(1.0));
 		this.mem.add(this.vocab.get("pi"),Math.PI);
@@ -2092,7 +2103,7 @@ cosmicos_Evaluate.prototype = {
 		this.evaluateLine("@ is:prime | ? x | if (< $x 2) 0 | not | has-divisor-within (- $x 1) $x");
 		this.evaluateLine("@ has-square-divisor-within | ? top | ? x | if (< $top 0) 0 | if (= $x | * $top $top) 1 | has-square-divisor-within (- $top 1) $x");
 		this.evaluateLine("@ is:square | ? x | has-square-divisor-within $x $x");
-		this.evaluateLine("@ undefined 999");
+		this.evaluateLine("@ undefined 999999");
 		this.evaluateLine("@ even | ? x | = 0 | - $x | * 2 | div $x 2");
 		this.id_lambda0 = this.vocab.get("??");
 	}
