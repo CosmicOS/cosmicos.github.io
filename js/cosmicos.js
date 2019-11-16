@@ -1523,6 +1523,16 @@ cosmicos_Config.prototype = {
 		}
 		return fname;
 	}
+	,getNamesPath: function() {
+		if(this.config == null) {
+			return null;
+		}
+		var fname = Reflect.field(this.config,"names");
+		if(fname == "") {
+			return null;
+		}
+		return fname;
+	}
 	,setExternalVocab: function(txt) {
 		this.external_vocab = JSON.parse(txt);
 	}
@@ -1665,6 +1675,7 @@ var cosmicos_Evaluate = $hx_exports["cosmicos"]["Evaluate"] = function(state,use
 	this.id_if = this.vocab.get("if");
 	this.id_assign = this.vocab.get("assign");
 	this.id_translate = -1;
+	this.internal_id = 10000;
 	this.config = state.getConfig();
 };
 cosmicos_Evaluate.__name__ = ["cosmicos","Evaluate"];
@@ -1880,6 +1891,11 @@ cosmicos_Evaluate.prototype = {
 		codec.encode(statement);
 		return this.evaluateExpression(statement.content);
 	}
+	,iid: function() {
+		var result = this.internal_id;
+		this.internal_id++;
+		return result;
+	}
 	,getVocab: function() {
 		return this.vocab;
 	}
@@ -1907,9 +1923,7 @@ cosmicos_Evaluate.prototype = {
 		this.vocab.check(">",4);
 		this.explain(">","is one integer greater than another","> 42 41");
 		this.vocab.check("not",5);
-		this.vocab.check("and",6);
-		this.vocab.check("or",7);
-		this.vocab.check("equal",8);
+		this.vocab.check("unary",7);
 		this.vocab.check("*",9);
 		this.explain("*","multiply two integers","* 2 21");
 		this.vocab.check("+",10);
@@ -1918,9 +1932,10 @@ cosmicos_Evaluate.prototype = {
 		this.explain("-","subtract one integer from another","- 44 2");
 		this.id_lambda = this.vocab.check("?",12);
 		this.explain("?","create an anonymous function","? x | - $x 1");
-		this.id_define = this.vocab.check("define",13);
-		this.explain("@","store an expression in memory","@ dec | ? x | - $x 1");
+		this.id_define = this.vocab.check("@",13);
+		this.explain("@","store an expression in memory","@ decrement | ? x | - $x 1");
 		this.id_assign = this.vocab.check("assign",14);
+		this.explain("assign","memory within expression","assign x 15 | = $x 15");
 		this.id_if = this.vocab.check("if",15);
 		this.explain("if","conditional evaluation","if (> $x 1) (dec $x) $x");
 		this.vocab.check("vector",16);
@@ -1929,26 +1944,19 @@ cosmicos_Evaluate.prototype = {
 		this.vocab.check("forall",19);
 		this.vocab.check("exists",20);
 		this.vocab.check("cons",21);
-		this.vocab.check("car",22);
-		this.vocab.check("cdr",23);
-		this.vocab.check("number?",24);
 		this.id_translate = this.vocab.check("translate",25);
 		this.vocab.check("lambda",26);
-		this.vocab.check("make-cell",27);
-		this.vocab.check("set!",28);
-		this.vocab.check("get!",29);
+		this.vocab.check("make",27);
 		this.vocab.check("all",30);
-		this.vocab.check("set:int:+",31);
 		this.vocab.check("undefined",32);
-		this.vocab.check("!",33);
 		this.vocab.check("div",34);
 		this.vocab.check("primer",35);
 		this.vocab.check("demo",36);
-		this.vocab.set("is:int",40);
-		this.vocab.set("unary",255);
+		this.vocab.check("cell",37);
 		this.mem.add(this.vocab.get("intro"),function(x) {
 			return 1;
 		});
+		this.vocab.set("assume",this.iid());
 		this.mem.add(this.vocab.get("assume"),function(x1) {
 			return x1;
 		});
@@ -1956,56 +1964,36 @@ cosmicos_Evaluate.prototype = {
 		this.evaluateLine("@ 1 1");
 		this.evaluateLine("@ true 1");
 		this.addDefinition("not","? 0 | if $0 0 1");
-		this.addDefinition("and","? 0 | ? 1 | if $0 $1 0");
-		this.addDefinition("or","? 0 | ? 1 | if $0 1 $1");
-		this.mem.add(this.vocab.get("make-cell"),function(x2) {
+		this.addDefinition("true:*","? 0 | ? 1 | if $0 $1 0");
+		this.addDefinition("true:+","? 0 | ? 1 | if $0 1 $1");
+		this.mem.add(this.vocab.get("cell:make"),function(x2) {
 			return { data : x2};
 		});
-		this.mem.add(this.vocab.get("get!"),function(x3) {
+		this.mem.add(this.vocab.get("cell:get"),function(x3) {
 			return x3.data;
 		});
-		this.mem.add(this.vocab.get("set!"),function(x4) {
+		this.mem.add(this.vocab.get("cell:assign"),function(x4) {
 			return function(y) {
 				x4.data = y;
 				return 1;
 			};
 		});
-		this.mem.add(this.vocab.get("number?"),function(x5) {
-			if(!(typeof(x5) == "number" && ((x5 | 0) === x5))) {
-				return js_Boot.__instanceof(x5,cosmicos_BigInteger);
-			} else {
-				return true;
+		this.mem.add(this.vocab.get("function?"),function(x5) {
+			return !(typeof(x5) == "number" && ((x5 | 0) === x5) || typeof(x5) == "number" || js_Boot.__instanceof(x5,cosmicos_BigInteger) || typeof(x5) == "string" || js_Boot.__instanceof(x5,cosmicos_BitString) || typeof(x5) == "boolean");
+		});
+		this.mem.add(this.vocab.get("translate"),function(x6) {
+			if(typeof(x6) == "number" && ((x6 | 0) === x6) || js_Boot.__instanceof(x6,cosmicos_BigInteger) || typeof(x6) == "string" || js_Boot.__instanceof(x6,cosmicos_BitString) || typeof(x6) == "number") {
+				return x6;
 			}
-		});
-		this.mem.add(this.vocab.get("symbol?"),function(x6) {
-			return typeof(x6) == "string";
-		});
-		this.mem.add(this.vocab.get("single?"),function(x7) {
-			if(!(typeof(x7) == "number" && ((x7 | 0) === x7) || typeof(x7) == "number" || js_Boot.__instanceof(x7,cosmicos_BigInteger) || typeof(x7) == "string" || js_Boot.__instanceof(x7,cosmicos_BitString))) {
-				return typeof(x7) == "boolean";
-			} else {
-				return true;
-			}
-		});
-		this.mem.add(this.vocab.get("function?"),function(x8) {
-			return !(typeof(x8) == "number" && ((x8 | 0) === x8) || typeof(x8) == "number" || js_Boot.__instanceof(x8,cosmicos_BigInteger) || typeof(x8) == "string" || js_Boot.__instanceof(x8,cosmicos_BitString) || typeof(x8) == "boolean");
-		});
-		this.mem.add(this.vocab.get("type?"),function(x9) {
-			return "type " + Std.string(typeof(x9) == "number" && ((x9 | 0) === x9)) + " " + Std.string(typeof(x9) == "number") + " " + Std.string(typeof(x9) == "boolean");
-		});
-		this.mem.add(this.vocab.get("translate"),function(x10) {
-			if(typeof(x10) == "number" && ((x10 | 0) === x10) || js_Boot.__instanceof(x10,cosmicos_BigInteger) || typeof(x10) == "string" || js_Boot.__instanceof(x10,cosmicos_BitString) || typeof(x10) == "number") {
-				return x10;
-			}
-			var rep = function(x11) {
+			var rep = function(x7) {
 			};
-			var len = cosmicos_Cons.car(x10);
+			var len = cosmicos_Cons.car(x6);
 			if(len == 0) {
-				return x10;
+				return x6;
 			}
 			var current = _gthis.mem.get(_gthis.id_translate);
 			if(len == 1) {
-				var tmp = cosmicos_Cons.cdr(x10);
+				var tmp = cosmicos_Cons.cdr(x6);
 				return cosmicos_Cons.cons(1,current(tmp));
 			}
 			var rep1 = function(r,len1,rec) {
@@ -2018,7 +2006,7 @@ cosmicos_Evaluate.prototype = {
 				var rep5 = cosmicos_Cons.car(r);
 				return cosmicos_Cons.cons(current(rep5),rec(cosmicos_Cons.cdr(r),len1 - 1,rec));
 			};
-			return cosmicos_Cons.cons(len,rep1(cosmicos_Cons.cdr(x10),len,rep1));
+			return cosmicos_Cons.cons(len,rep1(cosmicos_Cons.cdr(x6),len,rep1));
 		});
 		this.mem.add(this.vocab.get("forall"),function(f) {
 			if(f(-5) != 0 && f(10) != 0 && f(15) != 0 && f(18) != 0) {
@@ -2060,51 +2048,58 @@ cosmicos_Evaluate.prototype = {
 			}
 			return cosmicos_Cons.consify(lst);
 		});
-		this.mem.add(this.vocab.get("sqrt"),function(x12) {
-			return Math.sqrt(x12);
+		this.mem.add(this.vocab.get("sqrt"),function(x8) {
+			return Math.sqrt(x8);
 		});
-		this.mem.add(this.vocab.get("pow"),function(x13) {
+		this.mem.add(this.vocab.get("pow"),function(x9) {
 			return function(y1) {
-				return Math.pow(x13,y1);
+				return Math.pow(x9,y1);
 			};
 		});
-		this.mem.add(this.vocab.get("set:int:+"),(this.mem.get(this.vocab.get("all")))(function(x14) {
-			return x14 >= 0;
+		this.mem.add(this.vocab.get("set:int:+"),(this.mem.get(this.vocab.get("all")))(function(x10) {
+			return x10 >= 0;
 		}));
-		this.mem.add(this.vocab.get("div"),function(x15) {
+		this.mem.add(this.vocab.get("div"),function(x11) {
 			return function(y2) {
-				if(cosmicos_Evaluate.isBi2(x15,y2)) {
-					return cosmicos_Evaluate.bi(x15).div(cosmicos_Evaluate.bi(y2));
+				if(cosmicos_Evaluate.isBi2(x11,y2)) {
+					return cosmicos_Evaluate.bi(x11).div(cosmicos_Evaluate.bi(y2));
 				}
-				return x15 / y2 | 0;
+				return x11 / y2 | 0;
 			};
 		});
-		this.mem.add(this.vocab.get("frac"),function(x16) {
+		this.mem.add(this.vocab.get("frac"),function(x12) {
 			return function(y3) {
-				if(cosmicos_Evaluate.isBi2(x16,y3)) {
+				if(cosmicos_Evaluate.isBi2(x12,y3)) {
 					throw new js__$Boot_HaxeError("real division cannot deal with bigints yet");
 				}
-				if(cosmicos_Evaluate.isComplex2(x16,y3)) {
-					return cosmicos_Evaluate.complex(x16).div(cosmicos_Evaluate.complex(y3));
+				if(cosmicos_Evaluate.isComplex2(x12,y3)) {
+					return cosmicos_Evaluate.complex(x12).div(cosmicos_Evaluate.complex(y3));
 				}
-				return x16 / y3;
+				return x12 / y3;
 			};
 		});
-		this.mem.add(this.vocab.get("demo"),function(x17) {
-			return x17;
+		this.mem.add(this.vocab.get("demo"),function(x13) {
+			return x13;
 		});
 		this.mem.add(this.vocab.get("e"),Math.exp(1.0));
 		this.mem.add(this.vocab.get("pi"),Math.PI);
 		this.mem.add(this.vocab.get("i"),new cosmicos_Complex(0,1));
-		this.evaluateLine("@ is:int $number?");
+		this.vocab.set("is-int",this.iid());
+		this.evaluateLine("@ is-int | ? x 1");
+		this.vocab.set("unary-v",this.iid());
 		this.evaluateLine("@ unary-v | ? v | ? x | if (= $x 0) $v (unary-v | + $v 1)");
 		this.evaluateLine("@ unary | unary-v 0");
+		this.vocab.set("has-divisor-within",this.iid());
 		this.evaluateLine("@ has-divisor-within | ? top | ? x | if (< $top 2) 0 | if (= $x | * $top | div $x $top) 1 | has-divisor-within (- $top 1) $x");
-		this.evaluateLine("@ is:prime | ? x | if (< $x 2) 0 | not | has-divisor-within (- $x 1) $x");
+		this.vocab.set("is-prime",this.iid());
+		this.evaluateLine("@ is-prime | ? x | if (< $x 2) 0 | not | has-divisor-within (- $x 1) $x");
+		this.vocab.set("has-square-divisor-within",this.iid());
 		this.evaluateLine("@ has-square-divisor-within | ? top | ? x | if (< $top 0) 0 | if (= $x | * $top $top) 1 | has-square-divisor-within (- $top 1) $x");
-		this.evaluateLine("@ is:square | ? x | has-square-divisor-within $x $x");
+		this.vocab.set("is-square",this.iid());
+		this.evaluateLine("@ is-square | ? x | has-square-divisor-within $x $x");
 		this.evaluateLine("@ undefined 999999");
 		this.evaluateLine("@ even | ? x | = 0 | - $x | * 2 | div $x 2");
+		this.evaluateLine("@ is | ? x | if (= $x int) $is-int | if (= $x square) $is-square | if (= $x prime) $is-prime $undefined");
 		this.id_lambda0 = this.vocab.get("??");
 	}
 	,addStdMin: function() {
@@ -2216,7 +2211,6 @@ cosmicos_Evaluate.prototype = {
 				};
 			}
 		});
-		this.evaluateLine("@ eval | ? x | x 1");
 	}
 	,addDefinition: function(name,body,example) {
 		this.evaluateLine("@ " + name + " | " + body);
@@ -2224,9 +2218,11 @@ cosmicos_Evaluate.prototype = {
 	}
 	,addStd: function() {
 		this.addStdMin();
+		this.explain("false","not true ;-)","= (> 10 20) $false");
+		this.explain("true","not false ;-)","= (> 20 10) $true");
 		this.addDefinition("not","? x | if $x 0 1","not (> 41 42)");
-		this.addDefinition("and","? x | ? y | if $x $y 0","and (> 42 41) (< 41 42)");
-		this.addDefinition("or","? x | ? y | if $x 1 $y","or (> 42 41) (< 42 41)");
+		this.explain("true:*","true if both args are true","and (> 42 41) (< 41 42)");
+		this.explain("true:+","true if either arg is true","or (> 42 41) (< 42 41)");
 	}
 	,addPrimer: function(primer) {
 		this.mem.add(this.vocab.get("primer"),cosmicos_Cons.consify(primer));
@@ -2973,7 +2969,7 @@ cosmicos_Parse.looksLikeMutation = function(v) {
 				return true;
 			}
 		}
-	} else if(v == "define" || v == "set!" || v == "class" || v == "act") {
+	} else if(v == "@" || v == "define" || v == "set!" || v == "class" || v == "act") {
 		return true;
 	}
 	return false;
@@ -3651,6 +3647,7 @@ cosmicos_Vocab.prototype = {
 		this.nameToCode = new haxe_ds_StringMap();
 		this.codeToName = new haxe_ds_IntMap();
 		this.nameToMeta = new haxe_ds_StringMap();
+		this.used = new haxe_ds_StringMap();
 		this.topCode = 0;
 	}
 	,getBase: function(name) {
@@ -3675,6 +3672,14 @@ cosmicos_Vocab.prototype = {
 			return _this2.getReserved(name);
 		} else {
 			return _this2.h[name];
+		}
+	}
+	,'use': function(name) {
+		var _this = this.used;
+		if(__map_reserved[name] != null) {
+			_this.setReserved(name,1);
+		} else {
+			_this.h[name] = 1;
 		}
 	}
 	,get: function(name) {
@@ -3704,9 +3709,16 @@ cosmicos_Vocab.prototype = {
 		}
 	}
 	,check: function(name,id) {
-		var nid = this.getBase(name);
-		if(id != nid) {
-			throw new js__$Boot_HaxeError("id for " + name + " is unexpected (" + nid + " vs " + id + ")");
+		var _this = this.nameToCode;
+		if(__map_reserved[name] != null ? _this.existsReserved(name) : _this.h.hasOwnProperty(name)) {
+			var nid = this.getBase(name);
+			if(id != nid) {
+				throw new js__$Boot_HaxeError("id for " + name + " is unexpected (" + nid + " vs " + id + ")");
+			}
+		} else if(this.codeToName.h.hasOwnProperty(id)) {
+			throw new js__$Boot_HaxeError("problem with " + name);
+		} else {
+			this.set(name,id);
 		}
 		return this.get(name);
 	}
@@ -3739,14 +3751,33 @@ cosmicos_Vocab.prototype = {
 	,reverse: function(id) {
 		return this.codeToName.h[id];
 	}
-	,getNames: function() {
-		var _g = [];
-		var i = this.nameToCode.keys();
-		while(i.hasNext()) {
-			var i1 = i.next();
-			_g.push(i1);
+	,getNames: function(decorated) {
+		if(decorated == null) {
+			decorated = false;
 		}
-		return _g;
+		if(!decorated) {
+			var _g = [];
+			var i = this.nameToCode.keys();
+			while(i.hasNext()) {
+				var i1 = i.next();
+				_g.push(i1);
+			}
+			return _g;
+		}
+		var result = [];
+		var i2 = this.nameToCode.keys();
+		while(i2.hasNext()) {
+			var i3 = i2.next();
+			var _this = this.used;
+			if((__map_reserved[i3] != null ? _this.getReserved(i3) : _this.h[i3]) != null) {
+				var _this1 = this.nameToCode;
+				result.push(i3 + " = " + (__map_reserved[i3] != null ? _this1.getReserved(i3) : _this1.h[i3]));
+			} else {
+				var _this2 = this.nameToCode;
+				result.push("((" + i3 + " = " + (__map_reserved[i3] != null ? _this2.getReserved(i3) : _this2.h[i3]) + "))");
+			}
+		}
+		return result;
 	}
 	,__class__: cosmicos_Vocab
 };

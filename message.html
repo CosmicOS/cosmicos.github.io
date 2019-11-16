@@ -44,21 +44,20 @@ extra_css: css/console.css
 </div>
 
 <script>
+ var jqconsole = null;
+
  function CosCon() {
-   var cc = this.cc = new cosmicos.Evaluate(null,true);
-   cc.applyOldOrder();
-   cc.addStd();
+   var cc = this.cc = new Eval();
  }
 
  CosCon.prototype.setup = function() {
  }
 
  CosCon.prototype.process = function(line) {
-   return this.cc.evaluateLine(line);
+   return this.cc.apply(line, function(x) { jqconsole.Write(x, 'jqconsole-output'); });
  }
 
 
- var jqconsole = null;
  var startPrompt = null;
  var interpreter = null;
 
