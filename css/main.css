@@ -110,6 +110,7 @@ div.readable {
   margin-bottom: 10px;
   border-top-left-radius: 1em;
   border-bottom-right-radius: 1em;
+  overflow: auto;
 }
 
 p {
@@ -132,19 +133,38 @@ h2 {
   font-size: 200%;
 }
 
-pre, tt, code, div.highlight, div.preish { 
+figure.highlight {
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+pre {
+  margin: 0;
+}
+
+pre, tt, div.preish { 
   font-family: "inconsolataregular", "Courier New", Courier, monospace;
+}
+
+div.code-block {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  overflow: auto;
+}
+
+.doc code {
+  overflow: auto;
+  background: #dfc;  
 }
 
 blockquote { 
   display: table;
 }
 
-tt, code {
+tt {
   background: #dfc;
-}
-
-pre > code {
 }
 
 tt {
@@ -177,7 +197,7 @@ blockquote table td {
   margin-bottom: 1em;
 }
 
-.happy-block, div.highlight pre {
+.happy-block {
   display: table;
   background: #dfc;
   padding: 7px;
@@ -357,14 +377,18 @@ a.sim-button:hover {
 .show-message-four { 
   font-family: "inconsolataregular", "Courier New", Courier, monospace;
   text-align: center;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .show-message-gate { 
   text-align: center;
+  overflow: auto;
 }
 
 .show-message-hear { 
   text-align: center;
+  overflow: auto;
 }
 
 .show-message-hear iframe { 
@@ -375,7 +399,7 @@ a.sim-button:hover {
   display: inline-block;
   padding: 0.05em;
   margin: 1em;
-  box-shadow: 0px 0px 2em yellow;
+  box-shadow: 0px 0px 5px yellow;
 }
 
 .show-message-gate a {
@@ -386,8 +410,12 @@ a.sim-button:hover {
   opacity: 1.0;
 }
 
-.show-message-text pre { 
+.show-message-text { 
   color: yellow;
+  font-family: "inconsolataregular", "Courier New", Courier, monospace;
+  background-color: rgba(0,0,0,0.5);
+  padding: 1em;
+  overflow: auto;
 }
 
 .show-message-iconic { 
@@ -508,15 +536,17 @@ p.scrawl {
 
 .msg-line {
     font-family: "inconsolataregular", "Courier New", Courier, monospace;
-    overflow: auto;
 }
 
 .msg-code {
   font-family: "inconsolataregular", "Courier New", Courier, monospace;
   font-size: 80%;
   color: #aaa;
-  padding-bottom: 6px;
   margin-bottom: 0;
+}
+
+.msg-holder {
+  padding-bottom: 20px;
 }
 
 .msg-code a.show:before {
@@ -553,10 +583,11 @@ a:focus {
 }
 
 .msg-expand {
-  border: 1px solid #aaa;
+}
+
+.msg-expand .console-wrapper {
   padding: 10px;
-  border-radius: 5px;
-  font-size: 100% !important;
+  background: black;
 }
 
 .msg-expand a {
@@ -579,8 +610,8 @@ h3.msg a {
 }
 
 div.post h3, div.post h2 {
-    color: black;
-    text-shadow: none;
+  color: black;
+  text-shadow: none;
 }
 
 .bottom div { 
@@ -673,8 +704,8 @@ div.midpic {
 }
 
 @keyframes fadeIn {
-   0% {opacity: 0;}
-   100% {opacity: 1;}
+  0% {opacity: 0;}
+  100% {opacity: 1;}
 } 
 
 .fadeIn {
@@ -683,6 +714,6 @@ div.midpic {
 }
 
 .content-message {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }

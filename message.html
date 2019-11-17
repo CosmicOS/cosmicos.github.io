@@ -2,7 +2,9 @@
 layout: default
 title: "CosmicOS: full message in human-readable form"
 extra_js: js/jqconsole.js
-extra_css: css/console.css
+extra_css:
+  - css/console.css
+  - css/syntax.css
 ---
 
 <h1>Full message</h1>
@@ -34,8 +36,8 @@ extra_css: css/console.css
 {% else %}
 <div class="msg-holder{% if stanza.assume %} msg-assume{% endif %}">
 <div class="scrawl">{{stanza.spider}}</div>
-<pre class="msg-line{% if stanza.dt %} msg-dt{% endif %}">{% for line in stanza.lines %}{{line | escape}}
-{% endfor %}</pre>
+<pre class="msg-line{% if stanza.dt %} msg-dt{% endif %}">{% highlight haskell %}{% for line in stanza.lines %}{{line}}
+{% endfor %}{% endhighlight %}</pre>
 <div class="msg-code" data-code="{{stanza.code}}"><a class="show" href="#">{{stanza.code | truncate: 40}}</a><a class="hear" href="#">hear</a></div>
 </div>
   {% endif %}
@@ -77,7 +79,7 @@ extra_css: css/console.css
    var txt = at.text();
    function finish() {
      interpreter.process(txt);
-     jqconsole.Write(txt, 'jqconsole-output');
+     jqconsole.Write(txt + "\n", 'jqconsole-output');
      if (!at.hasClass('mark-mark')) {
        interpreterTick = setTimeout(updateConsole, 1);
      }
@@ -93,7 +95,7 @@ extra_css: css/console.css
  }
 
   function reset() {
-    $('.console').remove();
+    $('.console-wrapper').remove();
     $('.msg-expand').removeClass("msg-expand");
     $('.mark-mark').removeClass('mark-mark');
     interpreter = null;
@@ -122,10 +124,13 @@ extra_css: css/console.css
          reset();
          p.parent().find('.msg-line').addClass("mark-mark");
          var c = $("<div></div>");
-         p.append(c);
+         var c2 = $("<div></div>");
+         c2.append(c);
+         c2.addClass('console-wrapper');
          c.addClass('console');
 	 p.addClass("msg-expand");
 	 $(this).text(p.data('code'));
+         p.append(c2);
          interpreter = new CosCon();
          interpreter.setup();
          jqconsole = c.jqconsole('', '>>> ');

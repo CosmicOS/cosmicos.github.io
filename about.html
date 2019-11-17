@@ -59,23 +59,12 @@ them arbitrarily as
 {% capture wrapped_length %}{{wrapped | strip_newlines | size}}{% endcapture %}
 {% capture wrapped_entropy %}{% include entropy.txt %}{% endcapture %}
 
+<div class="code-block">
 <div class="happy-block happy-block-top preish">
 {{wrapped | truncatewords: 7 | replace:' ','<br />' | replace:'...',''}}<br />...
 </div>
-<A class="happy-block happy-block-bottom" HREF="wrapped.txt">see full {{wrapped_length}}-symbol message</A>
-
-{% if false %}
-<p>
-Or reformatting into Ogham-style script (because: why not?)
-</p>
-
-<div class="happy-block happy-block-top">
-{% include glyph_head.txt %}
-...<br />
 </div>
-<A class="happy-block happy-block-bottom" HREF="iconic.html">see full message</A>
-
-{% endif %}
+<A class="happy-block happy-block-bottom" HREF="wrapped.txt">see full {{wrapped_length}}-symbol message</A>
 
 {% assign ent = wrapped_entropy | plus: 0 | divided_by: 1024.0 | plus: 0.5 | floor | append: '' | split: '.' %}
 <P>
@@ -111,6 +100,7 @@ to introduce higher-level notions in terms of those simulations.</li>
 
 <p>The message uses the following syntax (shown in plain-text form):</p>
 
+<div class="code-block">
 <pre class="happy-block">
   symbol   meaning
      (     marks beginning of an expression
@@ -121,7 +111,7 @@ to introduce higher-level notions in terms of those simulations.</li>
      $     $A is shorthand for (A).
      ;     marks end of a statement
 </pre>
-
+</div>
 
 <p>There are also numbers and arbitrary symbols.  If there's no
 other syntax between two of these, they must be separated
@@ -135,15 +125,13 @@ with this, but the encoding of symbols is being changed.
 
 <h2>Posts</h2>
 
-<div class="readable">
 <ul class="index">
   {% for post in site.posts %}
     <li>
-      <h3><a href="{{site.baseurl}}{{ post.url }}"><b>{{ post.title }}</b>, {{ post.date | date: "%B %Y" }}</a></h3>
+      <h3><a href="{{site.baseurl}}{{ post.url }}"><b>{{ post.title }}</b></a></h3>
     </li>
   {% endfor %}
 </ul>
-</div>
 
 <h2>License</h2>
 

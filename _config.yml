@@ -1,4 +1,5 @@
 name: CosmicOS
+encoding: utf-8
 markdown: kramdown
 highlighter: rouge
 baseurl: 
@@ -6,3 +7,5 @@ baseurl:
 include: [_equals_.svg,  _gt_.svg,  _lambda_.svg,  _lt_.svg]
 kramdown:
   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
+  syntax_highlighter_opts:
+    default_lang: haskell
