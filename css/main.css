@@ -468,18 +468,27 @@ a.sim-button:hover {
 }
 
 p.scrawl {
-    margin: 0;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    font-size: 250%;
-    background-color: rgba(0,0,0,0.5);
-    -moz-transform: scale(-1, 1);
-    -webkit-transform: scale(-1, 1);
-    -o-transform: scale(-1, 1);
-    -ms-transform: scale(-1, 1);
-    transform: scale(-1, 1);
+  margin: 0;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  font-size: 250%;
+  background-color: rgba(0,0,0,0.5);
+  -moz-transform: scale(-1, 1);
+  -webkit-transform: scale(-1, 1);
+  -o-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+
+p.scrawl a, p.scrawl a:hover {
+  color: yellow;
+}
+
+p.scrawl a:hover {
+  text-decoration: none;
+  text-shadow: 2px 2px 2px #00f;
 }
 
 .breakable { 

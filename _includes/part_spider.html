@@ -1,0 +1,9 @@
+<div class="show-message-spider">
+{% for stanza in site.data.msg %}
+  {% if forloop.index0 < 512 %}
+  {% if stanza.role == "code" %}
+    <p class="scrawl"><a href="message.html#line-{{stanza.stanza}}">{{stanza.spider}}</a></p>
+  {% endif %}
+  {% endif %}
+{% endfor %}
+</div>

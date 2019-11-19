@@ -6,13 +6,7 @@ title: "CosmicOS: a next-generation Contact message"
 <div id="msg-choice"></div>
 
 <div id="show-message-container">
-<div class="show-message">
-{% for stanza in site.data.msg %}
-  {% if forloop.index0 < 512 %}
-  {% if stanza.role == "code" %}
-    <p class="scrawl">{{stanza.spider}}</p>
-  {% endif %}
-  {% endif %}
-{% endfor %}
-</div>
+  <div class="show-message">
+    {% include part_spider.html %}
+  </div>
 </div>
