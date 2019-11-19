@@ -35,7 +35,7 @@ extra_css:
 {% endif %}
 {% else %}
 <div class="msg-holder{% if stanza.assume %} msg-assume{% endif %}">
-<div class="scrawl">{{stanza.spider}}</div>
+<div class="scrawl" id="line-{{stanza.stanza}}">{{stanza.spider}}</div>
 <pre class="msg-line{% if stanza.dt %} msg-dt{% endif %}">{% highlight haskell %}{% for line in stanza.lines %}{{line}}
 {% endfor %}{% endhighlight %}</pre>
 <div class="msg-code" data-code="{{stanza.code}}"><a class="show" href="#">{{stanza.code | truncate: 40}}</a><a class="hear" href="#">hear</a></div>

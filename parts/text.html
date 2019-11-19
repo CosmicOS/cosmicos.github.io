@@ -2,7 +2,7 @@
 layout: part
 ---
 <div class="show-message-text">
-<p>{% for stanza in site.data.msg %}{% if forloop.index0 < 1024 %}{% if stanza.role == "code" %}{% highlight haskell %}{% for line in stanza.lines %}{{line}}{% endfor %}{% endhighlight %}</p>
+<p>{% for stanza in site.data.msg %}{% if forloop.index0 < 1024 %}{% if stanza.role == "code" %}<A href="message.html#line-{{stanza.stanza}}">{% highlight haskell %}{% for line in stanza.lines %}{{line}}{% endfor %}{% endhighlight %}</a></p>
 {% endif %}{% endif %}{% endfor %}
 <br />
 ...

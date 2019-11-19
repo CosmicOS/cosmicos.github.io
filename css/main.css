@@ -418,6 +418,11 @@ a.sim-button:hover {
   overflow: auto;
 }
 
+.show-message-text a:hover {
+  text-decoration: none;
+  text-shadow: 2px 2px 2px #00f;
+}
+
 .show-message-iconic { 
   font-size: 170%;
 }
