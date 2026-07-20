@@ -9,3 +9,5 @@ kramdown:
   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
   syntax_highlighter_opts:
     default_lang: haskell
+
+exclude: [scripts, plans, Gemfile, Gemfile.lock]

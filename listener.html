@@ -1,0 +1,352 @@
+---
+layout: default
+title: "A listener's log"
+---
+
+<style>
+/* ---- listener: the decoder's log ---- */
+.diary { max-width: 660px; margin: 0 auto; padding: 0 6px; }
+
+/* the message index — an editor's key to what each pass decodes (collapsible) */
+.msg-index { max-width: 660px; margin: 0 auto 26px; border: 1px solid #24333f; border-radius: 10px; background: rgba(12,16,23,0.6); }
+.msg-index > summary { cursor: pointer; padding: 12px 18px; font-family: "inconsolataregular","Courier New",monospace; font-size: 80%; letter-spacing: 0.04em; color: #8fb0c0; list-style: none; }
+.msg-index > summary::-webkit-details-marker { display: none; }
+.msg-index > summary::before { content: "\25B8\00a0"; color: #6f95a8; }
+.msg-index[open] > summary::before { content: "\25BE\00a0"; }
+.msg-index .idx-note { color: #5f7382; font-style: italic; letter-spacing: 0; }
+.msg-index .idx-body { padding: 2px 18px 16px; columns: 15em; column-gap: 28px; }
+.msg-index .idx-arc { break-inside: avoid; color: #c98b5a; font-family: "inconsolataregular","Courier New",monospace; font-size: 72%; text-transform: uppercase; letter-spacing: 0.12em; margin: 13px 0 4px; }
+.msg-index a { display: block; break-inside: avoid; color: #cdd6df; text-decoration: none; font-size: 87%; line-height: 1.42; padding: 1px 0; }
+.msg-index a:hover { color: #9fe0ff; }
+.msg-index a b { color: #7f9bab; font-weight: normal; font-family: "inconsolataregular","Courier New",monospace; margin-right: 0.45em; }
+
+/* ---- message rendering: ONE place to swap glyphs (used by the JS renderer) ---- */
+:root{
+}
+.tn{ color:#c98b5a; }   /* tone chars ◢◣◤◥ live in the markup now (was ::before), so they copy-paste */
+.tones{ color:#c98b5a; letter-spacing:3px; }   /* generated wire-quote: real tone chars, copy-pasteable */
+/* toggleable message widget */
+.msg{ background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:10px 14px; margin:10px 0; }
+.msg-view{ font-size:20px; letter-spacing:2px; color:#cdd9e2; }
+.msg .gl{ color:#aab7c4; }          /* scope mark colors to the WHOLE widget (view + val + …) */
+.msg .bit{ color:#bfe8c8; }
+.msg .cup{ color:#6f95a8; }
+.msg .var{ color:#c9a3ff; font-style:italic; font-size:84%; }
+.msg-view .scrawl{ color:#d6b98a; font-size:1.15em; letter-spacing:6px; }
+.msg-view .scrawl.sign-fb{ font-size:.92em; letter-spacing:2px; color:#8f8674; }
+.msg-view .fam{ border-bottom:1px solid rgba(201,163,255,.4); padding:0 1px 1px; }
+.msg-val .msg-view{ color:#d7c3ff; }   /* the yielded value, set apart from the ways-of-showing */
+.msg-view .tn{ letter-spacing:3px; }
+.msg-line{ margin:8px 0; }
+.msg-line + .msg-line{ padding-top:8px; border-top:1px solid #16202a; }
+.msg-line .lbl{ display:block; letter-spacing:.16em; font-size:11px; text-transform:uppercase; color:#5f7f90; margin-bottom:4px; }
+
+.diary-tag {
+  text-align: center; font-family: "inconsolataregular","Courier New",monospace;
+  font-size: 78%; letter-spacing: 0.22em; text-transform: uppercase;
+  color: #8fb0c0; margin: 6px 0 22px;
+}
+
+.preface {
+  background: rgba(10,14,20,0.82); border-radius: 14px; padding: 24px 30px;
+  color: #cdd6df; margin-bottom: 30px;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; line-height: 1.65;
+}
+.preface h1 {
+  font-family: "inconsolataregular","Courier New",monospace;
+  color: #eaf2f6; text-shadow: none; font-size: 190%; margin: 0 0 4px; font-weight: normal;
+}
+.preface .sub { color: #8fb0c0; font-style: italic; margin: 0 0 14px; }
+.preface p { margin: 0 0 10px; text-align: left; }
+.preface p:last-child { margin-bottom: 0; }
+
+.entry {
+  background: rgba(12,16,23,0.78); border-left: 2px solid #2b4a5c;
+  border-radius: 0 12px 12px 0; padding: 18px 26px 20px; margin: 0 0 20px;
+}
+.entry .stamp {
+  font-family: "inconsolataregular","Courier New",monospace;
+  font-size: 74%; letter-spacing: 0.2em; text-transform: uppercase; color: #6f95a8; margin-bottom: 6px;
+}
+.entry h2 {
+  font-family: Georgia, "Iowan Old Style", serif; font-weight: normal;
+  color: #f0ece2; text-shadow: none; font-size: 146%; margin: 0 0 10px;
+  cursor: pointer;
+}
+/* click a header to pin the URL to its anchor (and copy the link where allowed) */
+.entry h2 .anchor-link {
+  font-family: "inconsolataregular","Courier New",monospace; font-weight: normal;
+  font-size: 62%; color: #6f95a8; text-decoration: none; margin-left: 0.55em;
+  vertical-align: 0.12em; opacity: 0; transition: opacity .15s ease; white-space: nowrap;
+}
+.entry h2:hover .anchor-link, .entry h2 .anchor-link.flash { opacity: 1; }
+.entry h2 .anchor-link.flash { color: #9fe0ff; }
+/* terse: short clipped lines, tighter rhythm */
+.entry p {
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  color: #dde3ea; line-height: 1.6; font-size: 106%; margin: 0 0 10px; text-align: left;
+}
+.entry p:last-child { margin-bottom: 0; }
+.entry .coin { font-style: italic; color: #ffe4a3; }
+
+.frag {
+  font-family: "inconsolataregular","Courier New",monospace;
+  background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px;
+  padding: 12px 14px; margin: 10px 0; color: #d6e6ef;
+  font-size: 108%; letter-spacing: 3px; overflow-x: auto; white-space: nowrap;
+}
+.frag .lbl {
+  display: block; letter-spacing: 0.16em; font-size: 60%; text-transform: uppercase;
+  color: #5f7f90; margin-bottom: 6px;
+}
+.frag .cup { color: #6f95a8; } .frag .bit { color: #bfe8c8; } .frag .tick { color: #ffd479; }
+.frag.flood { white-space: normal; overflow: hidden; padding: 12px 14px 2px; }
+.flood .flood-run {
+  display: block;
+  font-size: 13px; line-height: 1.6; letter-spacing: 3px; color: #c98b5a;
+  white-space: normal; word-break: break-all; overflow-wrap: anywhere;
+  max-height: 15em; overflow: hidden;
+  -webkit-mask-image: linear-gradient(#000 80%, transparent);
+          mask-image: linear-gradient(#000 80%, transparent);
+}
+
+/* the "peel" stepper */
+.peel { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 12px 14px; margin: 10px 0; }
+.peel .msg-view { display: block; margin-top: 4px; }
+.peel .gl { color: #aab7c4; }
+.peel .bit { color: #bfe8c8; letter-spacing: 3px; }
+.peel .cup { color: #6f95a8; }
+.peel .tk { color: #ffd479; letter-spacing: 2px; }
+.peel .tk.z { color: #566572; letter-spacing: 0; }
+.peel-say { color: #8fb0c0; font-size: 80%; font-style: italic; margin-top: 3px; }
+/* §267: the figures set in a right-aligned column so the place-columns line up and the reader
+   can read DOWN each column and watch it toggle (units every step, twos every two, …). */
+.binstack { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 1.7; }
+.binstack .fig { display: inline-block; width: 5ch; text-align: right; letter-spacing: 3px; }
+.binstack .bit { color: #bfe8c8; }
+.binstack .val { margin-left: 1.6em; color: #8fb0c0; }
+/* §288: the keeper's OWN worked reduction (her scratch, not transmitted wire) — pour a value into a
+   maker's slots and watch it reduce, so the reader sees the substitution the message only asserts. */
+.reduce { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 2; }
+.reduce .step { color: #7f8598; margin-right: 4px; }
+.reduce .say { color: #8fb0c0; font-size: 80%; font-style: italic; margin-left: 1.6em; }
+.reduce .gl { color: #aab7c4; } .reduce .bit { color: #bfe8c8; } .reduce .cup { color: #6f95a8; }
+
+/* ---- the log continues: each section an entry (rows, then the mull) ---- */
+.sect-entry {
+  background: rgba(12,16,23,0.6); border-left: 2px solid #24333f;
+  border-radius: 0 12px 12px 0; padding: 15px 24px 17px; margin: 0 0 16px;
+}
+.sect-entry .stamp {
+  font-family: "inconsolataregular","Courier New",monospace;
+  font-size: 72%; letter-spacing: 0.2em; text-transform: uppercase; color: #6f95a8; margin-bottom: 8px;
+}
+.rows { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 10px 14px; margin: 10px 0; overflow-x: auto; }
+.mull {
+  font-family: Georgia, "Iowan Old Style", serif; font-style: italic;
+  color: #cbd6de; font-size: 105%; line-height: 1.55; margin: 12px 0 0; text-align: left;
+}
+.row {
+  font-family: "inconsolataregular","Courier New",monospace; font-size: 12px;
+  line-height: 1.55; color: #8aa2b0; white-space: pre-wrap; word-break: break-word;
+  padding: 0; border-left: none; margin: 0;
+}
+.row-gate { color: #7fae8f; font-style: italic; }
+.row-file { color: #4a5f6c; font-style: italic; }
+.more-note { color: #61748a; font-style: italic; font-size: 13px; padding: 4px 0; }
+
+/* the listener's own hand (early sections, pictorial) */
+.row.hand { font-size: 17px; color: #cdd9e2; padding: 2px 0; letter-spacing: 1px; }
+.row.hand .tk { color: #ffd479; letter-spacing: 2px; }
+.row.hand .tk.z { color: #566572; letter-spacing: 0; }
+.row.hand .gp { display: inline-block; width: 7px; }
+.row.hand .cup { color: #6f95a8; }
+.row.hand .kind { color: #c9a3ff; }
+.row.hand .rel { color: #f0a35e; }
+.row.hand .op { color: #9fe0ff; }
+.row.hand .gl { color: #aab7c4; }              /* an opaque mark — meaning not yet known */
+.row.hand .raw { color: #61748a; letter-spacing: 3px; }  /* an uninterpreted run */
+.row.hand .bit { color: #bfe8c8; letter-spacing: 3px; }  /* the two tones, packed as a figure */
+.stem { font-size: 66%; opacity: 0.72; vertical-align: 0.28em; letter-spacing: 0; color: #c9a3ff; }  /* a shared family-root, seen on the wire as a compound symbol */
+.row.hand .head { outline: 1px solid #ffd479; border-radius: 2px; padding: 0 2px; }  /* the reading-place on the strip */
+
+/* an expression opened all the way — cups within cups, no floor */
+.fold {
+  font-family: "inconsolataregular","Courier New",monospace;
+  background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px;
+  padding: 12px 14px; margin: 10px 0; font-size: 15px; line-height: 1.75;
+  white-space: pre; overflow-x: auto; color: #cdd9e2;
+}
+.fold .cup { color: #5f7f90; }
+.fold .gl { color: #aab7c4; }
+.fold .bit { color: #bfe8c8; letter-spacing: 2px; }
+.row.coin { border-left-color: transparent; padding: 6px 0 3px; }
+.row.coin .cl { color: #7f9bab; font-style: italic; font-size: 13px; }
+.row.coin .cl b { color: #ffe4a3; font-style: normal; font-size: 150%; }
+
+.tx-key {
+  text-align: center; font-family: "inconsolataregular","Courier New",monospace;
+  color: #6f8a9a; font-size: 84%; margin: 0 0 18px; letter-spacing: 0.5px;
+}
+.tx-key .tk { color: #ffd479; } .tx-key .cup { color: #6f95a8; } .tx-key .tk.z { color: #566572; }
+
+.coda {
+  text-align: center; font-family: "inconsolataregular","Courier New",monospace;
+  color: #7f9bab; font-size: 86%; line-height: 1.8; margin: 34px 0 40px;
+}
+.coda a { color: #9fe0ff; }
+.colophon {
+  max-width: 34em; margin: 0 auto 40px; color: #5f7382; font-size: 78%;
+  line-height: 1.65; text-align: center; font-style: italic;
+}
+.divider { text-align: center; color: #35505f; margin: 20px 0; letter-spacing: 1em; }
+
+/* ---- the seeker's map (§619): an animated patrol of the room-tree ---- */
+.seekmap { position:relative; border:1px solid #3a2f22; border-radius:10px; padding:12px 8px 8px; margin:8px 0;
+  background:radial-gradient(rgba(216,201,168,0.05) 0.5px, transparent 0.7px) 0 0 / 6px 6px, radial-gradient(120% 100% at 30% 8%, #1d1710, #120d08);
+  box-shadow:inset 0 0 26px rgba(0,0,0,0.55); border-radius:8px; margin:10px 0; }
+.seekmap svg { display:block; width:100%; height:auto; max-width:460px; margin:0 auto; overflow:visible; }
+/* the map is a relief she feels out: raised ridges (emboss), her warm "hand" palette */
+.seekmap .door { stroke:#b79b6f; stroke-width:2.5; filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2)); transition:opacity .5s ease, stroke .3s ease; }
+.seekmap .room circle { fill:#241b12; stroke:#cbb488; stroke-width:2; filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2)); transition:opacity .5s ease, stroke .3s ease, stroke-width .18s ease; }
+.seekmap .room .rm  { font-family:"inconsolataregular","Courier New",monospace; fill:#ecdcb8; font-size:16px; text-anchor:middle; transition:opacity .5s ease; }
+.seekmap .room .tag { font-family:"inconsolataregular","Courier New",monospace; fill:#bfe8c8; font-size:10px; letter-spacing:1px; text-anchor:middle; transition:opacity .5s ease; }
+/* reveal mode (JS on): the not-yet-touched lie flat and faint; the hand's passing raises them into relief */
+.seekmap.reveal .door:not(.seen),
+.seekmap.reveal .room:not(.seen) circle { opacity:.32; filter:none; }
+.seekmap.reveal .room:not(.seen) .rm,
+.seekmap.reveal .room:not(.seen) .tag { opacity:.32; }
+.seekmap .room.here circle { stroke:#ffd479; stroke-width:3; }
+.seekmap .room.press circle { stroke-width:5.5; }
+.seekmap .seeker { fill:#ffd479; opacity:0; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(255,244,214,0.45)); transition:cx .5s ease, cy .5s ease, opacity .4s ease; }
+.seekmap .seeker.on { opacity:1; }
+.seekmap-bar { text-align:center; margin-top:8px; font-family:"inconsolataregular","Courier New",monospace; font-size:12px; color:#a89772; }
+.seekmap-bar button { background:none; border:1px solid #4a3f2e; color:#c3b48f; font:inherit; font-size:11px; padding:2px 11px; border-radius:11px; cursor:pointer; margin-right:8px; }
+.seekmap-bar button:hover { border-color:#e0c48a; color:#f0dcae; }
+.seekmap-say { font-style:italic; color:#a89b80; }
+/* geo-world: a second seeker (cool), and a flash where the two cross */
+.seekmap .seeker.s2 { fill:#7fcbd6; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(214,244,255,0.45)); }
+.seekmap.meet .room.here circle { stroke:#fff2cf; stroke-width:4.5; }
+
+/* pictures: same exhibit box as everything else */
+.entry img.pic { background:#0a0e14 !important; border:1px solid #1d2a34 !important; border-radius:8px !important; padding:12px !important; }
+</style>
+
+<div class="diary">
+
+  <div class="diary-tag">An experiment · a recipient imagined</div>
+
+  <div class="preface">
+    <h1>A listener's log</h1>
+  </div>
+
+  <details class="msg-index">
+    <summary>The message at a glance <span class="idx-note">&mdash; what each pass decodes. An editor’s key: it names, in our words, what the keeper (sharing none) could only point at. Spoils the surprises.</span></summary>
+    <div class="idx-body">
+      <div class="idx-arc">I · the founder — noise to number</div>
+      <a href="#p189"><b>189</b> the signal is a made message, not nature: it loops, and resets to a simplest state</a>
+      <a href="#p193"><b>193</b> two of the four tones are nesting brackets; the other two are the content bits</a>
+      <a href="#p200"><b>200</b> the bit-strings are numbers, written by place, not letters</a>
+      <a href="#p207"><b>207</b> a marker that introduces a new sign ("here is a new one")</a>
+      <a href="#p214"><b>214</b> counting — the successor rule; the natural numbers, inexhaustible</a>
+      <a href="#p221"><b>221</b> the square numbers</a>
+      <a href="#p228"><b>228</b> the prime numbers</a>
+      <div class="idx-arc">II · equality and arithmetic</div>
+      <a href="#p232"><b>232</b> equality, and less-than / greater-than</a>
+      <a href="#p239"><b>239</b> negation ("not this")</a>
+      <a href="#p246"><b>246</b> addition</a>
+      <a href="#p253"><b>253</b> subtraction</a>
+      <a href="#p260"><b>260</b> multiplication</a>
+      <a href="#p267"><b>267</b> those packed bit-strings are the same numbers, in binary</a>
+      <div class="idx-arc">III · evaluation, naming, functions, memory</div>
+      <a href="#p271"><b>271</b> expressions evaluate; a value may stand wherever its computation may</a>
+      <a href="#p280"><b>280</b> local naming (a let-binding), scoped to one expression</a>
+      <a href="#p288"><b>288</b> functions — lambda: define a verb and apply it</a>
+      <a href="#p297"><b>297</b> persistent (global) definitions; state that survives</a>
+      <a href="#p306"><b>306</b> the booleans (true / false), built out of equality</a>
+      <div class="idx-arc">IV · conditionals</div>
+      <a href="#p310"><b>310</b> the conditional (if), with an unevaluated branch; terminating recursion (factorial)</a>
+      <a href="#p345"><b>345</b> AND and OR built from if; redundant restatement as error-correction</a>
+      <div class="idx-arc">V · pairs, state, higher-order</div>
+      <a href="#p349"><b>349</b> pairs (cons) and lists of nested pairs; first / second (car / cdr)</a>
+      <a href="#p361"><b>361</b> the mutable cell — a value that changes with its history</a>
+      <a href="#p372"><b>372</b> "undefined" as distinct from zero or empty</a>
+      <a href="#p384"><b>384</b> map and fold (reduce) over a list</a>
+      <div class="idx-arc">VI · self-edit, search, higher mathematics</div>
+      <a href="#p388"><b>388</b> the message can redefine how a sign reads (quotation / meta-linguistic self-edit)</a>
+      <a href="#p400"><b>400</b> search-in-a-list (indexOf), returning "not found"</a>
+      <a href="#p411"><b>411</b> rational division; the constants π and e; approximate ("near enough") equality</a>
+      <a href="#p423"><b>423</b> the imaginary unit i (i²=−1); Euler’s identity, e^{iπ} + 1 = 0</a>
+      <div class="idx-arc">VII · pure functions, logic, graphs</div>
+      <a href="#p427"><b>427</b> syntactic shorthand (macros / multi-argument lambda)</a>
+      <a href="#p434"><b>434</b> Church encoding — booleans, pairs, numbers all rebuilt from pure functions</a>
+      <a href="#p441"><b>441</b> the quantifiers: for-all (∀) and there-exists (∃)</a>
+      <a href="#p448"><b>448</b> an inductive set (0∈S; n∈S ⇒ n+1∈S); implication and membership</a>
+      <a href="#p455"><b>455</b> graphs — nodes and edges; adjacency vs. reachability (transitive closure)</a>
+      <a href="#p462"><b>462</b> sequencing — order of effects, once there is state</a>
+      <div class="idx-arc">VIII · data structures and the machine</div>
+      <a href="#p466"><b>466</b> a key-value dictionary (map)</a>
+      <a href="#p484"><b>484</b> a record / struct — named mutable fields</a>
+      <a href="#p501"><b>501</b> a universal computer (a Turing machine): tape, head, transition table — any machine at all</a>
+      <div class="idx-arc">IX · code-as-data, types, objects, a world</div>
+      <a href="#p505"><b>505</b> quotation (code as data) with a live "unquote" hole</a>
+      <a href="#p511"><b>511</b> type predicates and typed function slots</a>
+      <a href="#p517"><b>517</b> message-passing objects (a method table)</a>
+      <a href="#p522"><b>522</b> a mutable collection (a bag / stack)</a>
+      <a href="#p528"><b>528</b> object identity vs. structural equality</a>
+      <a href="#p534"><b>534</b> the mutable cell rebuilt as a class instance</a>
+      <a href="#p540"><b>540</b> a graph of rooms and doors, with an agent that can be told to move</a>
+      <div class="idx-arc">X · physics, logic gates, memory (built by hand)</div>
+      <a href="#p544"><b>544</b> the three particles (proton, electron, neutron), their charges and ~1836 mass ratio; the elements by proton count</a>
+      <a href="#p549"><b>549</b> a forward declaration (a name before its definition)</a>
+      <a href="#p554"><b>554</b> a minimal universal gate (NAND — "yes, unless") + a 2-D cellular field that carries signals</a>
+      <a href="#p559"><b>559</b> a raster image (bits as a 2-D picture) — a circuit schematic — proved equal to its gate-works</a>
+      <a href="#p564"><b>564</b> AND built from NAND gates (with its truth table)</a>
+      <a href="#p569"><b>569</b> OR and NOR from gates</a>
+      <a href="#p574"><b>574</b> an oscillator — a feedback loop that never settles</a>
+      <a href="#p579"><b>579</b> an SR latch — one bit of memory</a>
+      <div class="idx-arc">XI · a mind, and the someone</div>
+      <a href="#p587"><b>587</b> a clocked flip-flop / register — takes its input only on the beat</a>
+      <a href="#p591"><b>591</b> test tooling; the message proves its own gates against their truth tables</a>
+      <a href="#p595"><b>595</b> reflection / self-reference — it reads its own past and points back to its first line</a>
+      <a href="#p602"><b>602</b> class inheritance — subclasses delegating to a parent, from a root with an empty "act"</a>
+      <a href="#p605"><b>605</b> methods as bytecode run on the Turing engine; machine and objects made one</a>
+      <a href="#p608"><b>608</b> a standard library as classes — a List, and an Iterator (walker)</a>
+      <a href="#p612"><b>612</b> world classes — Room (contents + exits), Door, Thing (here / next)</a>
+      <a href="#p615"><b>615</b> the World with a two-phase synchronous tick (all decide, then all commit)</a>
+      <a href="#p619"><b>619</b> an autonomous agent whose rule is to move to the least-recently-seen room</a>
+      <a href="#p622"><b>622</b> a minimal two-room world; the keeper builds and runs it, and the agent crosses of its own rule</a>
+    </div>
+  </details>
+
+{% include listener/founder.html %}
+{% include listener/terse.html %}
+{% include listener/wondering.html %}
+{% include listener/wary.html %}
+{% include listener/maker.html %}
+{% include listener/doubter.html %}
+{% include listener/plainer.html %}
+{% include listener/cold.html %}
+{% include listener/listener.html %}
+{% include listener/builder.html %}
+{% include listener/final.html %}
+  {% comment %} The whole message is now redrawn by hand above (§0–§68), a strict forward-only decode.
+     The old _includes/listener_sections.html rendering has been fully consumed. {% endcomment %}
+
+  <div class="divider">· · ·</div>
+
+  <div class="coda">
+    the signal the keepers hear is real —<br />
+    <a href="about.html">read it plainly</a> &nbsp;·&nbsp; <a href="learn.html">decode section 0 yourself</a> &nbsp;·&nbsp; <a href="message.html">the message, annotated</a>
+  </div>
+
+  <div class="colophon">
+    CosmicOS is a real constructed message, meant to be readable by someone who shares no
+    language, number, or history with us. It hasn't been sent. This diary is invented — but
+    every fragment shown is a true reading of the actual message.
+  </div>
+
+</div>
+
+<script>window.LEARN2 = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {{ site.data.wire_quotes | jsonify }} };</script>
+<script src="{{ site.baseurl }}/js/listener.js?v={{ site.time | date: '%s' }}"></script>
