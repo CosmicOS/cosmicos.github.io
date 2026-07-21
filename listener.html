@@ -23,8 +23,14 @@ title: "A listener's log"
 /* ---- message rendering: ONE place to swap glyphs (used by the JS renderer) ---- */
 :root{
 }
-.tn{ color:#c98b5a; }   /* tone chars ◢◣◤◥ live in the markup now (was ::before), so they copy-paste */
-.tones{ color:#c98b5a; letter-spacing:3px; }   /* generated wire-quote: real tone chars, copy-pasteable */
+.tn{ color:#cbb794; }   /* tone chars ˩˨˦˥ live in the markup now (was ::before), so they copy-paste */
+.tones{ color:#cbb794; letter-spacing:3px; }   /* generated wire-quote: real tone chars, copy-pasteable */
+
+/* ── ONE INK. The signal is tones — heard and gone; nothing on the page is "the wire," it is ALL
+      her transcription (§191: her figures, not only her ear). So no mark is more raw than another,
+      and none earns its own colour. Shape tells them apart; the pen is one. ── */
+.tn, .tones, .bit, .cup, .gl, .tk, .scrawl, .var, .kind, .rel, .op, .coin,
+.msg-val .msg-view { color:#cbb794 !important; }
 /* toggleable message widget */
 .msg{ background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:10px 14px; margin:10px 0; }
 .msg-view{ font-size:20px; letter-spacing:2px; color:#cdd9e2; }
@@ -88,6 +94,32 @@ title: "A listener's log"
 }
 .entry p:last-child { margin-bottom: 0; }
 .entry .coin { font-style: italic; color: #ffe4a3; }
+/* a dispatch: a short in-the-moment note, kept closer to the wire than a full entry.
+   lighter box, greener accent, no title — a quick hand, not a considered pass. */
+.entry.dispatch {
+  background: rgba(12,16,23,0.5); border-left-color: #3a5a3f;
+  padding: 12px 26px 13px; margin: 0 0 20px;
+}
+.entry.dispatch .stamp { color: #6f9a7a; }
+/* the "taking-up": a spare, diegetic change-of-watch record when a new keeper inherits the log — carries the
+   FACTS of succession (from/to, trade, the copied creed) so the prose need not. Born at the first succession
+   (Ren, a letter-cutter, §232); the form and its creed drift a little down the line. */
+.taking-up {
+  font-family: "inconsolataregular","Courier New",monospace;
+  max-width: 440px; margin: 40px auto 8px; padding: 12px 20px 13px;
+  border: 1px solid #35443d; border-radius: 3px;
+  background: rgba(18,24,20,0.6); color: #c2cfc6; font-size: 88%; line-height: 1.8; text-align: center;
+}
+.taking-up .tu-head {
+  text-transform: uppercase; letter-spacing: 0.24em; font-size: 74%; color: #7fa389;
+  margin-bottom: 8px; border-bottom: 1px solid #2a352f; padding-bottom: 6px;
+}
+.taking-up .tu-line { color: #c6d2c9; }
+.taking-up .tu-k { text-transform: uppercase; letter-spacing: 0.1em; font-size: 80%; color: #6f8a7c; }
+.taking-up .tu-creed {
+  margin-top: 8px; text-transform: uppercase; letter-spacing: 0.2em; font-size: 76%;
+  color: #8aa495; border-top: 1px solid #2a352f; padding-top: 7px;
+}
 
 .frag {
   font-family: "inconsolataregular","Courier New",monospace;
@@ -103,7 +135,7 @@ title: "A listener's log"
 .frag.flood { white-space: normal; overflow: hidden; padding: 12px 14px 2px; }
 .flood .flood-run {
   display: block;
-  font-size: 13px; line-height: 1.6; letter-spacing: 3px; color: #c98b5a;
+  font-size: 14px; line-height: 1.6; letter-spacing: 3px; color: #cbb794;
   white-space: normal; word-break: break-all; overflow-wrap: anywhere;
   max-height: 15em; overflow: hidden;
   -webkit-mask-image: linear-gradient(#000 80%, transparent);

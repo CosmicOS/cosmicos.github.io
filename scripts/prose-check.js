@@ -22,7 +22,7 @@ const dir = path.resolve(__dirname, '..', '_includes/listener');
 const ORDER = ['founder', 'terse', 'wondering', 'wary', 'maker', 'doubter', 'plainer', 'cold', 'listener', 'builder', 'final'];
 
 // structural glyphs legitimately hand-typed in prose (notation, not sign-references)
-const STRUCT = new Set([...'◢◣◤◥⟅⟆⟦⟧᚛᚜▪▫●◦◌⬚○◔·—–…“”‘’×÷≠≤≥→←↔⇛«»▩✱']);
+const STRUCT = new Set([...'˩˨˦˥⟅⟆⟦⟧᚛᚜▪▫●◦◌⬚○◔·—–…“”‘’×÷≠≤≥→←↔⇛«»▩✱']);
 // INTENTIONAL hand-drawn notation — deliberate per plans/CONVERSION_ISSUES.md, not coined aliases.
 const INTENTIONAL = {
   '⟳': 'the beat/tick mark (seeker + mutable-cell clock)',

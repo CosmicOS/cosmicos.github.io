@@ -14,7 +14,7 @@
                                    // THE source of truth for coining. Re-coining = a later `.coin` for the same sign wins.
   var allFigures = false;          // "in plain figures": force EVERY sign to its own figure (one source w/ hand mode, so the two can't disagree)
   var WIRE  = DATA.wire   || {};   // code -> {parse, spider} for data-code widgets (looked up client-side, not baked)
-  var TONE  = { '0':'◢','1':'◣','2':'◤','3':'◥' };
+  var TONE  = { '0':'˩','1':'˨','2':'˦','3':'˥' };
   function wireOf(el){ var c = el.getAttribute('data-code'); return (c && WIRE[c]) ? WIRE[c] : {}; }
   function tones(code){                        // RAW: the four-symbol stream, in real tone chars (copy-pasteable)
     var s = ''; for (var i = 0; i < code.length; i++) s += TONE[code.charAt(i)] || '?';
@@ -289,7 +289,7 @@
 /* wire quotes (§193 etc.): render <div class="frag" data-code="…" data-view="tones|cups"> to
    REAL characters at load — copy-pasteable, source stays clean. data-code is the literal wire. */
 (function () {
-  var TONE = { '0': '◢', '1': '◣', '2': '◤', '3': '◥' };
+  var TONE = { '0': '˩', '1': '˨', '2': '˦', '3': '˥' };
   function tones(code) {
     var s = ''; for (var i = 0; i < code.length; i++) s += TONE[code.charAt(i)] || '?';
     return '<span class="tones">' + s + '</span>';

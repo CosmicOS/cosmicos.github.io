@@ -29,11 +29,12 @@ const ROOT = path.resolve(__dirname, '..');
 
 // ---- args ----
 const argv = process.argv.slice(2);
-let through = Infinity, outFile = null, domFile = null;
+let through = Infinity, outFile = null, domFile = null, figMode = 'token';
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === '--through') through = parseInt(argv[++i], 10);
   else if (argv[i] === '--out') outFile = argv[++i];
   else if (argv[i] === '--dom') domFile = argv[++i];
+  else if (argv[i] === '--figures') figMode = argv[++i];  // 'token' (glyphN, default) | 'braille' (one distinct symbol per figure)
 }
 
 // ---- get the real post-JS DOM (render fresh unless one was handed to us) ----
@@ -47,9 +48,16 @@ const html = fs.readFileSync(domFile, 'utf8');
 //      box in plain text; give each distinct one a stable glyphN, first-seen order, whole read ----
 const glyphReg = new Map();
 function glyphToken(cp) {
-  if (!glyphReg.has(cp)) glyphReg.set(cp, 'glyph' + glyphReg.size);
+  if (!glyphReg.has(cp)) {
+    const n = glyphReg.size;
+    // braille mode: one distinct Unicode symbol per figure (recurrence is self-evident, needs no explaining);
+    // token mode: a stable glyphN word (survives plain-text tofu, but clutters the prose)
+    glyphReg.set(cp, figMode === 'braille' ? String.fromCodePoint(0x2801 + n) : 'glyph' + n);
+  }
   return glyphReg.get(cp);
 }
+// figures render inline as a single symbol in braille mode; as a spaced word in token mode
+function figWrap(tok) { return figMode === 'braille' ? tok : ' ' + tok + ' '; }
 
 // ---- entity decoding: named + numeric; numeric PUA figures route to glyphToken() ----
 const NAMED = { nbsp: ' ', amp: '&', lt: '<', gt: '>', quot: '"', apos: "'",
@@ -58,14 +66,14 @@ function decodeEntities(s) {
   return s.replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (m, body) => {
     if (body[0] === '#') {
       const cp = body[1] === 'x' ? parseInt(body.slice(1).replace(/^x/i, ''), 16) : parseInt(body.slice(1), 10);
-      if (cp >= 0xE000 && cp <= 0xF8FF) return ' ' + glyphToken(cp) + ' ';
+      if (cp >= 0xE000 && cp <= 0xF8FF) return figWrap(glyphToken(cp));
       return String.fromCodePoint(cp);
     }
     return (body in NAMED) ? NAMED[body] : m;
   });
 }
 // literal private-use scrawl chars in the text -> the same stable glyphN tokens
-function neutralizePUA(s) { return s.replace(/[\uE000-\uF8FF]/g, ch => " " + glyphToken(ch.charCodeAt(0)) + " "); }
+function neutralizePUA(s) { return s.replace(/[\uE000-\uF8FF]/g, ch => figWrap(glyphToken(ch.charCodeAt(0)))); }
 
 // ---- flatten a chunk of DOM HTML (prose + already-rendered rows/exhibits/widgets) to text ----
 function flatten(frag) {
@@ -86,7 +94,10 @@ function flatten(frag) {
 
 // ---- balanced-div slicer: inner HTML of each top-level <div class="CLASS"> ----
 function sliceBlocks(str, cls) {
-  const open = new RegExp('<div class="' + cls + '"[^>]*>', 'g');
+  // match cls as a whole space-delimited class token, so varied entry types
+  // (class="entry dispatch") are sliced too — but NOT a different class that merely
+  // contains it as a substring (class="sect-entry" must not match cls="entry").
+  const open = new RegExp('<div class="(?:[^"]*\\s)?' + cls + '(?:\\s[^"]*)?"[^>]*>', 'g');
   const tag = /<div\b[^>]*>|<\/div>/g;
   const out = [];
   let m;
@@ -101,12 +112,41 @@ function sliceBlocks(str, cls) {
   return out;
 }
 
+// position-aware slice so standalone blocks (the change-of-watch records) interleave with entries in order
+function sliceBlocksPos(str, cls) {
+  const open = new RegExp('<div class="(?:[^"]*\\s)?' + cls + '(?:\\s[^"]*)?"[^>]*>', 'g');
+  const tag = /<div\b[^>]*>|<\/div>/g;
+  const out = []; let m;
+  while ((m = open.exec(str))) {
+    const start = m.index + m[0].length; tag.lastIndex = start;
+    let depth = 1, t;
+    while (depth > 0 && (t = tag.exec(str))) depth += t[0] === '</div>' ? -1 : 1;
+    if (depth === 0) out.push({ pos: m.index, inner: str.slice(start, tag.lastIndex - 6) });
+    open.lastIndex = tag.lastIndex;
+  }
+  return out;
+}
+
 // ---- assemble the read ----
 const chunks = [];
 const preface = sliceBlocks(html, 'preface')[0];
 if (preface) chunks.push('PREFACE\n\n' + flatten(preface));
 
-for (const inner of sliceBlocks(html, 'entry')) {
+// entries and taking-up records, merged in document order
+const items = [
+  ...sliceBlocksPos(html, 'entry').map(x => ({ ...x, kind: 'entry' })),
+  ...sliceBlocksPos(html, 'taking-up').map(x => ({ ...x, kind: 'record' })),
+].sort((a, b) => a.pos - b.pos);
+
+for (const it of items) {
+  if (it.kind === 'record') {                                                     // a spare change-of-watch record
+    const rec = flatten(it.inner);
+    const recPass = parseInt((rec.match(/pass\s+(\d+)/i) || [])[1], 10);
+    if (!isNaN(recPass) && recPass > through) continue;
+    chunks.push(rec);
+    continue;
+  }
+  const inner = it.inner;
   const stamp = (inner.match(/<div class="stamp">([^<]*)<\/div>/) || [])[1] || '';
   const h2 = (inner.match(/<h2[^>]*>([\s\S]*?)<\/h2>/) || [])[1] || '';           // may wrap a "#" anchor-link
   const title = h2.replace(/<a class="anchor-link"[\s\S]*?<\/a>/g, '').replace(/<[^>]+>/g, '').trim();
