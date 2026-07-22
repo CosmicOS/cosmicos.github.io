@@ -154,7 +154,7 @@ if (!files.length) {
 files.forEach(buildFile);
 
 // the client-side lookup table for .msg[data-code] widgets: code -> {parse, spider}. listener.js reads it via
-// window.LEARN2.wire (injected by liquid). Only the codes actually used are included, so it stays small.
+// window.LISTENER.wire (injected by liquid). Only the codes actually used are included, so it stays small.
 const table = {};
 for (const code of usedCodes) table[code] = BY_CODE[code];
 fs.writeFileSync(path.resolve(__dirname, '../_data/wire_quotes.json'), JSON.stringify(table));

@@ -31,6 +31,15 @@ title: "A listener's log"
       and none earns its own colour. Shape tells them apart; the pen is one. ── */
 .tn, .tones, .bit, .cup, .gl, .tk, .scrawl, .var, .kind, .rel, .op, .coin,
 .msg-val .msg-view { color:#cbb794 !important; }
+/* a COINED WORD (her homespun name for a sign she has cracked) — one ink, told apart by form:
+   small, spaced, lowercase transcription, so a fragment reads as her marks and not as prose. */
+.gl.w{ font-family:"inconsolataregular","Courier New",monospace; font-size:.8em; letter-spacing:.05em; text-transform:lowercase; }
+/* end-of-section READ-BACK: re-show a real fragment now carrying the pass's new term — a
+   semi-formal "what I can read now", paying off the coining and consolidating the lesson. */
+.readback{ margin:16px 0 6px; padding:11px 16px 12px; border-left:2px solid #2a3b47; background:rgba(12,16,23,.5); border-radius:0 6px 6px 0; }
+.readback .rb-label{ font-family:"inconsolataregular","Courier New",monospace; font-size:68%; text-transform:uppercase; letter-spacing:.2em; color:#7f9bab; margin-bottom:8px; }
+.readback .row{ margin:4px 0; }
+.readback .rb-note{ margin-top:9px; font-size:92%; color:#8fa2ad; font-style:italic; }
 /* toggleable message widget */
 .msg{ background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:10px 14px; margin:10px 0; }
 .msg-view{ font-size:20px; letter-spacing:2px; color:#cdd9e2; }
@@ -40,7 +49,16 @@ title: "A listener's log"
 .msg .var{ color:#c9a3ff; font-style:italic; font-size:84%; }
 .msg-view .scrawl{ color:#d6b98a; font-size:1.15em; letter-spacing:6px; }
 .msg-view .scrawl.sign-fb{ font-size:.92em; letter-spacing:2px; color:#8f8674; }
-.msg-view .fam{ border-bottom:1px solid rgba(201,163,255,.4); padding:0 1px 1px; }
+/* a COMPOUND sign (a :-name the sender built from parts) — kept as ONE grouped unit (.fam), its
+   parts joined by a faint · so a compound is never mistaken for separate signs (part-count = dots+1).
+   Box/pill styling NEUTERED for now (too distracting); the · joins carry the distinction. */
+.fam{ }
+.fam .scrawl{ letter-spacing:0; }   /* kill the 5px TRAILING letter-spacing inside a compound, so the · sits symmetric & tight (not shoved right) */
+.fam .fj{ margin:0 1px; }            /* the · is the compound-marker — keep it FULLY visible, it carries the distinction */
+/* separate signs must sit clearly apart, so two scrawl signs "C C" never read as one run "CC".
+   The gap between terms (a real space) is widened; compound parts stay tight, held by their · joins
+   (which are NOT spaces, so word-spacing leaves them alone). Tune the value if it reads too airy. */
+.row, .msg-view, .fold, .peel .rows{ word-spacing:0.4em; }
 .msg-val .msg-view{ color:#d7c3ff; }   /* the yielded value, set apart from the ways-of-showing */
 .msg-view .tn{ letter-spacing:3px; }
 .msg-line{ margin:8px 0; }
@@ -262,6 +280,20 @@ title: "A listener's log"
 
 /* pictures: same exhibit box as everything else */
 .entry img.pic { background:#0a0e14 !important; border:1px solid #1d2a34 !important; border-radius:8px !important; padding:12px !important; }
+
+/* live circuit simulator: same ink & frame as the .pic gate stills, so a live figure and a
+   still one read as the same drawn hand. Controls echo the seeker's map bar, in green. */
+.circuit { margin:0.7em 0; }
+.circuit-frame { background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:12px; }
+.circuit-cvs { image-rendering:pixelated; width:453px; max-width:100%; height:auto; display:block; margin:0 auto; }
+.circuit-bar { text-align:center; margin-top:9px; font-family:"inconsolataregular","Courier New",monospace; font-size:12px; color:#8fa88f; }
+.circuit-bar button { background:none; border:1px solid #2c4436; color:#9fc0a8; font:inherit; font-size:11px; padding:2px 11px; border-radius:11px; cursor:pointer; margin:2px 5px; }
+.circuit-bar button:hover { border-color:#8fe6a8; color:#c9f0d4; }
+.circuit-bar .sw { display:inline-block; width:9px; height:9px; border-radius:2px; margin-left:5px; vertical-align:middle; border:1px solid #4a6152; }
+.circuit-bar .sw.lit { background:#8fe6a8; border-color:#8fe6a8; }
+.circuit-bar .sw.dark { background:#0a0e14; }
+.circuit-bar .sw.free { background:transparent; border-style:dashed; }
+.circuit-say { font-style:italic; color:#8a9b86; margin-left:6px; }
 </style>
 
 <div class="diary">
@@ -380,5 +412,6 @@ title: "A listener's log"
 
 </div>
 
-<script>window.LEARN2 = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {{ site.data.wire_quotes | jsonify }} };</script>
+<script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {{ site.data.wire_quotes | jsonify }} };</script>
 <script src="{{ site.baseurl }}/js/listener.js?v={{ site.time | date: '%s' }}"></script>
+<script src="{{ site.baseurl }}/js/circuit-sim.js?v={{ site.time | date: '%s' }}"></script>

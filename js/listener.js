@@ -1,12 +1,12 @@
 /* ---- listener: message renderer + the peel ----
-   Logic only. Data (her marks + sign glyphs) is injected by the page as `window.LEARN2`
+   Logic only. Data (her marks + sign glyphs) is injected by the page as `window.LISTENER`
    (a tiny inline <script> with liquid), since liquid does not run inside a .js file. */
 
 /* modular message renderer: render(fragment, notation)
    A shown message is DATA (raw `code` tones + `parse` tree, straight from msg.json).
    A notation is a function fragment->html. Add notations here; glyphs live in CSS (:root). */
 (function () {
-  var DATA  = window.LEARN2 || {};
+  var DATA  = window.LISTENER || {};
   var SCRAWL= DATA.scrawl || {};   // wire sign name -> its real spider-scrawl glyph(s) — THE BASE (what she writes before understanding)
   var STR   = DATA.strings|| {};   // string literal -> its glyph sequence (the substrate carries what she can't read)
   var COINED = {};                 // sign -> token, built LINEARLY as we walk the page: a `.coin` span in the prose
@@ -33,7 +33,10 @@
   function mark(name){                             // a bound var -> its slot; else her token (once introduced); else the sign in spider scrawl
     if (slots && (name in slots)) return '<span class="gl">'+slots[name]+'</span>';  // bound-var name (e.g. (x) from assign) -> slot
     if (allFigures) return scrawlSpan(name);                                         // plain-scrawl view: every sign as its scrawl
-    if (COINED[name] !== undefined) return '<span class="gl">'+COINED[name]+'</span>';   // she has coined it (a `.coin` span above, in reading order) -> her token
+    if (COINED[name] !== undefined) { var t=COINED[name];                                 // she has coined it (a `.coin` span above, in reading order) -> her token
+      return '<span class="gl'+(/[a-z]/i.test(t)?' w':'')+'">'+t+'</span>'; }              //   a WORD token (has letters) gets `.w` so it reads as her coined word, not a glyph
+    if (name.indexOf(':')>0)                                                             // an uncoined COMPOUND — operation OR name — render its parts as a pill w/ · joins,
+      return '<span class="fam">'+name.split(':').map(function(p){ return /^-?\d+$/.test(p)?bitsOf(p):mark(p); }).join('<span class="fj">·</span>')+'</span>';  //   so the part-count is legible (no opaque glyph-run)
     return scrawlSpan(name);                                                             // else: the sign in real spider scrawl (the base)
   }
   // bound names (lambda params / $var refs) -> HER established slot-marks (§300: ◌ a slot, ⬚ another), not the sender's letters
@@ -56,11 +59,7 @@
       if (slots && (s in slots)) return mark(s);                                  // a hinted/bound name (incl. compound) -> her coined glyph, wins over family
       if (/^-?\d+$/.test(s)) return bitsOf(node);
       if (s.charAt(0)==='"') return strblob(s);                                   // string -> opaque byte-blob
-      if (s.indexOf(':')>0){                                                     // compound name
-        if (COINED[s] !== undefined) return '<span class="gl">'+COINED[s]+'</span>';                  // she coined ONE mark for the whole compound (e.g. car) -> use it
-        return '<span class="fam">'+s.split(':').map(function(p){ return /^-?\d+$/.test(p)?bitsOf(p):mark(p); }).join('')+'</span>';  // else -> its parts (cons:0 -> cons·0)
-      }
-      return mark(s);
+      return mark(s);                                                            // a sign OR a :-compound (name or op) -> mark(), which pills+dots any compound
     }
     if (node[0]===-2){ var rn=node[1]; return (slots && (rn in slots)) ? '<span class="gl">'+slots[rn]+'</span>' : mark(rn); }  // $ref: a bound lambda-slot, else a free NAME (scrawl/token)
     var items = (node[0]===-1) ? node.slice(1) : node;         // strip grouping marker
