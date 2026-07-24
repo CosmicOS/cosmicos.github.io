@@ -23,9 +23,19 @@ const SCRAWL = require(path.resolve(__dirname, '../_data/sign_scrawl.json'));
 
 // the keeper's own diagram notation — stands for nothing the message sends
 const HERS = {
-  '⌂': 'a room',            '⇌': 'the way between rooms', '⟳': 'the beat',
-  '▸': 'a step / toward',   '◌': 'a slot', '⬚': 'a slot', '○': 'a slot', '◔': 'a slot',
+  // Slot-marks only.  A bound name has no sign of its own on the wire — it is a position in a maker, so there
+  // is nothing transmitted to render and a shape is the only option.  Hollow because §288 is where she meets
+  // it: "a new mark takes a HOLLOW for a slot, then a body that leans on that slot".
+  '◌': 'a slot', '⬚': 'a slot', '○': 'a slot', '◔': 'a slot',
 };
+/* KILLED 07-23 (user: "there are perfectly good scrawls; you need some compelling reason to use something
+   else — and even then it should generally be a regular coining"):
+     ⌂ -> .sg data-s="room"  (msg 1301 `intro room`, scrawl f147f148)
+     ⇌ -> .sg data-s="door"  (msg 1299 `intro door`, scrawl f147f146)
+     ⟳ -> deleted; every row already carried the words "a beat"/"the beat" beside it
+     ▸ -> `.step` "then" as a sequence separator; deleted where the row already said "it turns toward"
+   None had earned its place: ⇌ was never glossed anywhere, ▸ meant two different things and was also the
+   fallback char for cons:1, and ⌂/⟳ were only inferable from adjacent words that could carry the load alone. */
 
 const RENDERER = path.resolve(__dirname, '../js/listener.js');
 const files = fs.readdirSync(DIR).filter(f => f.endsWith('.html'));
@@ -50,6 +60,57 @@ for (const f of files) {
     flags.push(`${f}:${lineOf(m.index)}  hand-typed ${g}` +
                `  — if it is a transmitted sign use .sg data-s; if it is hers, add it to HERS with a reason` +
                (sign ? ` (note: "${g}" is also a sign name)` : ''));
+  }
+}
+
+/* 1b. ONE WORD, ONE MARK.  A coined word must not answer to two different marks: both render as the word, so
+   the reader cannot tell which mark is on the page.  Until 07-23 `maker` was cut for BOTH `?` (f150) and
+   `lambda` (f15e) — plainer re-used Iso's name because lambda really is the same doing said shorter, which is
+   a good reason and still the wrong outcome (Paul: "let's not have her do that, that's confusing").  She now
+   declines to name it and reads it in its own mark, which is T1's rule anyway: coin only where a name
+   illuminates.  Same escape clause as 3b: identical scrawl means it IS one mark, so sharing is fine. */
+{
+  const byWord = {};
+  for (const f of files)
+    for (const m of fs.readFileSync(path.join(DIR, f), 'utf8')
+        .matchAll(/<span class="coin[^"]*"[^>]*data-sign="([^"]*)"[^>]*>([^<]*)<\/span>/g))
+      (byWord[m[2].trim()] = byWord[m[2].trim()] || new Set()).add(m[1]);
+  for (const [word, set] of Object.entries(byWord)) {
+    if (set.size < 2) continue;
+    const scrawls = new Set([...set].map(x => SCRAWL[x]));
+    if (scrawls.size !== 1 || scrawls.has(undefined))
+      flags.push(`the word "${word}" is cut for ${set.size} DIFFERENT marks (${[...set].join(', ')}) ` +
+                 `— both render as "${word}", so a reader cannot tell which mark is on the page`);
+  }
+}
+
+/* 3b. FALLBACK COHERENCE.  The text inside a `.sg` span is the no-JS fallback — the renderer overwrites it —
+   so it is invisible in normal reading and drifts silently.  It is NOT harmless: it is what a source-reader
+   sees, and mis-reading a fallback as "the mark" is how ▮/⬥ were mis-diagnosed three times in one session.
+   Two rules:  a sign is drawn ONE way (at most one shape, plus optionally its coined word);  and a shape means
+   ONE sign — unless those signs ARE THE SAME MARK ON THE WIRE, i.e. identical scrawl in sign_scrawl.json (10
+   such aliases exist, e.g. `true:*`/`map`).  Sharing a coined WORD is NOT sufficient and was my first, wrong
+   rule: `?` (f150) and `lambda` (f15e) are both cut "maker" but are different marks, so one shape for both
+   claimed they look alike when they do not.  A fallback depicts the MARK, so the wire decides, not the word. */
+{
+  const bySign = {}, byShape = {}, coined = {};
+  for (const f of files) {
+    const src = fs.readFileSync(path.join(DIR, f), 'utf8');
+    for (const m of src.matchAll(/<span class="gl sg" data-s="([^"]*)">([^<]*)<\/span>/g)) {
+      (bySign[m[1]] = bySign[m[1]] || new Set()).add(m[2]);
+      (byShape[m[2]] = byShape[m[2]] || new Set()).add(m[1]);
+    }
+  }
+  for (const [sign, set] of Object.entries(bySign)) {
+    const shapes = [...set].filter(x => !/[a-z]/i.test(x));
+    if (shapes.length > 1) flags.push(`sign "${sign}" is drawn ${shapes.length} ways: ${shapes.join(' ')} — pick one`);
+  }
+  for (const [shape, set] of Object.entries(byShape)) {
+    if (set.size < 2 || /[a-z]/i.test(shape)) continue;
+    const scrawls = new Set([...set].map(s => SCRAWL[s]));
+    if (scrawls.size !== 1 || scrawls.has(undefined))
+      flags.push(`shape ${shape} is the fallback for ${set.size} signs (${[...set].join(', ')}) ` +
+                 `that are DIFFERENT marks on the wire — a fallback depicts the mark, so one shape, one mark`);
   }
 }
 

@@ -39,7 +39,8 @@
       return '<span class="fam">'+name.split(':').map(function(p){ return /^-?\d+$/.test(p)?bitsOf(p):mark(p); }).join('<span class="fj">·</span>')+'</span>';  //   so the part-count is legible (no opaque glyph-run)
     return scrawlSpan(name);                                                             // else: the sign in real spider scrawl (the base)
   }
-  // bound names (lambda params / $var refs) -> HER established slot-marks (§300: ◌ a slot, ⬚ another), not the sender's letters
+  // bound names (lambda params / $var refs) -> HER slot-marks, not the sender's letters. Hollow shapes because
+  // §288 is where she meets the thing: "a new mark takes a HOLLOW for a slot, then a body that leans on that slot".
   var SLOTS=['◌','⬚','○','◔'], slots, slotN;   // hollow slot-marks, no numerals
   function resetSlots(){ slots={}; slotN=0; }
   function slot(name){ if (COINED[name] !== undefined) return mark(name);  // an already-coined sign, not a fresh lambda slot
