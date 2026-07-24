@@ -10,9 +10,13 @@ cd "$(dirname "$0")/.."
 DOM="${1:-/tmp/rendered.html}"; ERR="${DOM%.html}.err"
 scripts/render-dom.sh "$DOM"
 
-# strip tags -> readable rendered text (what the reader actually sees, post-JS)
+# strip tags -> readable rendered text (what the reader actually sees, post-JS).
+# A fixed-width inline-block span is a table CELL; without a gap the strip butts cells together
+# ("say your kinda mark of its kind"). Turn each cell boundary into spaces before dropping tags.
+# (scripts/read.js is the real reviewer read and does this properly; this is the grep-aid version.)
 TXT="${DOM%.html}.txt"
-sed -e 's/<[^>]*>//g' -e 's/&#x\([0-9a-f]*\);/[glyph]/gi' "$DOM" | sed '/^[[:space:]]*$/d' > "$TXT"
+sed -e 's/<span[^>]*display: *inline-block[^>]*>/   /g' \
+    -e 's/<[^>]*>//g' -e 's/&#x\([0-9a-f]*\);/[glyph]/gi' "$DOM" | sed '/^[[:space:]]*$/d' > "$TXT"
 
 fail=0
 echo

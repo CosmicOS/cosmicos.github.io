@@ -37,3 +37,9 @@ for (const f of FILES) {
 }
 console.log(`read-back audit — coins seen substituted after minting: ${ok} ok, ${gaps.length} gap(s)`);
 gaps.forEach(x => console.log('    ' + x));
+/* EXIT LOUDLY (07-24).  This printed its gaps and returned 0, so verify.sh went on to print
+   "✓ all gates passed" with a real gap on the page — §602 coined `class`→"mold" in its closing
+   paragraph, where no later row could ever render it, and the coin was inert: the word appeared
+   0 times in any row in the whole arc. Advisory output nobody has to act on is how that survives.
+   A coin that is never seen substituted has not been demonstrated, which is the entire T2 rule. */
+if (gaps.length) process.exit(1);

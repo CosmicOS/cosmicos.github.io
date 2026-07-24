@@ -21,6 +21,12 @@ const DIR = path.resolve(__dirname, '../_includes/listener');
 const JUSTIFIED = {
   '= 0 0': { value: 'true',  why: 'msg 391 `define true | = 0 0` — the name IS this claim, by transmitted definition; and none-equals-none is her own numeracy' },
   '= 0 1': { value: 'false', why: 'msg 392 `define false | = 0 1` — same, the fails-name is bound to this very claim' },
+  '(? x | + $x 1) 15': { value: '16', why:
+    '§602: the root mold\'s first manner, whose body is on the page one row above (msg 1544 renders it `maker ◌ ⟅join ◌ ▪⟆`). ' +
+    'She reads the rule off that row and runs it — no sender-side answer is involved: `join` is her own coined word for the ' +
+    'adding she has done since the counting era, and one-more-than-a-count is a numerate people\'s own competence, not a gift ' +
+    'from the sender (DONT_LEAK.md). Hand-running the message\'s rules IS her craft, asserted since §0 ("she is the rule-runner"). ' +
+    'The message tests the same manner itself at msg 1554, and gets the same answer.' },
 };
 
 const flags = [];

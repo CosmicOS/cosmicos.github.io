@@ -15,6 +15,8 @@
  *     tofu box in plain text, so each distinct one becomes a stable token glyph0, glyph1, …
  *     assigned in first-seen order and REUSED across the whole read (recurrence stays checkable);
  *   - the §189 tone-wall is summarized (it fades off-screen; its length is unstated);
+ *   - a message FIGURE bitmap becomes ⟦figure: {alt}⟧ and a seeker ANIMATION becomes ⟦animation:
+ *     {aria-label}⟧ (play/step controls dropped), so a flat read isn't blind to those beats;
  *   - no explanatory header and no figure-key footer — hand over just the diary.
  *
  * Usage:  node scripts/read.js [--through N] [--out FILE] [--dom FILE]
@@ -82,13 +84,26 @@ function flatten(frag) {
     const opener = g.replace(/<[^>]+>/g, '').replace(/\s+/g, '').slice(0, 60);
     return ' «the raw stream, dense and unbroken, wrapping and fading out past the visible edge; it opens ' + opener + '…» ';
   });
+  // advanced renderings a flat read would otherwise DROP or turn to noise: surface each as a bracketed
+  // token carrying its alt/aria-label, so a text-only review isn't blind to the picture/animation beats
+  // (§544–579 bitmaps, §619/622 seeker animations). Do this BEFORE the generic tag-strip below.
+  s = s.replace(/<div class="seekmap-bar">[\s\S]*?<\/div>/g, '');                  // drop play/pause/step controls
+  s = s.replace(/<svg\b[^>]*\baria-label="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g, ' ⟦animation: $1⟧ ');
+  s = s.replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, ' ⟦figure: $1⟧ ');
   s = s.replace(/<span class="lbl"[^>]*>([\s\S]*?)<\/span>/g, '($1) ');            // a way-of-showing label -> ( … )
   s = s.replace(/<(?:br)\s*\/?>/g, '\n');
   s = s.replace(/<\/(?:p|div|li|h1|h2|h3|tr)>/g, '\n');                            // block breaks -> newlines
+  // A span laid out as a COLUMN (fixed-width inline-block) is a table cell: on the page its width
+  // separates it from the next cell, but a plain tag-strip butts them together ("say your kinda mark
+  // of its kind"), which reads as a typo and hides the question->answer pairing the row exists to show.
+  // Mark each cell boundary now, restore it as a gap after whitespace is collapsed.
+  const CELL = '[^>]*style="[^"]*display:\\s*inline-block[^"]*"[^>]*';
+  s = s.replace(new RegExp('<span' + CELL + '>([^<]*)</span>', 'g'), '\t$1\t');     // a leaf cell: fence both sides
+  s = s.replace(new RegExp('<span' + CELL + '>', 'g'), '\t');                       // a cell wrapping more markup
   s = s.replace(/<[^>]+>/g, '');                                                   // drop remaining tags (keep inner text)
   s = decodeEntities(s);
   s = neutralizePUA(s);
-  return s.split('\n').map(l => l.replace(/[ \t]+/g, ' ').trim()).join('\n')
+  return s.split('\n').map(l => l.replace(/ +/g, ' ').replace(/\t/g, '   ').trim()).join('\n')
           .replace(/\n{3,}/g, '\n\n').replace(/^\n+|\n+$/g, '');
 }
 

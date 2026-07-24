@@ -4,3 +4,6 @@ plans/
 # dead, comment-only includes (superseded by the diary; see listener.html:334)
 _includes/listener_sections.html
 _includes/listener_s0_rows.html
+
+# generated cross-reference (scripts/build-index.js); regenerable, never committed
+plans/listener_index.json

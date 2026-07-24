@@ -42,7 +42,9 @@ title: "A listener's log"
 .readback .rb-note{ margin-top:9px; font-size:92%; color:#8fa2ad; font-style:italic; }
 /* toggleable message widget */
 .msg{ background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:10px 14px; margin:10px 0; }
-.msg-view{ font-size:20px; letter-spacing:2px; color:#cdd9e2; }
+.msg-view{ font-size:12px; letter-spacing:0; color:#cdd9e2; }   /* MATCH .row (12px): the .msg widget renders the
+   same notation through the same form() renderer, so it must not be a different size from the wire-quote rows it
+   sits beside. Was 20px+2px — 67% larger than a .row three lines above it in the same entry (Paul, 07-24). */
 .msg .gl{ color:#aab7c4; }          /* scope mark colors to the WHOLE widget (view + val + …) */
 .msg .bit{ color:#bfe8c8; }
 .msg .cup{ color:#6f95a8; }
