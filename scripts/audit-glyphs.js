@@ -84,6 +84,31 @@ for (const f of files) {
   }
 }
 
+/* 4. NO UNCOINED WORD TOKENS.  `.gl w` is declared in MARK_INVENTORY as "a coined word token … the rendered
+   form of a `.coin[data-sign]`".  A `.gl w` with no coin anywhere is a word wearing the costume of a cut
+   mark: it LOOKS like a sign she has named, and no gate sees it, because prose-check/audit-coins/
+   audit-readback all key off `.coin[data-sign]` and there is none.  Until 07-23 the arc carried 20 such
+   tokens — `switch` `field` `both-knot` `ring` `mold` — every one inside a hand row, which is exactly where
+   an unearned mark hides (same family as §549's ▮).  Two legitimate outcomes when this fires: cut the sign
+   properly (show → coin → read back), or, if the word is not a sign at all — her own label, or a family of
+   several marks that cannot share one word (see 1b) — style it as a plain label, not `.gl w`.
+   Document order matters: the coin must come first, which prose-check enforces separately. */
+{
+  const coined = new Set();
+  const ORDER = ['founder','terse','wondering','wary','maker','doubter','plainer','cold','listener','builder','final'];
+  for (const f of ORDER) {
+    const src = fs.readFileSync(path.join(DIR, f + '.html'), 'utf8');
+    const lineOf = i => src.slice(0, i).split('\n').length;
+    for (const m of src.matchAll(/<span class="(coin gl w|gl w)"[^>]*>([^<]*)<\/span>/g)) {
+      const word = m[2].trim();
+      if (m[1] === 'coin gl w') { coined.add(word); continue; }
+      if (!coined.has(word))
+        flags.push(`${f}.html:${lineOf(m.index)}  .gl w token "${word}" is never coined` +
+                   `  — cut it (show → .coin[data-sign] → read back), or make it a plain label if it is not a sign`);
+    }
+  }
+}
+
 /* 3b. FALLBACK COHERENCE.  The text inside a `.sg` span is the no-JS fallback — the renderer overwrites it —
    so it is invisible in normal reading and drifts silently.  It is NOT harmless: it is what a source-reader
    sees, and mis-reading a fallback as "the mark" is how ▮/⬥ were mis-diagnosed three times in one session.
