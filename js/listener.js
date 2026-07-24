@@ -27,7 +27,12 @@
   function tally(n){ n=Math.abs(Number(n)); var s=''; for(var i=0;i<n;i++){ if(i>0&&i%5===0) s+='<span class="gp"></span>'; s+='<span class="tk">●</span>'; } return s+'<span class="tk z">◦</span>'; }
   function unaryVal(items){ var c=0; for(var i=1;i<items.length;i++) if(String(items[i])==='1') c++; return c; }  // (unary 1 1 0) -> 2
   function bitsOf(n){ return num(Math.abs(Number(n)).toString(2).split('')); }
-  var foldMode = false, foldMax = Infinity;        // fold: break+indent nested makings (per data-fold); foldMax caps depth
+  /* fold: break+indent nested makings (per data-fold). foldMax caps how DEEP breaking goes; foldMin sets a
+     FLOOR, so the shallow scaffolding of a big statement can stay inline while the interesting run deeper
+     down breaks one-per-line. Added 07-24: with a cap alone, a statement whose payload sits below its own
+     setup had only two useless renderings — payload crammed on one line (cap low), or setup exploded into
+     40 lines of scaffolding (cap high). data-fold="5-7" says: break only between those depths. */
+  var foldMode = false, foldMin = 0, foldMax = Infinity;
   function indent(d){ var s=''; for(var i=0;i<d;i++) s+='   '; return s; }
   function scrawlSpan(name){ return SCRAWL[name] ? '<span class="scrawl sign-fb">'+SCRAWL[name]+'</span>' : '<span class="gl" style="opacity:.4">▩</span>'; }
   function mark(name){                             // a bound var -> its slot; else her token (once introduced); else the sign in spider scrawl
@@ -83,7 +88,7 @@
     var body = kids(items);
     if (!cupped) return body;
     var cup = '<span class="cup o">⟅</span>'+body+'<span class="cup c">⟆</span>';
-    return (foldMode && depth>0 && depth<=foldMax) ? '\n'+indent(depth)+cup : cup;   // fold: nested making onto its own indented line
+    return (foldMode && depth>0 && depth>=foldMin && depth<=foldMax) ? '\n'+indent(depth)+cup : cup;   // fold: nested making onto its own indented line
   }
   var MODES = {
     raw:   function(el){ return tones(el.getAttribute('data-code') || el.getAttribute('data-tones')); },
@@ -123,7 +128,10 @@
     if (!parse) return;
     allFigures = false; resetSlots();
     var fm = el.getAttribute('data-fold');
-    foldMode = el.hasAttribute('data-fold'); foldMax = (fm && /^\d+$/.test(fm)) ? +fm : Infinity;
+    foldMode = el.hasAttribute('data-fold');
+    var rng = fm && fm.match(/^(\d+)-(\d+)$/);                       // "M-N": break only between depths M and N
+    foldMin = rng ? +rng[1] : 0;
+    foldMax = rng ? +rng[2] : ((fm && /^\d+$/.test(fm)) ? +fm : Infinity);
     el.innerHTML = form(parse, false, 0);
     foldMode = false;
   }

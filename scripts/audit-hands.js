@@ -62,7 +62,10 @@ const tally = {};
 for (const f of files) {
   const src = fs.readFileSync(path.join(DIR, f), 'utf8');
   const lineOf = i => src.slice(0, i).split('\n').length;
-  for (const m of src.matchAll(/<div class="row hand"([^>]*)>([\s\S]*?)<\/div>\s*(?=<div|<\/div|$)/g)) {
+  /* `class="row hand …"` — match ANY trailing classes. A gate keyed to the exact string silently stops
+     seeing a row the moment someone adds a modifier, which is how the wrapper-span blind spot (P5) works.
+     Widened 07-24 when `.row hand ledger` was introduced. */
+  for (const m of src.matchAll(/<div class="row hand[^"]*"([^>]*)>([\s\S]*?)<\/div>\s*(?=<div|<\/div|$)/g)) {
     const attrs = m[1], body = m[2], at = `${f}:${lineOf(m.index)}`;
     const why = (attrs.match(/data-hand="([^"]*)"/) || [])[1];
     const of = (attrs.match(/data-of="([^"]*)"/) || [])[1];

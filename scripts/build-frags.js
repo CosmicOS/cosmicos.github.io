@@ -82,7 +82,7 @@ const dropAttr = (s, name) => s.replace(new RegExp('\\s*' + name + '=(["\']).*?\
 const WIRE = msg.filter(s => (s.role === 'code' || s.role === 'gate') && s.code).map(s => s.code).join('');
 const BY_CODE = {};                         // code -> {parse, spider} for looking up .msg[data-code] widgets client-side
 for (const s of msg) if ((s.role === 'code' || s.role === 'gate') && s.code) BY_CODE[s.code] = { parse: s.parse, spider: s.spider };
-const usedCodes = new Set();                // .msg[data-code] widgets collected across all files -> _data/wire_quotes.json
+const usedCodes = new Set();                // .msg[data-code] widgets collected across all files -> _includes/wire_quotes.json
 
 function buildFile(file) {
   let html = fs.readFileSync(file, 'utf8');
@@ -153,9 +153,17 @@ if (!files.length) {
 }
 files.forEach(buildFile);
 
-// the client-side lookup table for .msg[data-code] widgets: code -> {parse, spider}. listener.js reads it via
-// window.LISTENER.wire (injected by liquid). Only the codes actually used are included, so it stays small.
+/* The client-side lookup table for .msg[data-code] widgets: code -> {parse, spider}. listener.js reads it via
+   window.LISTENER.wire.
+
+   IT LIVES IN _includes/, NOT _data/, AND THAT IS LOAD-BEARING (07-24).  Jekyll parses every _data/*.json
+   through safe_yaml/libyaml, which caps a flow-mapping SIMPLE KEY at 1024 characters — and this table is keyed
+   by the whole wire code.  So while it sat in _data/, any statement whose code exceeded 1024 chars could not be
+   quoted at all: `jekyll build` died with "did not find expected ',' or '}'" naming wire_quotes.json rather than
+   the offending statement.  class String (#1550, 1074 chars) was unquotable for that reason alone.  An {% include %}
+   is read as TEXT, never YAML-parsed, so the cap is gone and the key length no longer matters.  Do not move this
+   back to _data/ for tidiness. */
 const table = {};
 for (const code of usedCodes) table[code] = BY_CODE[code];
-fs.writeFileSync(path.resolve(__dirname, '../_data/wire_quotes.json'), JSON.stringify(table));
-console.log(`_data/wire_quotes.json: ${Object.keys(table).length} entr${Object.keys(table).length === 1 ? 'y' : 'ies'}`);
+fs.writeFileSync(path.resolve(__dirname, '../_includes/wire_quotes.json'), JSON.stringify(table));
+console.log(`_includes/wire_quotes.json: ${Object.keys(table).length} entr${Object.keys(table).length === 1 ? 'y' : 'ies'}`);

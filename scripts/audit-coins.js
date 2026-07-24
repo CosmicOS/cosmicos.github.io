@@ -5,7 +5,7 @@
    coin-before-USE (token order); this enforces show-before-COIN. Exit 1 on any violation.
    Usage: node scripts/audit-coins.js */
 const fs = require('fs'), path = require('path');
-const w = require(path.resolve(__dirname, '../_data/wire_quotes.json'));
+const w = require(path.resolve(__dirname, '../_includes/wire_quotes.json'));
 const DIR = path.resolve(__dirname, '../_includes/listener');
 const FILES = ['founder','terse','wondering','wary','maker','doubter','plainer','cold','listener','builder','final'];
 const contains = (p, s) => Array.isArray(p) ? p.some(x => contains(x, s)) : String(p) === s;

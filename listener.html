@@ -209,6 +209,11 @@ title: "A listener's log"
 
 /* the listener's own hand (early sections, pictorial) */
 .row.hand { font-size: 17px; color: #cdd9e2; padding: 2px 0; letter-spacing: 1px; }
+/* `.row hand` conflated two jobs: the audit-hands contract, and PICTORIAL styling at 17px meant for her
+   drawings (the §214 tallies). A hand row that is a LEDGER — a trace of wire values read beside a real
+   quote — must be the size of the quote it sits with, or it reads as a different kind of thing. Same
+   notation, same size (07-24). The wider question of whether 17px is right for the drawings is P7b. */
+.row.hand.ledger { font-size: 12px; letter-spacing: 0; }
 .row.hand .tk { color: #ffd479; letter-spacing: 2px; }
 .row.hand .tk.z { color: #566572; letter-spacing: 0; }
 .row.hand .gp { display: inline-block; width: 7px; }
@@ -414,6 +419,6 @@ title: "A listener's log"
 
 </div>
 
-<script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {{ site.data.wire_quotes | jsonify }} };</script>
+<script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {% include wire_quotes.json %} };</script>
 <script src="{{ site.baseurl }}/js/listener.js?v={{ site.time | date: '%s' }}"></script>
 <script src="{{ site.baseurl }}/js/circuit-sim.js?v={{ site.time | date: '%s' }}"></script>

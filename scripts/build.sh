@@ -3,7 +3,7 @@
 #   1. build-pics: regenerate the gate pictures from the WIRE (make-image data) so the committed
 #      assets/listener/*.png always equal what the message actually transmits — never a stale blob.
 #   2. build-frags over ALL includes: verify every quote is a real transmitted statement + rebuild
-#      the shared _data/wire_quotes.json. Exits non-zero (and stops the build) on any bad data-code.
+#      the shared _includes/wire_quotes.json. Exits non-zero (and stops the build) on any bad data-code.
 #   3. build-index: refresh plans/listener_index.json (the cross-reference — kept fresh with the diary
 #      so a lookup never lies; gitignored + Jekyll-excluded, so it costs the site nothing).
 #   4. jekyll build -> _site.
