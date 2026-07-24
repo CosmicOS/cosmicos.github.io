@@ -94,8 +94,10 @@
     hand:  function(el){ resetSlots(); return form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), false); }
   };
   function renderVal(v){                       // what a fragment YIELDS (from Evaluate), in her marks
-    if (v===true)  return '<span class="gl">⬥</span>';
-    if (v===false) return '<span class="gl">⬦</span>';
+    // through mark(), like every other sign in the arc: her coined word once she has one (holds/fails, §306),
+    // the real scrawl before that. NEVER a shape of our own — the widget teaches the word one line above.
+    if (v===true)  { resetSlots(); return mark('true'); }
+    if (v===false) { resetSlots(); return mark('false'); }
     if (typeof v==='number') return num(Math.abs(v).toString(2).split(''));
     return '';
   }
