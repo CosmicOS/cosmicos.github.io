@@ -16,6 +16,9 @@
 #  11. build         — build-frags verifies every data-code is a real transmitted statement, then jekyll build
 #  12. render-check   — renders listener.html through real headless Chrome; fails on JS errors / unrendered signs
 #
+#  (plus STEP 0, added 07-24: build-frags runs FIRST too, so the audits at 2-3 resolve data-codes against a
+#   fresh table rather than a stale one — see the comment at that step.)
+#
 # Usage:  scripts/verify.sh
 # (render-check needs Chrome/Chromium; it rebuilds _site itself, so step 11's build is the fast, loud pre-check.)
 set -euo pipefail
