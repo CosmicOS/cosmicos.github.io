@@ -23,6 +23,15 @@ cd "$(dirname "$0")/.."
 
 step() { printf '\n\033[1m── %s ──\033[0m\n' "$1"; }
 
+# STEP 0 — regenerate the wire lookup table BEFORE the audits that read it.
+# audit-coins and audit-readback resolve a `data-code` through _includes/wire_quotes.json, which
+# build-frags writes — but build-frags only ran at step 11. So the first verify after adding a NEW
+# data-code read a stale table, could not find the new statement, and reported a show-before-coin
+# violation that did not exist (hit 07-24 on §544). A gate that cries wolf gets prose "fixed" to
+# satisfy it, which is worse than no gate. Cheap and idempotent, so just run it first.
+step "0/12  build-frags (refresh the wire table the audits resolve against)"
+node scripts/build-frags.js > /dev/null
+
 step "1/12  prose-check (coined tokens introduced before use)"
 node scripts/prose-check.js
 
