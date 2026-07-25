@@ -34,7 +34,6 @@ const INTENTIONAL = {
   '⇝': 'reachability/path notation (plainer §455)',
   '◃': 'the Turing-tape notation (cold §501)',
   '▵': 'field-stem notation (plainer — a shared stem for field names; cf. ▹ removed from cold §484)',
-  '⌂': 'the §540 room-map diagram (room)',
   '⇌': 'the §540 room-map diagram (door)',
   '⬤': 'physics mote (proton, builder §544)',
   '∙':  'physics mote (electron, builder §544)',

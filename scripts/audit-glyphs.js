@@ -37,6 +37,16 @@ const HERS = {
    None had earned its place: ⇌ was never glossed anywhere, ▸ meant two different things and was also the
    fallback char for cons:1, and ⌂/⟳ were only inferable from adjacent words that could carry the load alone. */
 
+/* 5. NO REAL-WORLD SHAPES.  A closed blacklist of glyphs whose SHAPE carries an Earth referent.  These are a
+   worse fault than an invented mark: an invented mark is merely unearned, but a picture of a human artifact
+   smuggles our world into her notation — the same family as the banned horse/city-name imagery, and invisible
+   to every other check because the shape "reads well".  ⌂ (a pitched roof over a square = a human dwelling)
+   stood for the transmitted `room` sign in the renderer's seeker captions, in the §619 map, and as the no-JS
+   fallback on 12 spans, for months (Paul, 07-24: "that's semantic leakage, has to be plugged").  `room` has a
+   real scrawl (f147f148) and she has her own word for it.  Scanned EVERYWHERE, including inside .sg fallbacks
+   and renderer string literals, because that is exactly where it hid. */
+const REAL_WORLD = { '\u2302': 'a human house (pitched roof) — use the `room` scrawl, or her word' };
+
 const RENDERER = path.resolve(__dirname, '../js/listener.js');
 const files = fs.readdirSync(DIR).filter(f => f.endsWith('.html'));
 const flags = [];
@@ -156,6 +166,20 @@ for (const f of files) {
   const slots = src.match(/SLOTS\s*=\s*\[([^\]]*)\]/);
   if (slots) for (const ch of (slots[1].match(/'([^'])'/g) || []).map(x => x[1]))
     if (!(ch in HERS)) flags.push(`js/listener.js:${lineOf(slots.index)}  slot mark ${ch} is not in the allow-list`);
+}
+
+{
+  const targets = files.map(f => [f, fs.readFileSync(path.join(DIR, f), 'utf8')]);
+  targets.push(['js/listener.js', fs.readFileSync(RENDERER, 'utf8')]);
+  targets.push(['listener.html', fs.readFileSync(path.resolve(__dirname, '../listener.html'), 'utf8')]);
+  for (const [name, src] of targets) {
+    const lineOf = i => src.slice(0, i).split('\n').length;
+    for (const [ch, why] of Object.entries(REAL_WORLD)) {
+      let i = -1;
+      while ((i = src.indexOf(ch, i + 1)) !== -1)
+        flags.push(`${name}:${lineOf(i)}  real-world shape ${ch} — ${why}`);
+    }
+  }
 }
 
 if (flags.length) {

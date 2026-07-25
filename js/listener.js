@@ -190,7 +190,7 @@
     g.classList.add('press'); setTimeout(function () { g.classList.remove('press'); }, 200);
     if (fresh) mapped++;
     sayEl.textContent = mapped < 5
-      ? 'feeling it out — ⌂ ' + tag[room] + (fresh ? ', a room I had not yet touched' : '')
+      ? 'feeling it out — the room ' + tag[room] + (fresh ? ', a room I had not yet touched' : '')
       : 'the whole shape of it, felt, and the round it keeps';
     prev = room;
   }
@@ -199,7 +199,7 @@
   seeker.style.transition = 'none';                     // place at the start without a glide
   moveTo(start); prev = start;
   rooms[start].g.classList.add('seen', 'here'); mapped = 1;
-  sayEl.textContent = 'under my hand where it was set going — ⌂ ' + tag[start];
+  sayEl.textContent = 'under my hand where it was set going — the room ' + tag[start];
   box.getBoundingClientRect();                          // flush, then restore the transition
   seeker.style.transition = '';
   seeker.classList.add('on');
@@ -275,7 +275,7 @@
     Object.keys(rooms).forEach(function (k) { rooms[k].g.classList.remove('here'); });
     rooms[r1].g.classList.add('here'); rooms[r2].g.classList.add('here');
     press(r1); if (r2 !== r1) press(r2);
-    if (r1 === r2) { box.classList.add('meet'); sayEl.textContent = 'they cross — ⌂ ' + tag[r1]; setTimeout(function () { box.classList.remove('meet'); }, 750); }
+    if (r1 === r2) { box.classList.add('meet'); sayEl.textContent = 'they cross — the room ' + tag[r1]; setTimeout(function () { box.classList.remove('meet'); }, 750); }
     else sayEl.textContent = 'two, each on a round of its own';
     prev1 = r1; prev2 = r2; at = (at + 1) % round1.length;
   }
