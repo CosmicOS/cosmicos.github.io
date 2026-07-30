@@ -15,7 +15,7 @@ const DIR = path.resolve(__dirname, '../_includes/listener');
 const FILES = ['founder','terse','wondering','wary','maker','doubter','plainer','cold','listener','builder','final'];
 const KEEPERS = ['Maren','Ren','Iso','Neru','Bram','Vess','Ona','Senn','Cael','Tamsin','Lio'];
 const TIDES = ['Ful','Sut','Slack','Neap','Bore','Ford','Race'];
-const ROOMS = ['Star','Kettle','Barge','Reed','Gull','Salt'];
+const ROOMS = ['Star','Kettle','Barge','Reed','Skeel','Salt'];
 
 const flags = [];
 const bad = (f, msg) => flags.push(`${f.padEnd(10)} ${msg}`);
