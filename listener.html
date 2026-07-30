@@ -207,6 +207,15 @@ title: "A listener's log"
 .row-file { color: #4a5f6c; font-style: italic; }
 .more-note { color: #61748a; font-style: italic; font-size: 13px; padding: 4px 0; }
 
+/* "copied, not read" — the line copies every pass faithfully and only reads some of it. What a keeper
+   passed over is still in the archive as marks; it is just unworked. Noting it is not filler: nothing
+   unnoted survives the four hundred passes to the next turn, so an honest log says what it set aside. */
+.copied { margin: 14px 0 4px; padding: 9px 0 2px; border-top: 1px solid #1d2a34; }
+.copied .cp-label { font-family: "inconsolataregular","Courier New",monospace; font-size: 66%;
+  text-transform: uppercase; letter-spacing: .2em; color: #6c8494; margin-bottom: 7px; }
+.copied .cp-item { color: #93a5b1; font-size: 93%; line-height: 1.5; padding: 1px 0 1px 1.1em; text-indent: -1.1em; }
+.copied .cp-item::before { content: "\2014\00a0"; color: #4a5f6c; }
+
 /* the listener's own hand (early sections, pictorial) */
 .row.hand { font-size: 17px; color: #cdd9e2; padding: 2px 0; letter-spacing: 1px; }
 /* `.row hand` conflated two jobs: the audit-hands contract, and PICTORIAL styling at 17px meant for her
@@ -347,6 +356,7 @@ title: "A listener's log"
       <a href="#p388"><b>388</b> the message can redefine how a sign reads (quotation / meta-linguistic self-edit)</a>
       <a href="#p400"><b>400</b> search-in-a-list (indexOf), returning "not found"</a>
       <a href="#p411"><b>411</b> rational division; the constants π and e; approximate ("near enough") equality</a>
+      <a href="#p417"><b>417</b> exponentiation, fractional powers, float equality; e derived as a series</a>
       <a href="#p423"><b>423</b> the imaginary unit i (i²=−1); Euler’s identity, e^{iπ} + 1 = 0</a>
       <div class="idx-arc">VII · pure functions, logic, graphs</div>
       <a href="#p427"><b>427</b> syntactic shorthand (macros / multi-argument lambda)</a>

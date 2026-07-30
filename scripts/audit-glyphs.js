@@ -119,33 +119,19 @@ for (const f of files) {
   }
 }
 
-/* 3b. FALLBACK COHERENCE.  The text inside a `.sg` span is the no-JS fallback — the renderer overwrites it —
-   so it is invisible in normal reading and drifts silently.  It is NOT harmless: it is what a source-reader
-   sees, and mis-reading a fallback as "the mark" is how ▮/⬥ were mis-diagnosed three times in one session.
-   Two rules:  a sign is drawn ONE way (at most one shape, plus optionally its coined word);  and a shape means
-   ONE sign — unless those signs ARE THE SAME MARK ON THE WIRE, i.e. identical scrawl in sign_scrawl.json (10
-   such aliases exist, e.g. `true:*`/`map`).  Sharing a coined WORD is NOT sufficient and was my first, wrong
-   rule: `?` (f150) and `lambda` (f15e) are both cut "maker" but are different marks, so one shape for both
-   claimed they look alike when they do not.  A fallback depicts the MARK, so the wire decides, not the word. */
+/* 3b. NO FALLBACK TEXT AT ALL.  A `.sg` span's contents are overwritten by the renderer, so anything typed
+   inside it is invisible in normal reading, drifts silently, and is read by a source-reader as if it were the
+   mark.  That misreading happened four times.  The old scheme kept a stand-in shape per sign and policed its
+   coherence; the shapes were invented dingbats, `data-s` already names the sign truly, and the "no-JS
+   fallback" they were held to provide protects nothing (without JS every `.row[data-code]` exhibit is an empty
+   div, so the page has no message in it either way — a blank span makes that failure honest).  Killed 07-29,
+   user's call.  A `.sg` span must now be EMPTY. */
 {
-  const bySign = {}, byShape = {}, coined = {};
   for (const f of files) {
     const src = fs.readFileSync(path.join(DIR, f), 'utf8');
-    for (const m of src.matchAll(/<span class="gl sg" data-s="([^"]*)">([^<]*)<\/span>/g)) {
-      (bySign[m[1]] = bySign[m[1]] || new Set()).add(m[2]);
-      (byShape[m[2]] = byShape[m[2]] || new Set()).add(m[1]);
-    }
-  }
-  for (const [sign, set] of Object.entries(bySign)) {
-    const shapes = [...set].filter(x => !/[a-z]/i.test(x));
-    if (shapes.length > 1) flags.push(`sign "${sign}" is drawn ${shapes.length} ways: ${shapes.join(' ')} — pick one`);
-  }
-  for (const [shape, set] of Object.entries(byShape)) {
-    if (set.size < 2 || /[a-z]/i.test(shape)) continue;
-    const scrawls = new Set([...set].map(s => SCRAWL[s]));
-    if (scrawls.size !== 1 || scrawls.has(undefined))
-      flags.push(`shape ${shape} is the fallback for ${set.size} signs (${[...set].join(', ')}) ` +
-                 `that are DIFFERENT marks on the wire — a fallback depicts the mark, so one shape, one mark`);
+    for (const m of src.matchAll(/<span class="gl sg" data-s="([^"]*)">([^<]+)<\/span>/g))
+      flags.push(`${f}: .sg data-s="${m[1]}" contains "${m[2]}" — a .sg span must be empty; ` +
+                 `the renderer fills it, and typed contents are read as the mark and are wrong`);
   }
 }
 
