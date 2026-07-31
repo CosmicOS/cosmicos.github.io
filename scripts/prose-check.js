@@ -19,7 +19,7 @@
 const fs = require('fs'), path = require('path');
 const dir = path.resolve(__dirname, '..', '_includes/listener');
 // document order = the {% include %} order in listener.html
-const ORDER = ['founder', 'terse', 'wondering', 'wary', 'maker', 'doubter', 'plainer', 'cold', 'listener', 'builder', 'final'];
+const ORDER = require('./arc-order');
 
 // structural glyphs legitimately hand-typed in prose (notation, not sign-references)
 const STRUCT = new Set([...'˩˨˦˥⟅⟆⟦⟧᚛᚜▪▫●◦◌⬚○◔·—–…“”‘’×÷≠≤≥→←↔⇛«»▩✱']);

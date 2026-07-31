@@ -5,7 +5,7 @@
 'use strict';
 const fs=require('fs'),path=require('path');
 const dir=path.resolve(__dirname,'..','_includes/listener');
-const ORDER=['founder','terse','wondering','wary','maker','doubter','plainer','cold','listener','builder','final'];
+const ORDER=require('./arc-order');
 const P={
   foreshadow:/\bthe someone\b|\ba someone\b|is coming\b|meant to (live|walk|rise|be made|be spoken|hold)|waiting, on|the one (who walks|at the (end|far))|someone is expected|what (the|it) .{0,25}(is for|was for)\b/gi,
   mortality:/\bbones now\b|\bis gone\b|will not (see|live to see)|across our deaths|dying hand|hand to (failing|dying) hand|the watch .{0,12}(gone )?(cold|dark)|\bdust\b|set down (her|his) pen|laid down (her|his) pen/gi,

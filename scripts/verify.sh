@@ -32,7 +32,13 @@ step() { printf '\n\033[1m── %s ──\033[0m\n' "$1"; }
 # data-code read a stale table, could not find the new statement, and reported a show-before-coin
 # violation that did not exist (hit 07-24 on §544). A gate that cries wolf gets prose "fixed" to
 # satisfy it, which is worse than no gate. Cheap and idempotent, so just run it first.
-step "0/12  build-frags (refresh the wire table the audits resolve against)"
+step "0/12  prose -> arc, then build-frags (refresh the wire table the audits resolve against)"
+# The diary's SOURCE is _prose/*.html (the keeper's words) + _prose/*.blocks.json (the exhibits).
+# _includes/listener/*.html is GENERATED from those and must not be hand-edited; regenerate first so
+# every gate below reads what the prose actually says.  The splice asserts an exact round-trip, which
+# is what stops an edit from silently dropping a wire quote (it happened on 07-30 and all 12 gates
+# passed the corrupted files).
+node scripts/prose.js build
 node scripts/build-frags.js > /dev/null
 
 step "1/12  prose-check (coined tokens introduced before use)"
@@ -50,6 +56,7 @@ node scripts/audit-watch.js
 
 step "5/12  audit-glyphs (no fabricated marks: coins are words, signs are .sg)"
 node scripts/audit-glyphs.js
+node scripts/audit-notation.js
 
 step "6/12  audit-values (every "gives" row is one the keeper can settle herself)"
 node scripts/audit-values.js
@@ -73,3 +80,7 @@ step "12/12  render-check (real post-JS DOM through headless Chrome)"
 scripts/render-check.sh
 
 printf '\n\033[1;32m✓ all gates passed\033[0m\n'
+
+# The gates check the DATA. Green says nothing about the prose, and green is when the register slips.
+# Answer this by READING what you wrote, never by remembering how you wrote it. Recall says yes every time.
+printf '\033[1;33mDID YOU USE THE WRITING CHECKLIST?\033[0m (plans/README.md, top — go read the lines)\n'

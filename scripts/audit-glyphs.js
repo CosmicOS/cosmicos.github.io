@@ -105,7 +105,7 @@ for (const f of files) {
    Document order matters: the coin must come first, which prose-check enforces separately. */
 {
   const coined = new Set();
-  const ORDER = ['founder','terse','wondering','wary','maker','doubter','plainer','cold','listener','builder','final'];
+  const ORDER = require('./arc-order');
   for (const f of ORDER) {
     const src = fs.readFileSync(path.join(DIR, f + '.html'), 'utf8');
     const lineOf = i => src.slice(0, i).split('\n').length;

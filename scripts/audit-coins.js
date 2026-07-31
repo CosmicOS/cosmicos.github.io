@@ -7,7 +7,7 @@
 const fs = require('fs'), path = require('path');
 const w = require(path.resolve(__dirname, '../_includes/wire_quotes.json'));
 const DIR = path.resolve(__dirname, '../_includes/listener');
-const FILES = ['founder','terse','wondering','wary','maker','doubter','plainer','cold','listener','builder','final'];
+const FILES = require('./arc-order');
 const contains = (p, s) => Array.isArray(p) ? p.some(x => contains(x, s)) : String(p) === s;
 const unesc = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

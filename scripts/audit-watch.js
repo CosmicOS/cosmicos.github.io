@@ -12,7 +12,7 @@
    Exit 1 on any violation.  Usage: node scripts/audit-watch.js */
 const fs = require('fs'), path = require('path');
 const DIR = path.resolve(__dirname, '../_includes/listener');
-const FILES = ['founder','terse','wondering','wary','maker','doubter','plainer','cold','listener','builder','final'];
+const FILES = require('./arc-order');
 const KEEPERS = ['Maren','Ren','Iso','Neru','Bram','Vess','Ona','Senn','Cael','Tamsin','Lio'];
 const TIDES = ['Ful','Sut','Slack','Neap','Bore','Ford','Race'];
 const ROOMS = ['Star','Kettle','Barge','Reed','Skeel','Salt'];
