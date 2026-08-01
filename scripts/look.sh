@@ -46,8 +46,9 @@ GEOM=$(timeout 60 "$CHROME" --headless=new --no-sandbox --disable-gpu \
 [ -n "$GEOM" ] || { echo "could not find $SEL on the page" >&2; exit 1; }
 H=$(echo "$GEOM" | cut -d' ' -f2); VW=$(echo "$GEOM" | cut -d' ' -f3)
 
+# 160px of slack: H is the ELEMENT's height, but it still sits below its ancestors' padding.
 timeout 180 "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
-  --window-size="$WIDTH",$(( H + 40 )) --virtual-time-budget=18000 \
+  --window-size="$WIDTH",$(( H + 160 )) --virtual-time-budget=18000 \
   --run-all-compositor-stages-before-draw \
   --screenshot="$OUT" "http://127.0.0.1:$PORT/.look-iso.html" >/dev/null 2>&1
 
