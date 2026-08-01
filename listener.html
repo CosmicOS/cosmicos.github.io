@@ -141,6 +141,62 @@ title: "A listener's log"
   color: #8aa495; border-top: 1px solid #2a352f; padding-top: 7px;
 }
 
+/* ---- four page-forms that belong to ONE keeper each (plans/LISTENER_CHARACTERS.md §7).
+   They are how the hands differ on the page rather than in their sentences. Do not spread them:
+   a form used by everybody is a template, not a voice. ---- */
+
+/* REN's cut ledger (§239 on). What she copied and did not work, entered as a coded row with a key
+   cut at the front of it. Inherited: Vess keeps it through the famine when she has no hand for prose,
+   and Ona reads the key a hundred and sixty passes later to find out what an empty column meant. */
+.tally {
+  font-family: "inconsolataregular","Courier New",monospace;
+  background: rgba(10,14,20,0.7); border-left: 2px solid #4a4332;
+  padding: 10px 16px; margin: 12px 0; color: #cbbf9e; font-size: 92%; line-height: 1.75;
+}
+.tally .key { color: #8a7f63; font-size: 88%; font-style: italic; display: block; margin-bottom: 6px; }
+.tally .row { display: block; white-space: pre; overflow-x: auto; }
+.tally .gap { color: #6b6250; }               /* a column she could not fill, at its own width */
+
+/* NERU's gauge (§310–345). The vine's condition and whose hands read it, entered as an instrument
+   line under the stamp, every entry, whatever it costs her to fill it. Exactly one echo afterwards
+   (Vess, the vine dead) and then it stops. If it spreads, cut it back. */
+.gauge {
+  font-family: "inconsolataregular","Courier New",monospace;
+  font-size: 76%; letter-spacing: 0.12em; color: #7f9a86;
+  margin: -2px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #24332b;
+}
+.gauge .k { color: #5f7a68; text-transform: uppercase; letter-spacing: 0.2em; }
+.gauge .hand { color: #a08d6a; }              /* whose hands read it, once it stops being hers */
+
+/* TAMSIN's captions (§559 on). She reads the raised figures by hand, and the caption is what the
+   hand found, in the order it found it — no verbs, no argument. A different grammar from her prose,
+   set right under the figure it belongs to. */
+.cap {
+  font-family: "inconsolataregular","Courier New",monospace;
+  font-size: 88%; line-height: 1.7; color: #b9a98c;
+  margin: -4px 0 14px; padding-left: 14px; border-left: 2px solid #3d3628;
+}
+
+/* CAEL's correspondence (§505–540). She keeps the book's only live friendship, across the water, and it
+   runs both ways. When a letter matters the letter is on the page in the other hand's own cadence, not
+   summarized in hers — the one keeper whose entries are sometimes somebody else's words. */
+.letter {
+  font-family: "inconsolataregular","Courier New",monospace;
+  font-size: 92%; line-height: 1.85; color: #c3ccd6;
+  background: rgba(10,14,20,0.55); border: 1px solid #2b3540; border-radius: 3px;
+  padding: 12px 18px; margin: 12px 0;
+}
+.letter .sig { display: block; margin-top: 8px; color: #8095a6; }
+/* one line of a block that is LINES rather than prose — a quoted letter, a bench list. Never a mark. */
+.ln { display: block; }
+
+/* ISO's later hand (§271–306). She marks her guesses as noticing, so she is the one who comes back
+   and writes against herself. Dated, bracketed, in the entry it corrects. */
+.later {
+  font-family: Georgia, "Iowan Old Style", serif; font-size: 96%; line-height: 1.55;
+  color: #b9b2c6; margin: 10px 0; padding-left: 14px; border-left: 2px solid #3a3348;
+}
+
 .frag {
   font-family: "inconsolataregular","Courier New",monospace;
   background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px;

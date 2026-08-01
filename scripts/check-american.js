@@ -19,6 +19,9 @@ const re=new RegExp('\\b('+BR.join('|')+')\\b','gi');
 for(const f of files){
   const s=fs.readFileSync(f,'utf8').split('\n');
   s.forEach((line,i)=>{let m;re.lastIndex=0;
+    // Markdown blockquote = somebody else's words, verbatim. VOICE_RESEARCH.md is full of them, and
+    // correcting another writer's spelling would falsify the sample. Only quoted lines are exempt.
+    if(/^\s*>/.test(line))return;
     while((m=re.exec(line))){bad++;console.log(`    ${f}:${i+1}  "${m[0]}"`);}});
 }
 if(bad){console.log(`✗ ${bad} British spelling(s) — American English only`);process.exit(1);}

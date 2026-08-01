@@ -41,6 +41,20 @@ const INVENTORY = [
     what: 'the closing empty cup that ends a unary run — "◦ for the empty one that ends the run" (§214).',
     gate: 'inventory-marks --check' },
 
+  /* Ren's cut ledger (§239) and what it grows into. A keeper's OWN bookkeeping notation: it never claims to
+     be anything transmitted, which is why it cannot leak. It is also the book's one heirloom — Vess keeps it
+     through the famine when she has no hand for prose, and Ona walks to the front of the book to read the key
+     at §458. See plans/LISTENER_CHARACTERS.md §7. */
+  { cls: 'key',      kind: 'HERS',      shapes: null, est: 'p239',
+    what: 'the translation key Ren cuts at the front of the book so her shorthand survives her: r read and worked, c copied and not worked, b blank.',
+    gate: 'inventory-marks --check' },
+  { cls: 'row',      kind: 'HERS',      shapes: null, est: 'p239',
+    what: 'one line of that ledger: pass, the mark it was about, then the counts. Free text — words and numbers, never a mark.',
+    gate: 'inventory-marks --check' },
+  { cls: 'gap',      kind: 'HERS',      shapes: ['(','·',')'], est: 'p388',
+    what: 'Vess\'s ruled blank: a ledger column she cannot fill, ruled to the WIDTH of the thing that is missing and left empty. Closed inventory on purpose — it is punctuation standing for an absence, and the moment a shape appears in here it is claiming to be the lost mark, which is exactly the fabrication this file exists to stop.',
+    gate: 'inventory-marks --check' },
+
   { cls: 'bit',      kind: 'STRUCTURE', shapes: ['▪','▫'],
     what: 'the wire\'s binary digits: ▪ one, ▫ none. House alphabet for an atom\'s number, not a sign.',
     gate: 'inventory-marks --check' },
@@ -67,6 +81,14 @@ const INVENTORY = [
   { cls: 'seekmap-say', kind: 'LABEL',  shapes: null, what: 'gloss in the seeker map.',               gate: '—' },
   { cls: 'val',      kind: 'LABEL',     shapes: null, what: 'a value shown in a control/table.',      gate: '—' },
   { cls: 'tu-k',     kind: 'LABEL',     shapes: null, what: '"Watch ended:"/"Watch begins:" keys in a taking-up record.', gate: 'audit-watch' },
+  { cls: 'ln',       kind: 'LABEL',     shapes: null,
+    what: 'one line of a block that is LINES rather than prose — a letter quoted into Cael\'s watch in the other hand\'s own cadence, or an item on Tamsin\'s bench list. Plain text, never a mark.', gate: '—' },
+  { cls: 'sig',      kind: 'LABEL',     shapes: null,
+    what: 'who signed that letter. An initial, because both correspondents sign that way and one of them has been dead three hundred passes.', gate: '—' },
+  { cls: 'k',        kind: 'LABEL',     shapes: null,
+    what: 'the field name in Neru\'s gauge line ("Vine") — the instrument reading she rules at the head of every entry from §310. A key, like tu-k, not a mark.', gate: '—' },
+  { cls: 'hand',     kind: 'LABEL',     shapes: null,
+    what: 'the other half of that gauge: WHOSE hands read it. Plain text, and the whole point of the field — read down her column and the answer stops being "mine".', gate: '—' },
 ];
 const BY_CLS = Object.fromEntries(INVENTORY.map(r => [r.cls, r]));
 

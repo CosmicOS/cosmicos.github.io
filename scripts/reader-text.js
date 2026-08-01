@@ -33,7 +33,17 @@ let t = body
   .replace(/<div class="(more-note|cp-label|cp-item|rb-label|rb-note|peel-say|tu-k)">/g, '  · ')
   .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '')
   .replace(/<a class="anchor"[\s\S]*?<\/a>/g, '')
-  .replace(/<[^>]+>/g, '');
+  /* A blind reviewer on 07-31 filed two of its findings against this exporter rather than the book:
+     an italicized quotation read as a doubled word ("as as before"), and ~15 run-together lines where
+     adjacent spans lost the space between them ("bothfails fails fails holds"). Both are transport
+     damage, and both landed in the review as prose defects. Mark emphasis, and keep tags apart. */
+  .replace(/<em>([\s\S]*?)<\/em>/g, '“$1”')
+  /* spans the stylesheet lays out as BLOCKS — a ledger row, a line of a letter, an item on a bench list.
+     Stripping the tag runs them together into one paragraph, which is not what any reader sees. */
+  .replace(/<span class="(ln|sig|row|key)"[^>]*>/g, '\n  ')
+  .replace(/<\/span>\s*<span/g, '</span> <span')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/[ \t]{2,}/g, ' ');
 
 t = t.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<')
      .replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&mdash;/g, '—');
@@ -47,7 +57,7 @@ t = [...t].map(c => {
   return seen.get(c);
 }).join('');
 
-t = t.replace(/#(?=\n)/g, '')            // strip the heading anchor glyph
+t = t.replace(/#[ \t]*(?=\n)/g, '')      // strip the heading anchor glyph (tags now leave a space behind it)
      .replace(/\n{3,}/g, '\n\n').replace(/[ \t]+\n/g, '\n').replace(/@@@/g, '').replace(/@@/g, '');
 
 /* NO LEGEND.  An earlier version appended one — "these N cells are distinct recurring marks, no meanings
