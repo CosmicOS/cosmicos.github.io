@@ -53,7 +53,12 @@ const REASONS = {
 /* marks and words that are visibly the keeper's, so a row carrying one cannot be mistaken for a quote.
    `.gl sg` / `.bit` / `.cup` are deliberately ABSENT: those are the message's signs and the wire's own
    atoms, and a row made only of them reads as the wire itself. */
-const HER_MARK = /class="(tk|tk z|gl w|step|head|coin|say|lbl)"|class="gl"[ >]|style="/;
+const HER_MARK = /class="(tk|tk z|gl w|step|head|coin|say|lbl|does|keeps|beat)"|class="gl"[ >]|style="/;
+/* `does` added 08-01: Lio's ledger column of her OWN WORDS for what an engine-order does
+   ("fetch the first given"), declared free-text in MARK_INVENTORY and never a mark. Those rows
+   used to qualify through `style="` — inline widths that were removed as part of killing
+   hand-set alignment. A row carrying her sentences cannot read as a wire quote; the styling
+   attribute was never the thing that made it hers. */
 
 const files = fs.readdirSync(DIR).filter(f => f.endsWith('.html'));
 const flags = [];

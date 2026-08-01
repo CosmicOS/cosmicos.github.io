@@ -26,6 +26,11 @@ const body = html.slice(html.indexOf('<div class="diary"') >= 0 ? html.indexOf('
 
 // keep labels off the data they label, and keep entries apart
 let t = body
+  /* A FOLD'S LINE BREAKS ARE ITS CONTENT. `data-fold` renders a nested statement as indented
+   * lines — §501's rule table is "a small table with nothing in it but lines of one shape", and the
+   * shape is only visible because it breaks. Stripping the <br> collapsed it to one unbroken wall,
+   * so a blind reviewer would have judged a figure the page does not show (08-01). Indentation is
+   * carried by margin-left on a span, which no text dump can see, so the break alone must survive. */
   .replace(/<div class="stamp">/g, '\n\n@@@')
   .replace(/<h2>/g, '\n@@')
   .replace(/<\/(p|div|figure|li|h2)>/g, '\n')
@@ -53,9 +58,13 @@ let t = body
   /* spans the stylesheet lays out as BLOCKS — a ledger row, a line of a letter, an item on a bench list.
      Stripping the tag runs them together into one paragraph, which is not what any reader sees. */
   .replace(/<span class="(ln|sig|row|key)"[^>]*>/g, '\n  ')
-  .replace(/<\/span>\s*<span/g, '</span> <span')
+  /* `[ \t]*`, NOT `\s*`. A fold breaks a line with a real newline plus indent (listener.js:91),
+   * not a <br>, and that newline sits between two spans — so eating it here collapsed §501's rule
+   * table into one unbroken wall. The table IS "lines of one shape"; the lines are the content.
+   * Caught 08-01 while preparing a blind read, before the reviewer saw the mangled version. */
+  .replace(/<\/span>[ \t]*<span/g, '</span> <span')
   .replace(/<[^>]+>/g, ' ')
-  .replace(/[ \t]{2,}/g, ' ');
+  .replace(/(?<!^)[ \t]{2,}/gm, ' ');   // keep LEADING whitespace: a fold's indent is its nesting depth
 
 t = t.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<')
      .replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&mdash;/g, '—');

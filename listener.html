@@ -67,6 +67,7 @@ title: "A listener's log"
 .msg-line + .msg-line{ padding-top:8px; border-top:1px solid #16202a; }
 .msg-line .lbl{ display:block; letter-spacing:.16em; font-size:11px; text-transform:uppercase; color:#5f7f90; margin-bottom:4px; }
 
+
 .diary-tag {
   text-align: center; font-family: "inconsolataregular","Courier New",monospace;
   font-size: 78%; letter-spacing: 0.22em; text-transform: uppercase;
@@ -98,6 +99,77 @@ title: "A listener's log"
   font-family: Georgia, "Iowan Old Style", serif; font-weight: normal;
   color: #f0ece2; text-shadow: none; font-size: 146%; margin: 0 0 10px;
   cursor: pointer;
+}
+/* ── THE MARKS NOW HAVE A FONT OF THEIR OWN.
+   The four tone letters were chosen deliberately (65f2610: "literally tones, and legible at
+   flood-run density") and the whole notation is a closed set declared in MARK_INVENTORY.md.
+   But inconsolata, the page face, contains NONE of it — not the tones, cups, bits, tally, slots
+   or stems — so every mark was being drawn by whatever fallback the reader's device picked:
+   a different shape on a phone than on a desk, different advance widths (which is why columns
+   that should be monospace did not line up), and tofu on any device without coverage.
+   listener-marks.woff is a 1.8KB subset carrying exactly those 17 characters and nothing else,
+   so the marks render the same everywhere and the inventory is the charset. ── */
+@font-face {
+  font-family: 'listenermarks';
+  src: url('{{site.baseurl}}/fonts/listener-marks.woff') format('woff');
+  font-weight: normal; font-style: normal; font-display: block;
+}
+.tn, .tones, .flood-run, .bit, .cup, .tk, .gl, .gap, .sheets .row, .binstack .fig,
+.msg-view, .peel, .reduce, .row {
+  font-family: 'listenermarks', "inconsolataregular", "DejaVu Sans Mono", "Courier New", monospace;
+}
+
+/* MAREN's TWO SHEETS (§193). One stream written twice; the lower page slid along until the
+   marks stand over their own. Monospace with white-space:pre so the columns are real columns —
+   the whole point is seeing them fail to stack, and then stack. */
+.sheets { background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:12px 14px;
+  margin:10px 0; overflow-x:auto; }
+.sheets .row { white-space:pre; line-height:2.0; word-spacing:0; letter-spacing:1px; }
+.sheets .pc { letter-spacing:0; padding:0 0.45em; }
+.sheets .lbl { display:inline-block; width:5.5em; letter-spacing:0; font-style:normal;
+  color:#6f8494; font-size:88%; text-align:right; padding-right:1.1em; }
+.sheets .say { display:block; letter-spacing:0; word-spacing:normal; font-style:italic;
+  color:#8fa2ad; font-size:90%; margin:2px 0 12px 5.5em; white-space:normal; }
+.sheets .row:last-child .say { margin-bottom:0; }
+
+/* ── THE PASS HEAD. Until 08-01 an entry opened with a stamp and a serif chapter title, and
+   nobody inside the fiction writes chapter titles. But the book already says three times what
+   this actually is — a FINDING AID, ruled at the head of the page so a later hand can locate a
+   night without reading the whole book: Ona "go back and cut it in at the head of this pass,
+   deep and big, where a fellow hunting for it will walk into it"; Vess "wrote across the top of
+   the page what's missing"; Lio "I've cut the two columns into the press at the head of this
+   pass." And Maren rules it in the first entry: "I've headed it for the pass, the way the
+   station heads everything."
+   So: a semi-formal divider — a ruled line across the page, the pass, and her note beside it.
+   Kin to the taking-up record and deliberately lighter: that one is a station form filled at a
+   handoff, this one is a keeper's own hand at the top of a night. ── */
+.entry .stamp {
+  border-top: 1px solid #2f4a5a;
+  padding: 13px 26px 0; margin: 0 -26px 8px;      /* negative margin = the rule runs edge to edge */
+}
+.entry.dispatch .stamp { border-top-color: #33513a; }
+/* the fields that make the head a form rather than a title, and both have to be things somebody
+   actually wanted written down. WHO WAS ON WATCH, read off the text and never invented. And the
+   CYCLE, the tablers' long reckoning, which is what a record is dated by — so §385 lands twice,
+   the head saying "unreckoned" for the whole famine because nobody crossed to bring it.
+   Maren's heads carry no cycle: the form was not finished until Ren cut the taking-up record at
+   232 and put the reckoning on it. Forms grow.
+   NOT a sky-sound field, which was the first thing I put here and was wrong three ways — that
+   line lives in the REGISTER, at the FOOT, and is explicitly not ruled: "it sits at the foot of
+   the page because it isn't anybody's column." A form has fields for what the station wants, and
+   the station does not want this. That is the premise. */
+.passfields {
+  font-family: "inconsolataregular","Courier New",monospace;
+  font-size: 74%; letter-spacing: 0.06em; color: #90a8b8; margin: 0 0 9px;
+}
+.passfields .pf-k {
+  text-transform: uppercase; letter-spacing: 0.18em; color: #5f7f90;
+  margin-right: 0.6em; }
+.passfields .pf-k + * , .passfields .pf-k ~ .pf-k { margin-left: 1.6em; }
+.entry > h2 {
+  font-family: "inconsolataregular","Courier New",monospace;
+  font-size: 104%; font-weight: normal; letter-spacing: 0.02em;
+  color: #cbd8e2; text-shadow: none; margin: 0 0 12px; clear: both;
 }
 /* click a header to pin the URL to its anchor (and copy the link where allowed) */
 .entry h2 .anchor-link {
@@ -155,7 +227,9 @@ title: "A listener's log"
 }
 .tally .key { color: #8a7f63; font-size: 88%; font-style: italic; display: block; margin-bottom: 6px; }
 .tally .row { display: block; white-space: pre; overflow-x: auto; }
-.tally .gap { color: #6b6250; }               /* a column she could not fill, at its own width */
+.tally .gap { display: inline-block; width: 1.15em; border-bottom: 1px solid #6b6250;
+  vertical-align: baseline; }   /* a column she could not fill: ruled to the width of the missing
+  thing and left empty — her own words. Drawn, never typed; the span holds no characters at all. */
 
 /* NERU's gauge (§310–345). The vine's condition and whose hands read it, entered as an instrument
    line under the stamp, every entry, whatever it costs her to fill it. Exactly one echo afterwards
@@ -229,10 +303,80 @@ title: "A listener's log"
 .peel-say { color: #8fb0c0; font-size: 80%; font-style: italic; margin-top: 3px; }
 /* §267: the figures set in a right-aligned column so the place-columns line up and the reader
    can read DOWN each column and watch it toggle (units every step, twos every two, …). */
-.binstack { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 1.7; }
-.binstack .fig { display: inline-block; width: 5ch; text-align: right; letter-spacing: 3px; }
+/* §267: the short figures cut one under the next, RIGHT EDGE SQUARE — "read down the right-hand
+   column, on, off, on, off, the whole way." The alignment IS the lesson, so it must not depend on a
+   width anyone has to compute. This was `width: 5ch`, and 5ch was measured against a font that does
+   not contain the boxes (`.fig` renders in `listenermarks`, a 17-character subset with no digit) —
+   so the four-box run for eight overflowed, wrapped, and left a lone ▫ beside the word "eight",
+   which reads as none. A max-content grid column is exactly as wide as the widest run, in any font,
+   and cannot wrap. Nothing to keep in step by hand. */
+.binstack { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 1.7;
+  display: grid; grid-template-columns: max-content max-content; column-gap: 1.6em; }
+.binstack .row { display: contents; }
+.binstack .fig { text-align: right; letter-spacing: 3px; white-space: nowrap; }
 .binstack .bit { color: #bfe8c8; }
-.binstack .say { margin-left: 1.6em; color: #8fb0c0; font-style: normal; font-size: 100%; }
+/* A GLOSS BESIDE HER MARKS (Ren's readings §239–260, Senn's walk and tables §501). `.say` had NO
+   rule inside a plain `.rows` — only .sheets/.binstack/.reduce ever styled it — so in 16 rows it
+   inherited the marks' font, size, letter-spacing AND word-spacing, with no gap: "▪standing at the
+   last cell" ran the words straight off the notation, and a wrapped line started again at the far
+   left, beneath the marks, merging one row's words into the next row's figure. inline-block gives
+   the gloss its own column, so it wraps inside itself and never under the notation. Found by Paul
+   08-01, looking at a screenshot I had never taken. */
+.rows .row.hand .say { display: inline-block; vertical-align: top; margin-left: 1.1em;
+  font-size: 70%; font-style: italic; letter-spacing: 0; word-spacing: normal; color: #8fa2ad; }
+
+.binstack .say { color: #8fb0c0; font-style: normal; font-size: 100%; }
+/* §310: NERU'S DESCENT, listed the way she'd list a bad tide — indented going in, level coming out.
+   The V IS the content, so a row must never wrap: a wrapped line at the deepest indent destroys the
+   turn, and one at the outermost destroys the return. nowrap guarantees the shape whatever the text
+   or the font; the box already scrolls if it must. Depth stays per-row (it is data, not styling). */
+.descent .row { white-space: nowrap; }
+
+/* §587: Lio's memory-that-keeps-time, five columns — what she says, the mark, whether a beat came,
+   the verb, what it holds after. The beat column was a centered `width:7em` picked so "a beat" and
+   "— no beat —" would occupy the same space; a max-content column does that by measuring them. */
+.rows.beats { display: grid; grid-template-columns: repeat(4, max-content) minmax(0,1fr);
+  column-gap: 1em; align-items: baseline; row-gap: 3px; }
+.rows.beats .row { display: contents; }
+.rows.beats .beat { color: #bfe8c8; text-align: center; }
+.rows.beats .beat.none { color: #7f8598; }
+.rows.beats .keeps { color: #c9a3ff; }
+
+/* §605: Lio's ledger of the engine's own orders — mark, what the order does, the trace it left.
+   Three columns, previously three inline `width:3.5em/20em` boxes. Same reason as `.labeled`. */
+.rows.ledgered { display: grid; grid-template-columns: max-content max-content minmax(0,1fr);
+  column-gap: 1.4em; align-items: baseline; row-gap: 3px; }
+.rows.ledgered .row { display: contents; }
+.rows.ledgered .does { color: #7f8598; }
+.rows.ledgered .trace { color: #bfe8c8; white-space: nowrap; }
+.rows.ledgered .trace .gp { display: inline-block; width: 9px; }
+
+/* A LABELED TABLE (Tamsin's gate answers §564-579, Lio's §587). The label column used to be an
+   inline `width:5.5em` per row — a number that happened to fit "both-knot" and would silently
+   misalign the day a label grew. Same construction that corrupted §267. max-content sizes it to the
+   widest label in whatever font, and the marks keep their own column. */
+.rows.labeled { display: grid; grid-template-columns: max-content minmax(0,1fr);
+  column-gap: 1.4em; align-items: baseline; row-gap: 3px; }
+.rows.labeled .row { display: contents; }
+.rows.labeled .row.hand .lbl,
+.rows.beats .row.hand .lbl { display: inline; color: #c9a3ff; letter-spacing: 0;
+  word-spacing: normal; font-size: 76%; text-transform: none; margin-bottom: 0; }
+  /* beats `.rows .row.hand .lbl` (the §207 rule, 4 classes) on specificity — that one is a
+     block, uppercase caption, and these labels are her coined WORDS, which are never uppercase. */
+.rows.labeled .fig { white-space: nowrap; }
+
+/* §501: SENN'S WALK and her four tables — a figure with a gloss beside it. The gloss must start at
+   the same place on every line, and it cannot: the reading-place box (`.head`) has width, so a row
+   with the stone on cell 4 is wider than one with it on cell 3, and inline-block glosses came out
+   ragged. Alignment across rows needs the column on the CONTAINER, which is what `.binstack` already
+   does — same pattern, reused: rows go `display:contents`, the marks live in a `.fig`, and the first
+   column is max-content so it is exactly as wide as the widest figure. */
+.rows.glossed { display: grid; grid-template-columns: max-content minmax(0,1fr);
+  column-gap: 1.2em; align-items: baseline; row-gap: 4px; }
+.rows.glossed .row { display: contents; }
+.rows.glossed .fig { white-space: nowrap; }
+.rows.glossed .say { margin-left: 0; }
+
 /* §288: the keeper's OWN worked reduction (her scratch, not transmitted wire) — pour a value into a
    maker's slots and watch it reduce, so the reader sees the substitution the message only asserts. */
 .reduce { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 2; }
@@ -279,6 +423,14 @@ title: "A listener's log"
    quote — must be the size of the quote it sits with, or it reads as a different kind of thing. Same
    notation, same size (07-24). The wider question of whether 17px is right for the drawings is P7b. */
 .row.hand.ledger { font-size: 12px; letter-spacing: 0; }
+/* a label inside a hand row (§207: the run, against the mark she sets down instead). `.row` carries
+   word-spacing .4em and `.row.hand` letter-spacing 1px — both for MARKS — and words inherit them and
+   come out spaced like notation. Reset that, and put the label on its own line exactly as `.frag .lbl`
+   does — so the marks start at the box edge and lay directly under the pieces in the frags above,
+   which is the comparison the exhibit exists to make. A right-aligned label column (the `.sheets`
+   treatment) indents the marks ~100px and breaks that alignment. */
+.rows .row.hand .lbl { display: block; letter-spacing: 0.16em; word-spacing: normal;
+  font-size: 60%; text-transform: uppercase; color: #5f7f90; margin-bottom: 4px; }
 .row.hand .tk { color: #ffd479; letter-spacing: 2px; }
 .row.hand .tk.z { color: #566572; letter-spacing: 0; }
 .row.hand .gp { display: inline-block; width: 7px; }
@@ -381,6 +533,58 @@ title: "A listener's log"
 .circuit-bar .sw.dark { background:#0a0e14; }
 .circuit-bar .sw.free { background:transparent; border-style:dashed; }
 .circuit-say { font-style:italic; color:#8a9b86; margin-left:6px; }
+/* ──────────────────────────────────────────────────────────────────────────────
+   NARROW SCREENS. The listener page had NO media query at all until 08-01 — it was
+   built and reviewed at desk width, and read on a phone the exhibits either ran off
+   the side or sat too small to work. Three separate faults, fixed here:
+     1. .frag was white-space:nowrap, so the founder's tone runs (§189/§193/§207 —
+        the six exhibits a reader meets FIRST) could only be seen by dragging sideways.
+     2. 52px of .entry padding out of a ~390px screen, taken off the exhibits.
+     3. 12px rows with 0.4em word-spacing: sized for a desk, not a hand.
+   Wire rows keep white-space:pre-wrap, so a statement still breaks rather than being
+   hidden behind a scrollbar the reader may never find.
+   ────────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .diary, .entry, .taking-up, .rows, .frag, .tally, .msg, .peel, .readback, .board, .letter, .cap
+    { box-sizing: border-box; max-width: 100%; }
+  .diary { padding: 0; }
+  .entry { padding: 14px 13px 15px; border-radius: 0 8px 8px 0; }
+  .entry.dispatch { padding: 11px 13px 12px; }
+  .entry .stamp { padding: 11px 13px 0; margin: 0 -13px 7px; }
+  .entry > h2 { font-size: 100%; margin-bottom: 10px; }
+  .entry p { font-size: 102%; }
+
+  /* the founder's raw runs: wrap them. They are a stream, not a structured row —
+     there is nothing to lose by breaking one, and everything to lose by hiding it. */
+  .frag { white-space: normal; overflow-x: hidden;
+          font-size: 96%; letter-spacing: 2px; padding: 10px 11px; }
+  /* the break has to go on the RUN, not the box: a tone stretch is one unbroken string of
+     modifier letters, and a container-level rule never reaches inside it. This is the same
+     recipe .frag.flood already uses, which is why the founder's big block wrapped and these
+     six did not. */
+  .frag .tones, .frag .tn, .msg-view, .msg-view .tn, .msg-view .scrawl {
+     white-space: normal; word-break: break-all; overflow-wrap: anywhere; }
+  .msg, .msg-line { max-width: 100%; }
+  .tones { letter-spacing: 2px; }
+
+  .rows, .peel, .msg, .readback { padding: 9px 10px; }
+  .row { font-size: 13px; line-height: 1.6; }
+  .row, .msg-view, .fold, .peel .rows { word-spacing: 0.22em; }
+  .reduce { line-height: 1.75; }
+
+  /* her ledger and her ruled blank keep their columns (white-space:pre), so give
+     them room by shrinking instead of wrapping — a broken column is a wrong column. */
+  .tally { padding: 9px 11px; font-size: 84%; }
+  .binstack { font-size: 92%; }
+  .binstack .say { margin-left: 1em; }
+
+  .taking-up { padding: 10px 12px 11px; font-size: 82%; letter-spacing: 0; }
+  .taking-up .tu-head, .taking-up .tu-creed { letter-spacing: 0.12em; }
+  .cap, .letter { padding-left: 10px; font-size: 90%; }
+  .letter { padding: 10px 12px; }
+  .board { padding: 10px 4px 8px; }
+}
+
 </style>
 
 <div class="diary">

@@ -51,8 +51,23 @@ const INVENTORY = [
   { cls: 'row',      kind: 'HERS',      shapes: null, est: 'p239',
     what: 'one line of that ledger: pass, the mark it was about, then the counts. Free text — words and numbers, never a mark.',
     gate: 'inventory-marks --check' },
-  { cls: 'gap',      kind: 'HERS',      shapes: ['(','·',')'], est: 'p388',
-    what: 'Vess\'s ruled blank: a ledger column she cannot fill, ruled to the WIDTH of the thing that is missing and left empty. Closed inventory on purpose — it is punctuation standing for an absence, and the moment a shape appears in here it is claiming to be the lost mark, which is exactly the fabrication this file exists to stop.',
+  { cls: 'beat',     kind: 'HERS',      shapes: null, est: 'p587',
+    what: 'Lio\'s §587 table: whether a beat came on this line, in her words ("a beat" / "no beat"). Free text. The `.none` modifier is the absent case, dimmed.',
+    gate: 'inventory-marks --check' },
+  { cls: 'beat none', kind: 'HERS',     shapes: null, est: 'p587',
+    what: 'the no-beat case of `.beat`, same column, dimmed. Free text.',
+    gate: 'inventory-marks --check' },
+  { cls: 'keeps',    kind: 'HERS',      shapes: null, est: 'p587',
+    what: 'Lio\'s §587 table: her verb for what the part then does with what it was told. Free text, never a mark.',
+    gate: 'inventory-marks --check' },
+  { cls: 'does',     kind: 'HERS',      shapes: null, est: 'p605',
+    what: 'Lio\'s ledger, middle column: what one engine-order DOES, in her words. Free text, never a mark.',
+    gate: 'inventory-marks --check' },
+  { cls: 'trace',    kind: 'HERS',      shapes: ['\u25aa','\u25ab',' '], est: 'p605',
+    what: 'Lio\'s ledger, right column: the trace of values that order left when she ran it. Her reading of a real run, so bits only.',
+    gate: 'inventory-marks --check' },
+  { cls: 'gap',      kind: 'HERS',      shapes: [], est: 'p388',
+    what: 'Vess\'s ruled blank: a ledger column she cannot fill, ruled to the WIDTH of the thing that is missing and left empty. EMPTY inventory on purpose: the blank is drawn by a rule in CSS, not by characters, so the moment ANY shape appears in here it is claiming to be the lost mark, which is exactly the fabrication this file exists to stop. It used to hold ( · ) as a stand-in for the rule, and a reader could not tell what it meant (Paul, 08-01).',
     gate: 'inventory-marks --check' },
 
   { cls: 'bit',      kind: 'STRUCTURE', shapes: ['▪','▫'],
@@ -60,6 +75,8 @@ const INVENTORY = [
     gate: 'inventory-marks --check' },
   { cls: 'cup o',    kind: 'STRUCTURE', shapes: ['⟅'],  what: 'an atom that OPENS a cup.',  gate: 'inventory-marks --check' },
   { cls: 'cup c',    kind: 'STRUCTURE', shapes: ['⟆'],  what: 'an atom that CLOSES a cup.', gate: 'inventory-marks --check' },
+  { cls: 'cup lo',   kind: 'STRUCTURE', shapes: ['⟦'],  what: 'opens a LIST (listener.js:79, `vector`). Renderer-generated, so it was invisible to this inventory until §501 hand-drew Senn\'s own table in the same shape (08-01).', gate: 'inventory-marks --check' },
+  { cls: 'cup lc',   kind: 'STRUCTURE', shapes: ['⟧'],  what: 'closes a LIST. Same note as `cup lo`.', gate: 'inventory-marks --check' },
   { cls: 'cup',      kind: 'STRUCTURE', shapes: ['⟅','⟆'], what: 'both cup marks in one span (a key/legend).', gate: 'inventory-marks --check' },
   { cls: 'tn',       kind: 'STRUCTURE', shapes: ['˩','˨','˦','˥'],
     what: 'the four wire symbols as tone-letters — the message exactly as it arrives, before any reading.',
@@ -68,8 +85,12 @@ const INVENTORY = [
   { cls: 'tn t1',    kind: 'STRUCTURE', shapes: ['˨'], what: 'the second wire symbol, in the tone key.', gate: 'inventory-marks --check' },
   { cls: 'tn t2',    kind: 'STRUCTURE', shapes: ['˦'], what: 'the third wire symbol, in the tone key.', gate: 'inventory-marks --check' },
   { cls: 'tn t3',    kind: 'STRUCTURE', shapes: ['˥'], what: 'the highest wire symbol, in the tone key.', gate: 'inventory-marks --check' },
-  { cls: 'stem',     kind: 'STRUCTURE', shapes: ['▵','◃'],
-    what: 'a shared family-root, seen on the wire as part of a compound symbol.', gate: 'inventory-marks --check' },
+  /* `stem` REMOVED 08-01. It declared ▵ and ◃ as "a shared family-root seen on the wire" — but ▵ was
+     never used at all, and ◃ appeared exactly once (§501) standing in for the stem of the tape family,
+     which the wire actually sends as a real two-glyph sign. A blind reader caught it: "the stem in the
+     prose is drawn ◃ and nothing resembling ◃ appears in either line." That is the T8 fabrication class
+     surviving by being filed under STRUCTURE instead of as a sign. The prose now points at the real
+     `tape` sign, and `audit-signs` verifies the figure beside it shows that sign. */
 
   { cls: 'coin',     kind: 'LABEL',     shapes: null,
     what: 'a coining of a WORD FOR A THING IN HER WORLD, not for a sign — §267 "a label worn, not counted". No data-sign, so the renderer never substitutes it; it is prose emphasis.', gate: '—' },
@@ -81,6 +102,8 @@ const INVENTORY = [
   { cls: 'seekmap-say', kind: 'LABEL',  shapes: null, what: 'gloss in the seeker map.',               gate: '—' },
   { cls: 'val',      kind: 'LABEL',     shapes: null, what: 'a value shown in a control/table.',      gate: '—' },
   { cls: 'tu-k',     kind: 'LABEL',     shapes: null, what: '"Watch ended:"/"Watch begins:" keys in a taking-up record.', gate: 'audit-watch' },
+  { cls: 'pf-k',     kind: 'LABEL',     shapes: null,
+    what: 'a field key in the head of a pass — ON WATCH, SKY-SOUND. Same job as tu-k one level down: the taking-up is a station form filled at a handoff, this is the form a keeper fills at the top of a night.', gate: '—' },
   { cls: 'ln',       kind: 'LABEL',     shapes: null,
     what: 'one line of a block that is LINES rather than prose — a letter quoted into Cael\'s watch in the other hand\'s own cadence, or an item on Tamsin\'s bench list. Plain text, never a mark.', gate: '—' },
   { cls: 'sig',      kind: 'LABEL',     shapes: null,

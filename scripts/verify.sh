@@ -4,6 +4,10 @@
 #
 #   1. prose-check    — every coined token appears at/after the pass that coins it (no premature marks)
 #   2. audit-coins    — show-before-coin: a sign is shown (fragment/.sg) before its word is coined
+#   3. audit-signs    — show-before-point: the mark itself. audit-coins governs the WORD and takes a
+#                       prose `.sg` as proof the sign was shown, so the FIRST inline glyph is checked
+#                       by nothing. This requires a figure showing the sign where the prose first
+#                       points at it — the §207 hole, found by a reader in 2026-08-01.
 #   3. audit-readback — show-after-coin: every coined word is re-shown after minting (fragment/.sg/.readback)
 #   4. audit-watch    — the change of watch: a taking-up record at every handoff, chaining hand to hand
 #   5. audit-glyphs   — no invented glyph coins; no hand-typed sign in prose (only her own notation)
@@ -32,7 +36,7 @@ step() { printf '\n\033[1m── %s ──\033[0m\n' "$1"; }
 # data-code read a stale table, could not find the new statement, and reported a show-before-coin
 # violation that did not exist (hit 07-24 on §544). A gate that cries wolf gets prose "fixed" to
 # satisfy it, which is worse than no gate. Cheap and idempotent, so just run it first.
-step "0/12  prose -> arc, then build-frags (refresh the wire table the audits resolve against)"
+step "0/13  prose -> arc, then build-frags (refresh the wire table the audits resolve against)"
 # The diary's SOURCE is _prose/*.html (the keeper's words) + _prose/*.blocks.json (the exhibits).
 # _includes/listener/*.html is GENERATED from those and must not be hand-edited; regenerate first so
 # every gate below reads what the prose actually says.  The splice asserts an exact round-trip, which
@@ -41,42 +45,45 @@ step "0/12  prose -> arc, then build-frags (refresh the wire table the audits re
 node scripts/prose.js build
 node scripts/build-frags.js > /dev/null
 
-step "1/12  prose-check (coined tokens introduced before use)"
+step "1/13  prose-check (coined tokens introduced before use)"
 node scripts/prose-check.js
 node scripts/check-american.js
 
-step "2/12  audit-coins (show-before-coin: sign shown before its word is coined)"
+step "2/13  audit-coins (show-before-coin: sign shown before its word is coined)"
 node scripts/audit-coins.js
 
-step "3/12  audit-readback (show-after-coin: every coined word re-shown after minting)"
+step "3/13  audit-signs (show-before-point: a figure shows the sign where the prose first points)"
+node scripts/audit-signs.js
+
+step "4/13  audit-readback (show-after-coin: every coined word re-shown after minting)"
 node scripts/audit-readback.js
 
-step "4/12  audit-watch (a taking-up record at every handoff, succession unbroken)"
+step "5/13  audit-watch (a taking-up record at every handoff, succession unbroken)"
 node scripts/audit-watch.js
 
-step "5/12  audit-glyphs (no fabricated marks: coins are words, signs are .sg)"
+step "6/13  audit-glyphs (no fabricated marks: coins are words, signs are .sg)"
 node scripts/audit-glyphs.js
 node scripts/audit-notation.js
 
-step "6/12  audit-values (every "gives" row is one the keeper can settle herself)"
+step "7/13  audit-values (every "gives" row is one the keeper can settle herself)"
 node scripts/audit-values.js
 
-step "7/12 inventory-marks (every mark class declared; closed shape inventories)"
+step "8/13 inventory-marks (every mark class declared; closed shape inventories)"
 node scripts/inventory-marks.js --check
 
-step "8/12 audit-hands (every hand-drawn row declares why it is not a wire quote)"
+step "9/13 audit-hands (every hand-drawn row declares why it is not a wire quote)"
 node scripts/audit-hands.js
 
-step "9/12 audit-provenance (every wire quote sits where its pass sits in the message)"
+step "10/13 audit-provenance (every wire quote sits where its pass sits in the message)"
 node scripts/audit-provenance.js
 
-step "10/12 audit-assets (embedded images decode + validate — no broken material reaches a reader)"
+step "11/13 audit-assets (embedded images decode + validate — no broken material reaches a reader)"
 node scripts/audit-assets.js
 
-step "11/12  build (verify wire quotes + jekyll build)"
+step "12/13  build (verify wire quotes + jekyll build)"
 scripts/build.sh
 
-step "12/12  render-check (real post-JS DOM through headless Chrome)"
+step "13/13  render-check (real post-JS DOM through headless Chrome)"
 scripts/render-check.sh
 
 printf '\n\033[1;32m✓ all gates passed\033[0m\n'

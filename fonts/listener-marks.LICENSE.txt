@@ -1,0 +1,24 @@
+listener-marks.woff
+-------------------
+A subset of DejaVu Sans Mono containing ONLY the 17 characters that carry the
+listener log's notation — the four tone letters, the cups, the bits, the tally,
+the slots, the stems, and the middot. Built 2026-08-01 with fontTools from
+DejaVuSansMono.ttf.
+
+WHY IT EXISTS. Inconsolata, the page face, contains none of these characters, so
+every mark in the book was being drawn by whatever fallback font the reader's
+device happened to pick — a different shape on a phone than on a desk, different
+advance widths (which is why "monospace" columns did not line up), and tofu on any
+device lacking coverage. The marks are a deliberate, closed set declared in
+plans/MARK_INVENTORY.md; they should not be at the mercy of a fallback chain.
+
+REBUILD. The charset is exactly the inventory. Scan the rendered DOM for the mark
+spans, then:
+  python3 -m fontTools.subset DejaVuSansMono.ttf --unicodes=<list> \
+      --flavor=woff --output-file=fonts/listener-marks.woff
+
+LICENCE. DejaVu fonts are released under a permissive licence derived from the
+Bitstream Vera Fonts Copyright: free to use, copy, modify and redistribute,
+provided the copyright notice travels with the font. Bitstream Vera is
+Copyright (c) 2003 by Bitstream, Inc.; DejaVu changes are in the public domain
+per the DejaVu project. Full text: https://dejavu-fonts.github.io/License.html
