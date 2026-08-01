@@ -14,7 +14,11 @@ const fs = require('fs'), path = require('path');
 const DIR = path.resolve(__dirname, '../_includes/listener');
 const FILES = require('./arc-order');
 const KEEPERS = ['Maren','Ren','Iso','Neru','Bram','Vess','Ona','Senn','Cael','Tamsin','Lio'];
-const TIDES = ['Ful','Sut','Slack','Neap','Bore','Ford','Race'];
+/* 'Ford' left the tide-book on 08-01: it collided with Low Ford (a station on the net) and with Ford
+   (the net works Fenn leaves for), so a reader met one word as three referents — and the tide-name was
+   the only one of the three that wasn't load-bearing. 'Sill' replaces it. Keep this list closed; the
+   register-name is flavor, and flavor must not take a word the story needs. */
+const TIDES = ['Ful','Sut','Slack','Neap','Bore','Sill','Race'];
 const ROOMS = ['Star','Kettle','Barge','Reed','Skeel','Salt'];
 
 const flags = [];
