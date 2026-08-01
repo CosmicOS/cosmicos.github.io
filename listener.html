@@ -232,7 +232,7 @@ title: "A listener's log"
 .binstack { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 1.7; }
 .binstack .fig { display: inline-block; width: 5ch; text-align: right; letter-spacing: 3px; }
 .binstack .bit { color: #bfe8c8; }
-.binstack .val { margin-left: 1.6em; color: #8fb0c0; }
+.binstack .say { margin-left: 1.6em; color: #8fb0c0; font-style: normal; font-size: 100%; }
 /* §288: the keeper's OWN worked reduction (her scratch, not transmitted wire) — pour a value into a
    maker's slots and watch it reduce, so the reader sees the substitution the message only asserts. */
 .reduce { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 2; }
@@ -324,6 +324,21 @@ title: "A listener's log"
 .divider { text-align: center; color: #35505f; margin: 20px 0; letter-spacing: 1em; }
 
 /* ---- the seeker's map (§619): an animated patrol of the room-tree ---- */
+/* ONA's BOARD (§455). A peg for each place, a cord between the ones that reach. Her own physical
+   model — the net is a board on a wall, and Cael walks into exactly this at Kell a hundred passes later
+   ("a board on the wall with the stations on it and lines between them"). No JS: she pegs it once. */
+.board { border:1px solid #2c3a2f; border-radius:10px; padding:14px 8px 10px; margin:10px 0;
+  background:linear-gradient(180deg,rgba(20,26,21,0.85),rgba(14,18,15,0.85)); }
+.board svg { display:block; width:100%; height:auto; max-width:420px; margin:0 auto; overflow:visible; }
+.board .cord { stroke:#9ab08b; stroke-width:2.5; stroke-linecap:round;
+  filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)); }
+.board .peg circle { fill:#1b2118; stroke:#bcd0aa; stroke-width:2;
+  filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)); }
+.board .rule { stroke:#c98b5a; stroke-width:2; stroke-dasharray:3 3; }
+.board .rule-tag { fill:#c98b5a !important; font-size:10px; }
+.board .tick circle { r:4; fill:#cbb794; stroke:none; }
+.board .peg .tag { font-family:"inconsolataregular","Courier New",monospace; fill:#cbb794;
+  font-size:11px; letter-spacing:1px; text-anchor:middle; }
 .seekmap { position:relative; border:1px solid #3a2f22; border-radius:10px; padding:12px 8px 8px; margin:8px 0;
   background:radial-gradient(rgba(216,201,168,0.05) 0.5px, transparent 0.7px) 0 0 / 6px 6px, radial-gradient(120% 100% at 30% 8%, #1d1710, #120d08);
   box-shadow:inset 0 0 26px rgba(0,0,0,0.55); border-radius:8px; margin:10px 0; }

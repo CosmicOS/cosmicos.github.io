@@ -33,6 +33,18 @@ let t = body
   .replace(/<div class="(more-note|cp-label|cp-item|rb-label|rb-note|peel-say|tu-k)">/g, '  · ')
   .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '')
   .replace(/<a class="anchor"[\s\S]*?<\/a>/g, '')
+  /* FIGURES AND DRAWINGS. Until 08-01 these dumped as blank lines, so three blind reviews read the book
+   * with its circuits and its seeker map silently deleted — and unmarked, so no reviewer could tell a
+   * figure had ever been there. What they were assessing when they discussed "the tactile diagrams" was
+   * Tamsin's caption, which is prose. Emit the alt/aria text the markup already carries, bracketed so a
+   * reviewer knows it is a projection of a picture and not the keeper's own words. No data-s values ever
+   * (NO-LEAK): describe the shape, never name the sender's signs. */
+  .replace(/<img[^>]*\balt="([^"]*)"[^>]*>/g, (_, a) => `\n  [FIGURE — ${a}]\n`)
+  .replace(/<svg[^>]*\baria-label="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g, (_, a) => `\n  [DRAWING — ${a}]\n`)
+  /* Interactive controls are furniture, not text. They were leaking into the dump as loose words
+   * ("sweep let it run still — set it going") in the middle of a keeper's paragraph. */
+  .replace(/<button[\s\S]*?<\/button>/g, '')
+  .replace(/<span class="circuit-say"[\s\S]*?<\/span>/g, '')
   /* A blind reviewer on 07-31 filed two of its findings against this exporter rather than the book:
      an italicized quotation read as a doubled word ("as as before"), and ~15 run-together lines where
      adjacent spans lost the space between them ("bothfails fails fails holds"). Both are transport
