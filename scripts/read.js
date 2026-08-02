@@ -27,6 +27,7 @@
  */
 'use strict';
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
+const STAMP = require('./stamp');
 const ROOT = path.resolve(__dirname, '..');
 
 // ---- args ----
@@ -91,6 +92,8 @@ function flatten(frag) {
   s = s.replace(/<svg\b[^>]*\baria-label="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g, ' ⟦animation: $1⟧ ');
   s = s.replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, ' ⟦figure: $1⟧ ');
   s = s.replace(/<span class="lbl"[^>]*>([\s\S]*?)<\/span>/g, '($1) ');            // a way-of-showing label -> ( … )
+  s = s.replace(/<span class="pf-k">([\s\S]*?)<\/span>/g, '$1 ');                  // head field key: it sits tag-to-tag
+  // against its value, so a bare strip gives "on watchMaren". Its gap is a column width on the page.
   s = s.replace(/<(?:br)\s*\/?>/g, '\n');
   s = s.replace(/<\/(?:p|div|li|h1|h2|h3|tr)>/g, '\n');                            // block breaks -> newlines
   // A span laid out as a COLUMN (fixed-width inline-block) is a table cell: on the page its width
@@ -142,10 +145,29 @@ function sliceBlocksPos(str, cls) {
   return out;
 }
 
+/* THE STATION BOOK that opens the page. It is neither an .entry nor a .taking-up, so it fell
+   straight through this read and three passes of review never saw the book's first page (08-01).
+   It is a RULED FORM, and a form flattened one cell per line stops being a form — so rebuild it
+   with padded columns, the way `.reg-grid`'s max-content columns draw it on screen. */
+function registerText(inner) {
+  const one = (cls) => (inner.match(new RegExp(`<div class="${cls}">([\\s\\S]*?)</div>`)) || [])[1] || '';
+  const cells = (cls) => [...inner.matchAll(new RegExp(`<div class="${cls}[^"]*">([\\s\\S]*?)</div>`, 'g'))]
+    .map(m => decodeEntities(m[1].replace(/<[^>]+>/g, '')).trim());
+  const heads = cells('reg-k'), body = cells('reg-c');
+  const n = heads.length || 1;
+  const rows = [heads, ...Array.from({ length: Math.ceil(body.length / n) }, (_, i) => body.slice(i * n, i * n + n))];
+  const w = heads.map((_, c) => Math.max(...rows.map(r => (r[c] || '').length)));
+  const table = rows.map(r => r.map((v, c) => (v || '').padEnd(w[c])).join('  ').trimEnd());
+  return [decodeEntities(one('reg-title')), decodeEntities(one('reg-sub')), '',
+          table[0], table.slice(1).join('\n'), '', decodeEntities(one('reg-foot'))].join('\n');
+}
+
 // ---- assemble the read ----
 const chunks = [];
 const preface = sliceBlocks(html, 'preface')[0];
 if (preface) chunks.push('PREFACE\n\n' + flatten(preface));
+const register = sliceBlocks(html, 'register')[0];
+if (register) chunks.push(registerText(register));
 
 // entries and taking-up records, merged in document order
 const items = [
@@ -162,12 +184,12 @@ for (const it of items) {
     continue;
   }
   const inner = it.inner;
-  const stamp = (inner.match(/<div class="stamp">([^<]*)<\/div>/) || [])[1] || '';
+  const stamp = STAMP.text(inner);
   const h2 = (inner.match(/<h2[^>]*>([\s\S]*?)<\/h2>/) || [])[1] || '';           // may wrap a "#" anchor-link
   const title = h2.replace(/<a class="anchor-link"[\s\S]*?<\/a>/g, '').replace(/<[^>]+>/g, '').trim();
   const passNo = parseInt((stamp.match(/(\d+)/) || [])[1], 10);
   if (!isNaN(passNo) && passNo > through) continue;                               // skip later entries entirely
-  const body = inner.replace(/<div class="stamp">[^<]*<\/div>/, '').replace(/<h2[^>]*>[\s\S]*?<\/h2>/, '');
+  const body = inner.replace(STAMP.BLOCK, '').replace(/<h2[^>]*>[\s\S]*?<\/h2>/, '');
   chunks.push('[' + stamp + ']  ' + title + '\n\n' + flatten(body));
 }
 

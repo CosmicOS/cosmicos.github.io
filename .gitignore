@@ -7,3 +7,6 @@ _includes/listener_s0_rows.html
 
 # generated cross-reference (scripts/build-index.js); regenerable, never committed
 plans/listener_index.json
+
+# the shared note queue (scripts/notes-server.py) — local, never committed
+notes.db

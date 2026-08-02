@@ -14,6 +14,7 @@
 const fs = require('fs'), path = require('path');
 const DIR = path.resolve(__dirname, '../_includes/listener');
 const ORDER = require('./arc-order');
+const STAMP = require('./stamp');
 
 const NOTATION = [
   { word: 'cup',   from: 193, why: '§193 — Ren\'s fair copy shows two tones pairing; she reads them as a cup and its lid' },
@@ -25,7 +26,7 @@ const flags = [];
 for (const name of ORDER) {
   const src = fs.readFileSync(path.join(DIR, name + '.html'), 'utf8');
   for (const chunk of src.split('<div class="entry').slice(1)) {
-    const m = chunk.match(/<div class="stamp">Pass (\d+)/);
+    const m = chunk.match(STAMP.PASS);
     if (!m) continue;
     const pass = +m[1];
     // prose only: strip tags, and drop attribute values so class="cup" is not a hit

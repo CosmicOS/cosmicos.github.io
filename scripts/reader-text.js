@@ -32,6 +32,10 @@ let t = body
    * so a blind reviewer would have judged a figure the page does not show (08-01). Indentation is
    * carried by margin-left on a span, which no text dump can see, so the break alone must survive. */
   .replace(/<div class="stamp">/g, '\n\n@@@')
+  /* A HEAD FIELD KEY sits tag-to-tag against its value — `<span class="pf-k">on watch</span>Maren` —
+   * so a bare tag-strip has always produced "on watchMaren", and since 08-01 "Pass189" as well. Give
+   * the key its own trailing space before anything else touches it. */
+  .replace(/<span class="pf-k">([\s\S]*?)<\/span>/g, '$1 ')
   .replace(/<h2>/g, '\n@@')
   .replace(/<\/(p|div|figure|li|h2)>/g, '\n')
   .replace(/<span class="lbl">([\s\S]*?)<\/span>/g, '[$1] ')

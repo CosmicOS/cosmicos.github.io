@@ -34,7 +34,29 @@
      40 lines of scaffolding (cap high). data-fold="5-7" says: break only between those depths. */
   var foldMode = false, foldMin = 0, foldMax = Infinity;
   function indent(d){ var s=''; for(var i=0;i<d;i++) s+='   '; return s; }
-  function scrawlSpan(name){ return SCRAWL[name] ? '<span class="scrawl sign-fb">'+SCRAWL[name]+'</span>' : '<span class="gl" style="opacity:.4">▩</span>'; }
+  /* SCRAWL IS THEIR NUMERALS, AND A KEEPER CANNOT USE IT UNTIL SHE CAN READ A CUP AS A NUMBER.
+     A sign arrives as a lone bit and a cup holding its id in bits. Writing that id in their own
+     numerals — one glyph — is transcription, but it needs place value, and Ren does not crack place
+     value until §267. So before 267 a sign is written the only way it can be: as its run. After 267
+     the numerals are available for every sign, meaning known or not, and the runs stop.
+     (Paul, 08-02. Before this the whole founding era showed numerals it had no way to write.) */
+  var NUMERALS_FROM = 267, numeralsOn = false;
+  function idOf(name){                          // the number in the sign's cup: codepoint - 0xf144
+    var g = SCRAWL[name]; if (!g) return null;
+    var m = /&#x([0-9a-f]+);/i.exec(g); if (!m) return null;
+    if (/&#x[0-9a-f]+;.*&#x/i.test(g)) return null;      // a multi-glyph sign: leave it to the compound path
+    var id = parseInt(m[1], 16) - 0xf144;
+    return (id >= 0 && id < 64) ? id : null;
+  }
+  function runOf(name){                         // a sign as she can write it before she has numerals
+    var id = idOf(name); if (id === null) return null;
+    return '<span class="bit">▪</span><span class="cup o">⟅</span>'
+      + id.toString(2).split('').map(function(b){ return '<span class="bit">'+(b==='1'?'▪':'▫')+'</span>'; }).join('')
+      + '<span class="cup c">⟆</span>';
+  }
+  function scrawlSpan(name){
+    if (!numeralsOn) { var r = runOf(name); if (r) return r; }
+    return SCRAWL[name] ? '<span class="scrawl sign-fb">'+SCRAWL[name]+'</span>' : '<span class="gl" style="opacity:.4">▩</span>'; }
   function mark(name){                             // a bound var -> its slot; else her token (once introduced); else the sign in spider scrawl
     if (slots && (name in slots)) return '<span class="gl">'+slots[name]+'</span>';  // bound-var name (e.g. (x) from assign) -> slot
     if (allFigures) return scrawlSpan(name);                                         // plain-scrawl view: every sign as its scrawl
@@ -144,6 +166,10 @@
   Array.prototype.forEach.call(
     document.querySelectorAll('.coin[data-sign], .msg, .row[data-parse], .row[data-code], .sg[data-s]'),
     function(el){
+      /* reading order decides the era as well as the coinings: once the walk reaches §267 the
+         numerals are available and stay available. */
+      var ent = el.closest && el.closest('.entry[id]');
+      if (ent && /^p\d+$/.test(ent.id) && +ent.id.slice(1) >= NUMERALS_FROM) numeralsOn = true;
       if (el.classList.contains('coin')) { COINED[el.getAttribute('data-sign')] = (el.textContent||'').trim(); return; }
       if (el.classList.contains('msg')) { renderMsg(el); return; }
       if (el.classList.contains('sg'))  { allFigures = false; resetSlots(); el.innerHTML = mark(el.getAttribute('data-s')); return; }

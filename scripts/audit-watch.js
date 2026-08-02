@@ -13,6 +13,7 @@
 const fs = require('fs'), path = require('path');
 const DIR = path.resolve(__dirname, '../_includes/listener');
 const FILES = require('./arc-order');
+const STAMP = require('./stamp');
 const KEEPERS = ['Maren','Ren','Iso','Neru','Bram','Vess','Ona','Senn','Cael','Tamsin','Lio'];
 /* 'Ford' left the tide-book on 08-01: it collided with Low Ford (a station on the net) and with Ford
    (the net works Fenn leaves for), so a reader met one word as three referents — and the tide-name was
@@ -57,7 +58,7 @@ for (let i = 0; i < FILES.length; i++) {
   const hp = head.match(/^Pass (\d+) · Cycle \S+$/);
   if (!hp) { bad(f, `malformed head: "${head}"`); }
   else {
-    const pass = +hp[1], first = +(src.slice(recs[0].index + recs[0][0].length).match(/Pass (\d+)/) || [])[1];
+    const pass = +hp[1], first = STAMP.first(src.slice(recs[0].index + recs[0][0].length));
     if (pass !== first) bad(f, `record stamped Pass ${pass}, but the era opens at Pass ${first}`);
     if (pass <= prevPass) bad(f, `Pass ${pass} does not follow Pass ${prevPass}`);
     prevPass = pass;

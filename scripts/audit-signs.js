@@ -26,6 +26,7 @@ const fs = require('fs'), path = require('path');
 const w = require(path.resolve(__dirname, '../_includes/wire_quotes.json'));
 const DIR = path.resolve(__dirname, '../_includes/listener');
 const FILES = require('./arc-order');
+const STAMP = require('./stamp');
 
 const contains = (p, s) => Array.isArray(p) ? p.some(x => contains(x, s)) : String(p) === s;
 const unesc = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
@@ -72,7 +73,7 @@ for (const f of FILES) {
   while ((m = re.exec(src))) {
     const sec = m[0];
     const id = (sec.match(/^<div[^>]*\bid="(p\d+)"/) || [])[1]
-            || '§' + ((sec.match(/class="stamp">Pass ([\d]+)/) || [])[1] || '?');
+            || '§' + ((sec.match(STAMP.PASS) || [])[1] || '?');
     const { prose, figures } = split(sec);
     const pointed = refs(prose);
     if (!pointed.length) continue;

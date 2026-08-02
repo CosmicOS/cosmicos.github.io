@@ -28,6 +28,7 @@ const ROOT = path.resolve(__dirname, '..');
 const DIR = path.join(ROOT, '_includes/listener');
 const msg = require(path.join(ROOT, '_data/msg.json'));
 const scrawl = require(path.join(ROOT, '_data/sign_scrawl.json'));
+const STAMP = require('./stamp');
 
 // --- the wire spine: seq (1-based over code+gate) -> source; and code -> seq --------------------------
 const statements = {};                 // seq -> source line
@@ -68,7 +69,7 @@ for (const file of files) {
   lines.forEach((ln, i) => {
     const line = i + 1;
     const id = ln.match(/class="entry[^"]*" id="p(\d+)"/); if (id) entry = 'p' + id[1];
-    const st = ln.match(/class="stamp">Pass ([\d]+)(?:[^<]*)?/); if (st) { pass = +st[1]; title = null; }
+    const st = ln.match(STAMP.PASS); if (st) { pass = +st[1]; title = null; }
     const h2 = ln.match(/<h2>([^<]*)<\/h2>/); if (h2 && title == null) title = h2[1].trim();
 
     if (/class="readback"/.test(ln)) rbDepth += 1;

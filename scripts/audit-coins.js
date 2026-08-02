@@ -25,7 +25,14 @@ for (const f of FILES) {
       const codes = [...before.matchAll(/data-code="(\d+)"/g)].map(x => x[1]);
       const shownCode = codes.some(c => w[c] && contains(w[c].parse, sign));
       const shownSg = new RegExp('data-s="' + esc(cm[1]) + '"').test(before);
-      if (!shownCode && !shownSg) flags.push(`${f} ${id}  sign=${sign}`);
+      /* A COMPOUND is shown when every one of its parts is. `is:int` is two marks that always run
+       * together; a keeper shows the pair by writing them side by side, and there is no separate act
+       * of "showing the compound". Demanding one made me write a line of prose whose only job was to
+       * satisfy this gate — which is the gate writing the book. (08-02) */
+      const parts = sign.split(':');
+      const shownParts = parts.length > 1 &&
+        parts.every(p => new RegExp('data-s="[^"]*\\b' + esc(p) + '\\b[^"]*"').test(before));
+      if (!shownCode && !shownSg && !shownParts) flags.push(`${f} ${id}  sign=${sign}`);
     }
   }
 }

@@ -68,12 +68,6 @@ title: "The Second Book"
 .msg-line .lbl{ display:block; letter-spacing:.16em; font-size:11px; text-transform:uppercase; color:#5f7f90; margin-bottom:4px; }
 
 
-.diary-tag {
-  text-align: center; font-family: "inconsolataregular","Courier New",monospace;
-  font-size: 78%; letter-spacing: 0.22em; text-transform: uppercase;
-  color: #8fb0c0; margin: 6px 0 22px;
-}
-
 .preface {
   background: rgba(10,14,20,0.82); border-radius: 14px; padding: 24px 30px;
   color: #cdd6df; margin-bottom: 30px;
@@ -86,6 +80,44 @@ title: "The Second Book"
 .preface .sub { color: #8fb0c0; font-style: italic; margin: 0 0 14px; }
 .preface p { margin: 0 0 10px; text-align: left; }
 .preface p:last-child { margin-bottom: 0; }
+
+/* ── THE STATION BOOK. It opens the page, before Pass 189, because it is the FIRST book: the
+   coast's own register, ruled and supplied by the steward's clerk, filled a row per tide-turn,
+   and the only document this post is paid to keep. Maren describes it in her second paragraph
+   and Lio still describes it, unchanged, four hundred passes later. So the reader should have
+   seen it: four columns of a job being done, and then, at the foot and out of the ruling, the
+   one line that disposes of the message in two words. The book that follows is a refusal of
+   that line. Kin to `.taking-up` — both are station forms — and colder, because this one
+   belongs to the coast and a clerk reads it. ── */
+.register {
+  font-family: "inconsolataregular","Courier New",monospace;
+  border: 1px solid #2a3a45; border-radius: 3px; background: rgba(9,13,18,0.86);
+  color: #b8c6d0; font-size: 84%; margin: 0 0 22px; padding-top: 13px;
+}
+.register .reg-head { padding: 0 14px 10px; border-bottom: 1px solid #2a3a45; }
+.register .reg-title { text-transform: uppercase; letter-spacing: 0.2em; font-size: 86%; color: #7f9bab; }
+.register .reg-sub { font-style: italic; color: #5f7382; font-size: 90%; margin-top: 4px; }
+/* the ruling: five max-content columns, so the form's shape is measured off its own entries and
+   never off a width I typed. Cells nowrap, box scrolls — a broken column is a wrong column. The
+   last column takes the slack so the rules run to the edge the way a ruled page does. */
+.register .reg-grid {
+  display: grid; grid-template-columns: repeat(4, max-content) minmax(max-content, 1fr);
+  overflow-x: auto;
+}
+.register .reg-k, .register .reg-c {
+  padding: 7px 14px; border-bottom: 1px solid #232f38; white-space: nowrap;
+}
+.register .reg-k {
+  text-transform: uppercase; letter-spacing: 0.14em; font-size: 78%; color: #5f7f90;
+  border-bottom-color: #2a3a45;
+}
+.register .reg-w { color: #9db0bd; }        /* the tide-turn: the row's key, and all the row is filed under */
+/* THE LAST LINE, and it is not in the ruling. No cell, no column head, and warm against the
+   coast's gray because a different hand writes it: "it sits at the foot of the page because it
+   isn't anybody's column." Every keeper in this room has written that sentence and no other. */
+.register .reg-foot {
+  padding: 12px 14px 13px; font-style: italic; color: #c6a97a; font-size: 98%;
+}
 
 .entry {
   background: rgba(12,16,23,0.78); border-left: 2px solid #2b4a5c;
@@ -166,15 +198,47 @@ title: "The Second Book"
   text-transform: uppercase; letter-spacing: 0.18em; color: #5f7f90;
   margin-right: 0.6em; }
 .passfields .pf-k + * , .passfields .pf-k ~ .pf-k { margin-left: 1.6em; }
+/* THE KEY COLUMN. The first key on each of the head's lines is boxed to one width, so the values
+   start at the same place down the head and it reads as a ruling rather than three loose lines:
+       PASS 193
+       ON WATCH  Maren, Ren copying
+       NOTE      Cups
+   `em`, not `ch` — letter-spacing is outside the ch unit, and these keys are spaced 0.18em. Both
+   boxes measure in the same em because both run at 74% of the entry (the h2's key is 71% of 104%),
+   so one number holds them. A key that is NOT first on its line — the cycle — stays tight against
+   its value; padding it would open a hole in the middle of the line. */
+.entry > .stamp .pf-k, .passfields .pf-k:first-child, .entry > h2::before {
+  display: inline-block; min-width: 7.1em; margin-right: 0; }
+/* the stamp's own key. It runs at .stamp's 74%, the same em the other two boxes measure in, so
+   one min-width holds all three. Spaced 0.18em like them rather than the stamp's own 0.2em — the
+   key column is a column, and it should read as one. */
+.entry > .stamp .pf-k { color: #5f7f90; letter-spacing: 0.18em; }
+/* the third line of the head, and it belongs to the HEAD, not to the entry. It was #cbd8e2 —
+   brighter than the prose under it — so it read as a chapter title sitting on top of a form.
+   It takes the stamp's own color now, so pass, watch and note are one block a reader's eye
+   passes over on the way in (Paul, 08-01). */
+/* SAME SIZE, SAME INK as the watch line above it — 74% and #90a8b8, straight off `.passfields`.
+   It was 104% and a different color, which made it a chapter title wearing a field key. The head
+   is a form: three keys in one column, three values in another, and no line of it louder than the
+   next (Paul, 08-01). */
 .entry > h2 {
   font-family: "inconsolataregular","Courier New",monospace;
-  font-size: 104%; font-weight: normal; letter-spacing: 0.02em;
-  color: #cbd8e2; text-shadow: none; margin: 0 0 12px; clear: both;
+  font-size: 74%; font-weight: normal; letter-spacing: 0.06em;
+  color: #90a8b8; text-shadow: none; margin: 0 0 12px; clear: both;
+}
+/* …and it gets a field key like the two lines above it, so the head is three fields and not two
+   fields with a title stuck under them. NOTE, because that is what §189 says the line is: "two or
+   three words for what the night was, so a fellow can find the night again without reading her way
+   to it." Drawn in CSS rather than typed into 79 entries — it is the form's ruling, not anybody's
+   words, and nothing in the book should have to carry it. No font-size of its own: the h2 now runs
+   at 74%, the same as .passfields, so the key inherits the size the other two keys already have. */
+.entry > h2::before {
+  content: "NOTE"; letter-spacing: 0.18em; color: #5f7f90;
 }
 /* click a header to pin the URL to its anchor (and copy the link where allowed) */
 .entry h2 .anchor-link {
   font-family: "inconsolataregular","Courier New",monospace; font-weight: normal;
-  font-size: 62%; color: #6f95a8; text-decoration: none; margin-left: 0.55em;
+  font-size: 86%; color: #6f95a8; text-decoration: none; margin-left: 0.55em;
   vertical-align: 0.12em; opacity: 0; transition: opacity .15s ease; white-space: nowrap;
 }
 .entry h2:hover .anchor-link, .entry h2 .anchor-link.flash { opacity: 1; }
@@ -545,13 +609,16 @@ title: "The Second Book"
    hidden behind a scrollbar the reader may never find.
    ────────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .diary, .entry, .taking-up, .rows, .frag, .tally, .msg, .peel, .readback, .board, .letter, .cap
+  .diary, .entry, .taking-up, .register, .rows, .frag, .tally, .msg, .peel, .readback, .board, .letter, .cap
     { box-sizing: border-box; max-width: 100%; }
+  /* the register keeps its columns and scrolls; shrink it rather than break a rule across a row */
+  .register { font-size: 78%; }
+  .register .reg-k, .register .reg-c { padding: 6px 10px; }
   .diary { padding: 0; }
   .entry { padding: 14px 13px 15px; border-radius: 0 8px 8px 0; }
   .entry.dispatch { padding: 11px 13px 12px; }
   .entry .stamp { padding: 11px 13px 0; margin: 0 -13px 7px; }
-  .entry > h2 { font-size: 100%; margin-bottom: 10px; }
+  .entry > h2 { margin-bottom: 10px; }   /* size follows .passfields now — no override */
   .entry p { font-size: 102%; }
 
   /* the founder's raw runs: wrap them. They are a stream, not a structured row —
@@ -589,21 +656,19 @@ title: "The Second Book"
 
 <div class="diary">
 
-  <div class="diary-tag">An experiment · a recipient imagined</div>
-
   <div class="preface">
     <h1>The Second Book</h1>
   </div>
 
   <details class="msg-index">
-    <summary>The message at a glance <span class="idx-note">&mdash; what each pass decodes. An editor’s key: it names, in our words, what the keeper (sharing none) could only point at. Spoils the surprises.</span></summary>
+    <summary>Human cheat sheet <span class="idx-note">(spoilers)</span></summary>
     <div class="idx-body">
-      <div class="idx-arc">I · the founder — noise to number</div>
+      <div class="idx-arc">I · the founder: noise to number</div>
       <a href="#p189"><b>189</b> the signal is a made message, not nature: it loops, and resets to a simplest state</a>
       <a href="#p193"><b>193</b> two of the four tones are nesting brackets; the other two are the content bits</a>
       <a href="#p200"><b>200</b> the bit-strings are numbers, written by place, not letters</a>
       <a href="#p207"><b>207</b> a marker that introduces a new sign ("here is a new one")</a>
-      <a href="#p214"><b>214</b> counting — the successor rule; the natural numbers, inexhaustible</a>
+      <a href="#p214"><b>214</b> counting: the successor rule; the natural numbers, inexhaustible</a>
       <a href="#p221"><b>221</b> the square numbers</a>
       <a href="#p228"><b>228</b> the prime numbers</a>
       <div class="idx-arc">II · equality and arithmetic</div>
@@ -616,7 +681,7 @@ title: "The Second Book"
       <div class="idx-arc">III · evaluation, naming, functions, memory</div>
       <a href="#p271"><b>271</b> expressions evaluate; a value may stand wherever its computation may</a>
       <a href="#p280"><b>280</b> local naming (a let-binding), scoped to one expression</a>
-      <a href="#p288"><b>288</b> functions — lambda: define a verb and apply it</a>
+      <a href="#p288"><b>288</b> functions (lambda): define a verb and apply it</a>
       <a href="#p297"><b>297</b> persistent (global) definitions; state that survives</a>
       <a href="#p306"><b>306</b> the booleans (true / false), built out of equality</a>
       <div class="idx-arc">IV · conditionals</div>
@@ -624,7 +689,7 @@ title: "The Second Book"
       <a href="#p345"><b>345</b> AND and OR built from if; redundant restatement as error-correction</a>
       <div class="idx-arc">V · pairs, state, higher-order</div>
       <a href="#p349"><b>349</b> pairs (cons) and lists of nested pairs; first / second (car / cdr)</a>
-      <a href="#p361"><b>361</b> the mutable cell — a value that changes with its history</a>
+      <a href="#p361"><b>361</b> the mutable cell: a value that changes with its history</a>
       <a href="#p372"><b>372</b> "undefined" as distinct from zero or empty</a>
       <a href="#p384"><b>384</b> map and fold (reduce) over a list</a>
       <div class="idx-arc">VI · self-edit, search, higher mathematics</div>
@@ -635,15 +700,15 @@ title: "The Second Book"
       <a href="#p423"><b>423</b> the imaginary unit i (i²=−1); Euler’s identity, e^{iπ} + 1 = 0</a>
       <div class="idx-arc">VII · pure functions, logic, graphs</div>
       <a href="#p427"><b>427</b> syntactic shorthand (macros / multi-argument lambda)</a>
-      <a href="#p434"><b>434</b> Church encoding — booleans, pairs, numbers all rebuilt from pure functions</a>
+      <a href="#p434"><b>434</b> Church encoding: booleans, pairs, numbers all rebuilt from pure functions</a>
       <a href="#p441"><b>441</b> the quantifiers: for-all (∀) and there-exists (∃)</a>
       <a href="#p448"><b>448</b> an inductive set (0∈S; n∈S ⇒ n+1∈S); implication and membership</a>
-      <a href="#p455"><b>455</b> graphs — nodes and edges; adjacency vs. reachability (transitive closure)</a>
-      <a href="#p462"><b>462</b> sequencing — order of effects, once there is state</a>
+      <a href="#p455"><b>455</b> graphs: nodes and edges; adjacency vs. reachability (transitive closure)</a>
+      <a href="#p462"><b>462</b> sequencing: order of effects, once there is state</a>
       <div class="idx-arc">VIII · data structures and the machine</div>
       <a href="#p466"><b>466</b> a key-value dictionary (map)</a>
-      <a href="#p484"><b>484</b> a record / struct — named mutable fields</a>
-      <a href="#p501"><b>501</b> a universal computer (a Turing machine): tape, head, transition table — any machine at all</a>
+      <a href="#p484"><b>484</b> a record / struct: named mutable fields</a>
+      <a href="#p501"><b>501</b> a universal computer (a Turing machine): tape, head, transition table; any machine at all</a>
       <div class="idx-arc">IX · code-as-data, types, objects, a world</div>
       <a href="#p505"><b>505</b> quotation (code as data) with a live "unquote" hole</a>
       <a href="#p511"><b>511</b> type predicates and typed function slots</a>
@@ -655,20 +720,20 @@ title: "The Second Book"
       <div class="idx-arc">X · physics, logic gates, memory (built by hand)</div>
       <a href="#p544"><b>544</b> the three particles (proton, electron, neutron), their charges and ~1836 mass ratio; the elements by proton count</a>
       <a href="#p549"><b>549</b> a forward declaration (a name before its definition)</a>
-      <a href="#p554"><b>554</b> a minimal universal gate (NAND — "yes, unless") + a 2-D cellular field that carries signals</a>
-      <a href="#p559"><b>559</b> a raster image (bits as a 2-D picture) — a circuit schematic — proved equal to its gate-works</a>
+      <a href="#p554"><b>554</b> a minimal universal gate (NAND, "yes, unless") + a 2-D cellular field that carries signals</a>
+      <a href="#p559"><b>559</b> a raster image (bits as a 2-D picture) of a circuit schematic, proved equal to its gate-works</a>
       <a href="#p564"><b>564</b> AND built from NAND gates (with its truth table)</a>
       <a href="#p569"><b>569</b> OR and NOR from gates</a>
-      <a href="#p574"><b>574</b> an oscillator — a feedback loop that never settles</a>
-      <a href="#p579"><b>579</b> an SR latch — one bit of memory</a>
+      <a href="#p574"><b>574</b> an oscillator: a feedback loop that never settles</a>
+      <a href="#p579"><b>579</b> an SR latch: one bit of memory</a>
       <div class="idx-arc">XI · a mind, and the someone</div>
-      <a href="#p587"><b>587</b> a clocked flip-flop / register — takes its input only on the beat</a>
+      <a href="#p587"><b>587</b> a clocked flip-flop / register: takes its input only on the beat</a>
       <a href="#p591"><b>591</b> test tooling; the message proves its own gates against their truth tables</a>
-      <a href="#p595"><b>595</b> reflection / self-reference — it reads its own past and points back to its first line</a>
-      <a href="#p602"><b>602</b> class inheritance — subclasses delegating to a parent, from a root with an empty "act"</a>
+      <a href="#p595"><b>595</b> reflection / self-reference: it reads its own past and points back to its first line</a>
+      <a href="#p602"><b>602</b> class inheritance: subclasses delegating to a parent, from a root with an empty "act"</a>
       <a href="#p605"><b>605</b> methods as bytecode run on the Turing engine; machine and objects made one</a>
-      <a href="#p608"><b>608</b> a standard library as classes — a List, and an Iterator (walker)</a>
-      <a href="#p612"><b>612</b> world classes — Room (contents + exits), Door, Thing (here / next)</a>
+      <a href="#p608"><b>608</b> a standard library as classes: a List, and an Iterator (walker)</a>
+      <a href="#p612"><b>612</b> world classes: Room (contents + exits), Door, Thing (here / next)</a>
       <a href="#p615"><b>615</b> the World with a two-phase synchronous tick (all decide, then all commit)</a>
       <a href="#p619"><b>619</b> an autonomous agent whose rule is to move to the least-recently-seen room</a>
       <a href="#p622"><b>622</b> a minimal two-room world; the keeper builds and runs it, and the agent crosses of its own rule</a>
@@ -697,9 +762,8 @@ title: "The Second Book"
   </div>
 
   <div class="colophon">
-    CosmicOS is a real constructed message, meant to be readable by someone who shares no
-    language, number, or history with us. It hasn't been sent. This diary is invented — but
-    every fragment shown is a true reading of the actual message.
+    CosmicOS is a real message, built to be readable by someone who shares no language, number,
+    or history with us, and never sent. The diary is invented; every fragment in it is a true reading.
   </div>
 
 </div>
@@ -707,3 +771,6 @@ title: "The Second Book"
 <script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {% include wire_quotes.json %} };</script>
 <script src="{{ site.baseurl }}/js/listener.js?v={{ site.time | date: '%s' }}"></script>
 <script src="{{ site.baseurl }}/js/circuit-sim.js?v={{ site.time | date: '%s' }}"></script>
+{% comment %} double-tap a word to leave a note in the shared queue. Inert unless
+   scripts/notes-server.py is serving the page — it probes /api/notes and, failing, does nothing. {% endcomment %}
+<script src="{{ site.baseurl }}/js/notes.js?v={{ site.time | date: '%s' }}"></script>

@@ -35,6 +35,7 @@ const TOL = 150;   // statements a quote may sit below its pass's place before i
 
 // code -> first index in the transmitted order (1-based, over code+gate statements) ------------------
 const msg = require(path.resolve(__dirname, '../_data/msg.json'));
+const STAMP = require('./stamp');
 const byCode = new Map();
 let k = 0;
 for (const s of msg) if ((s.role === 'code' || s.role === 'gate') && s.code) { k++; if (!byCode.has(s.code)) byCode.set(s.code, k); }
@@ -66,7 +67,7 @@ for (const file of files) {
   const lines = fs.readFileSync(path.join(file === path.basename(file) ? path.join(dir, file) : file), 'utf8').split('\n');
   let cur = null, rbDepth = 0;           // rbDepth>0 == inside a .readback block (exempt)
   lines.forEach((ln, i) => {
-    const stamp = ln.match(/class="stamp">Pass (\d+)/);
+    const stamp = ln.match(STAMP.PASS);
     if (stamp) { cur = { file, pass: +stamp[1], rows: [] }; passes.push(cur); }
     if (/class="readback"/.test(ln)) rbDepth += 1;      // enter read-back; count divs to find its end
     if (rbDepth > 0) {

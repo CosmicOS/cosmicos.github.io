@@ -19,6 +19,7 @@ const fs = require('fs'), path = require('path');
 const ROOT = path.resolve(__dirname, '..'), PROSE = path.join(ROOT, '_prose');
 const ORDER = require('./arc-order.js');
 const { label } = require('./scrawl.js');
+const STAMP = require('./stamp');
 const scrawlMap = JSON.parse(fs.readFileSync(path.join(ROOT, '_data/sign_scrawl.json'), 'utf8'));
 const KEEPERS = (ORDER.ORDER || ORDER.order || ORDER);
 
@@ -47,8 +48,8 @@ function load(name) {
 function context(html, n) {
   const m = html.indexOf(`{{EX:${n}}}`);
   if (m < 0) return { pass: '?', before: '(marker not referenced)', after: '' };
-  const passes = [...html.slice(0, m).matchAll(/class="stamp">Pass (\d+)/g)];
-  const pass = passes.length ? passes[passes.length - 1][1] : '?';
+  const passes = STAMP.all(html.slice(0, m));
+  const pass = passes.length ? passes[passes.length - 1] : '?';
   const ps = [...html.slice(0, m).matchAll(/<p[^>]*>([\s\S]*?)<\/p>/g)];
   const nx = html.slice(m).match(/<p[^>]*>([\s\S]*?)<\/p>/);
   const clean = s => s ? s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
