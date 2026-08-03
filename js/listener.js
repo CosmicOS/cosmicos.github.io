@@ -129,7 +129,7 @@
     if (typeof v==='number') return num(Math.abs(v).toString(2).split(''));
     return '';
   }
-  var LABEL = { raw:'as it comes', glyph:'in plain figures', hand:'in my hand' };
+  var LABEL = { raw:'as it comes', glyph:'in plain figures', hand:'as I set it down' };
   function renderMsg(el){                       // a .msg widget: lay every way-of-showing out at once, labeled
     var modes = (el.getAttribute('data-modes')||'hand,glyph,raw').split(',');
     modes.forEach(function(mode){
@@ -225,7 +225,7 @@
   seeker.style.transition = 'none';                     // place at the start without a glide
   moveTo(start); prev = start;
   rooms[start].g.classList.add('seen', 'here'); mapped = 1;
-  sayEl.textContent = 'under my hand where it was set going — the room ' + tag[start];
+  sayEl.textContent = 'under my feet where it was set going — the room ' + tag[start];
   box.getBoundingClientRect();                          // flush, then restore the transition
   seeker.style.transition = '';
   seeker.classList.add('on');
