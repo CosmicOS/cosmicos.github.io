@@ -23,7 +23,7 @@ const ORDER = require('./arc-order');
 
 // structural glyphs legitimately hand-typed in prose (notation, not sign-references)
 const STRUCT = new Set([...'˩˨˦˥⟅⟆⟦⟧᚛᚜▪▫●◦◌⬚○◔·—–…“”‘’×÷≠≤≥→←↔⇛«»▩✱']);
-// INTENTIONAL hand-drawn notation — deliberate per plans/archive/CONVERSION_ISSUES.md, not coined aliases.
+// INTENTIONAL hand-drawn notation — a keeper's own drawn mark, not a coined alias for a sign.
 const INTENTIONAL = {
   '⟳': 'the beat/tick mark (seeker + mutable-cell clock)',
   '▮': 'the bare post §549 — an intro with no definition',
