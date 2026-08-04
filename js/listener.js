@@ -237,6 +237,110 @@
   playing = false; toggle.textContent = 'play';   // start paused: step-driven (reading/tracing), not auto-running
 })();
 
+/* the engine walking a strip (§501). Every number below is transcribed off the wire, not invented:
+   the TABLE is msg.json #1176 (demo:tape:function:+:1), the STRIP is the one #1177 runs it on, and the
+   step rule is #1169 (tape:do) over #1167 (tape:next) — read the cell under the stone, look the pair up
+   in the table for the condition you stand in, write, step, pass into the next condition, stop at end.
+   In #1167 the step code is 1=on, 0=back, anything else=stand still. Keep it that way. */
+(function () {
+  var box = document.getElementById('engine');
+  if (!box) return;
+  var stone  = document.getElementById('engine-stone');
+  var condEl = document.getElementById('engine-cond');
+  var sayEl  = document.getElementById('engine-say');
+  var toggle = document.getElementById('engine-toggle');
+  var stepB  = document.getElementById('engine-step');
+
+  var BLANK = null;                                  // the empty cell: (vector) on the wire
+  /* Two rules, and the engine cannot tell them apart — which is the entry's whole point. The first is
+     the wire's (#1176) and counts the strip up by one. The second is the plainest of Senn's own, three
+     lines, and turns every mark over. Both are checked in her text: the wire's takes 1001 to 1010, hers
+     takes 1001 to 0110. */
+  var RULES = [{
+    name: 'the rule that came out of the sky',
+    table: {                                         // condition -> mark read -> [next condition, step, write]
+      'out':  { '1': ['out',  1, '1'], '0': ['out',  1, '0'], 'b': ['add',  0, 'b'] },
+      'add':  { '1': ['add',  0, '0'], '0': ['home', 0, '1'], 'b': ['end',  2, '1'] },
+      'home': { '1': ['home', 0, '1'], '0': ['home', 0, '0'], 'b': ['end',  1, 'b'] },
+      'end':  {}
+    },
+    say: { out:  'running out to the far end, setting down what it found',
+           add:  'the end. Turn back, and add one',
+           home: 'the marks are set. It is only walking home',
+           end:  'and it stopped, and the strip stood changed' }
+  }, {
+    name: 'the plainest rule I could write',
+    table: {
+      'out':  { '1': ['out',  1, '0'], '0': ['out',  1, '1'], 'b': ['end',  2, 'b'] },
+      'end':  {}
+    },
+    say: { out:  'turning over every mark it meets',
+           end:  'and it stopped, and the strip stood changed' }
+  }];
+  var which = 0, TABLE = RULES[0].table, SAY = RULES[0].say;
+  var CELLS = {}, MIN = -1, MAX = 4;
+  Array.prototype.forEach.call(box.querySelectorAll('.cell'), function (g) {
+    CELLS[g.getAttribute('data-i')] = { g: g, mk: g.querySelector('.mk'),
+                                        x: +g.querySelector('rect').getAttribute('x') + 27 };
+  });
+
+  var strip, at, cond, halted;
+  function reset() {
+    strip = { '-1': BLANK, '0': '1', '1': '0', '2': '0', '3': '1', '4': BLANK };  // #1177's strip
+    at = 0; cond = 'out'; halted = false;
+    draw(); condEl.classList.remove('done'); box.classList.remove('idle');
+    sayEl.textContent = 'the stone on the first cell, and ' + RULES[which].name + ' on the page';
+  }
+  function glyph(v) { return v === BLANK ? '' : (v === '1' ? '▪' : '▫'); }
+  function draw() {
+    for (var i = MIN; i <= MAX; i++) {
+      var c = CELLS[i]; if (!c) continue;
+      c.mk.textContent = glyph(strip[i]);
+      c.g.classList.toggle('blank', strip[i] === BLANK);
+      c.g.classList.toggle('at', i === at);
+    }
+    stone.setAttribute('cx', CELLS[at] ? CELLS[at].x : 0);
+    condEl.textContent = halted ? 'the condition that means halt' : SAY[cond];
+  }
+  function step() {
+    if (halted) { reset(); return; }
+    var read = strip[at] === BLANK ? 'b' : strip[at];
+    var row = TABLE[cond] && TABLE[cond][read];
+    if (!row) { halted = true; draw(); return; }
+    var wrote = row[2] === 'b' ? BLANK : row[2], changed = wrote !== strip[at];
+    strip[at] = wrote;
+    var cell = CELLS[at];
+    if (cell && changed) { cell.g.classList.add('wrote'); setTimeout(function () { cell.g.classList.remove('wrote'); }, 220); }
+    var moved = row[1] === 1 ? 1 : (row[1] === 0 ? -1 : 0);
+    var wasReading = read === 'b' ? 'nothing' : (read === '1' ? 'one' : 'none');
+    var nowWriting = wrote === BLANK ? 'nothing' : (wrote === '1' ? 'one' : 'none');
+    at = Math.max(MIN, Math.min(MAX, at + moved));
+    cond = row[0];
+    halted = (cond === 'end');
+    box.classList.toggle('idle', cond === 'home');
+    draw();
+    sayEl.textContent = halted
+      ? SAY.end
+      : 'reading ' + wasReading + ': write ' + nowWriting + ', '
+        + (moved === 1 ? 'step on' : moved === -1 ? 'step back' : 'stand where I stood');
+    if (halted) { condEl.classList.add('done'); pause(); }
+  }
+
+  var timer = null, playing = false;
+  function play()  { playing = true;  toggle.textContent = 'pause'; if (!timer) timer = setInterval(step, 900); }
+  function pause() { playing = false; toggle.textContent = 'play';  if (timer) { clearInterval(timer); timer = null; } }
+  toggle.addEventListener('click', function () { if (playing) pause(); else play(); });
+  stepB.addEventListener('click', function () { if (playing) pause(); step(); });
+  var swapB = document.getElementById('engine-swap');
+  if (swapB) swapB.addEventListener('click', function () {
+    pause(); which = (which + 1) % RULES.length;
+    TABLE = RULES[which].table; SAY = RULES[which].say; reset();
+  });
+
+  stone.style.transition = 'none'; reset(); box.getBoundingClientRect();
+  stone.style.transition = ''; stone.classList.add('on');
+})();
+
 /* self-linking headers: click a pass title to pin the URL to its anchor (and copy the link) */
 (function () {
   Array.prototype.forEach.call(document.querySelectorAll('.entry[id]'), function (entry) {

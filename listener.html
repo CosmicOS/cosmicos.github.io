@@ -579,6 +579,26 @@ title: "The Second Book"
 .seekmap-say { font-style:italic; color:#a89b80; }
 /* geo-world: a second seeker (cool), and a flash where the two cross */
 .seekmap .seeker.s2 { fill:#7fcbd6; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(214,244,255,0.45)); }
+
+/* THE ENGINE WALKING A STRIP (§501). Same furniture as the map: a raised relief she reads by hand,
+   a stone for the reading-place, and the bar under it. The strip is cells; the stone slides. */
+.engine .cell rect { fill:#241b12; stroke:#cbb488; stroke-width:2;
+  filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2));
+  transition:stroke .3s ease, stroke-width .18s ease, opacity .4s ease; }
+.engine .cell .mk { font-family:"inconsolataregular","Courier New",monospace; fill:#ecdcb8; font-size:19px;
+  text-anchor:middle; transition:opacity .35s ease; }
+.engine .cell.blank rect { stroke-dasharray:3 3; opacity:.5; }
+.engine .cell.at rect { stroke:#ffd479; stroke-width:3; }
+.engine .cell.wrote rect { stroke-width:5.5; }
+/* the stone Senn set down for the reading-place */
+.engine .stone { fill:#ffd479; opacity:0; transition:cx .42s ease, opacity .4s ease;
+  filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(255,244,214,0.45)); }
+.engine .stone.on { opacity:1; }
+.engine .cond { font-family:"inconsolataregular","Courier New",monospace; fill:#bfe8c8; font-size:11px;
+  letter-spacing:1px; text-anchor:middle; transition:opacity .3s ease; }
+.engine .cond.done { fill:#ffd479; }
+/* the run home changes nothing, so it reads quieter than the part that does */
+.engine.idle .cell.at rect { stroke:#9c8b63; }
 .seekmap.meet .room.here circle { stroke:#fff2cf; stroke-width:4.5; }
 
 /* pictures: same exhibit box as everything else */
