@@ -92,8 +92,18 @@ function flatten(frag) {
   s = s.replace(/<svg\b[^>]*\baria-label="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g, ' ⟦animation: $1⟧ ');
   s = s.replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, ' ⟦figure: $1⟧ ');
   s = s.replace(/<span class="lbl"[^>]*>([\s\S]*?)<\/span>/g, '($1) ');            // a way-of-showing label -> ( … )
-  s = s.replace(/<span class="pf-k">([\s\S]*?)<\/span>/g, '$1 ');                  // head field key: it sits tag-to-tag
+  s = s.replace(/<span class="pf-k">([\s\S]*?)<\/span>/g, '\t$1 ');                // head field key: it sits tag-to-tag
   // against its value, so a bare strip gives "on watchMaren". Its gap is a column width on the page.
+  // The fence goes BEFORE the key too: without it the PREVIOUS field's value runs into this key
+  // ("on watch Rencycle Jeren") at the head of nearly every entry.
+
+  // Spans that the stylesheet lays out as their own line or their own column. The CELL rule below
+  // only catches an inline style="display:inline-block", so these were butted onto whatever
+  // preceded them — gluing a caption's lines together and welding a gloss onto the end of the marks
+  // it glosses. Both are unreadable in the flat read and neither is wrong on the page.
+  const CLS = c => new RegExp('<span class="(?:[^"]*\\s)?' + c + '(?:\\s[^"]*)?"[^>]*>', 'g');
+  s = s.replace(CLS('ln'), '\n');                                                 // .ln  is display:block
+  s = s.replace(CLS('say'), '\t');                                                // .say is set off beside the row
   s = s.replace(/<(?:br)\s*\/?>/g, '\n');
   s = s.replace(/<\/(?:p|div|li|h1|h2|h3|tr)>/g, '\n');                            // block breaks -> newlines
   // A span laid out as a COLUMN (fixed-width inline-block) is a table cell: on the page its width
