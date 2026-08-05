@@ -17,7 +17,7 @@
  *   neighbourhood (the message interleaves threads — e.g. §511's `instanceof` demos sit a few
  *   statements past §517's first `point` row; that is a real interleave, not a leak).
  *
- * TWO LEGITIMATE NON-MONOTONE CASES, both handled:
+ * THREE LEGITIMATE NON-MONOTONE CASES, all handled:
  *   1. READ-BACKS re-show a deliberately old coined sign. A `.readback` block is EXEMPT — its rows are
  *      not judged for provenance (that is the whole point of a read-back).
  *   2. LOCAL INTERLEAVE — one pass reaching a few statements past the next. Absorbed by TOL below,
@@ -25,6 +25,16 @@
  *      is 74, while the two known bugs sat 545 and 1016 upstream. TOL=150 clears the real cases by 2×
  *      and flags the bugs by 3×+. It is a floor on "how far upstream is clearly wrong", not a knob to
  *      tune per-exception (a gate that needs three exceptions on day one is worse than none).
+ *   3. THE WRAP. ★ The message is not a line, it is a RING: it builds simple → complex over its whole
+ *      length and then goes back to its simple beginning. That reset is the founder's first finding —
+ *      the thing that tells her it is not weather is that it "put the whole tangle down and came round
+ *      short." So a pass sitting at the END of the wire may quote from the BEGINNING, because the
+ *      beginning is what is on the wire that night. The first version of this gate measured distance
+ *      along a line and called that a leak; it was measuring against a model of the artifact that the
+ *      artifact does not have. Distance is now measured the short way round the ring, which is not a
+ *      loosening: the two bugs above sit 680 and 1200 statements away by ring distance too, so they are
+ *      still flagged by 4×+, while the wrap at the last pass sits 5 statements AHEAD. The allowance is
+ *      only ever available within TOL of the end of the wire, and every use of it is printed.
  *
  * Usage:  node scripts/audit-provenance.js
  */
@@ -89,21 +99,36 @@ for (const file of files) {
 const median = a => { const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
 const ordered = passes.filter(p => p.rows.length).sort((a, b) => a.pass - b.pass);
 
+// How far upstream is a quote, given that the wire is a ring of N statements? Behind by the linear
+// count, or ahead by the short way round the wrap — whichever is nearer. A quote is only upstream if
+// it is far by BOTH readings. See case 3 in the header: this is the artifact's shape, not a waiver.
+const N = k;                                           // statements on the wire, one turn of the ring
+const ahead = (from, to) => ((to - from) % N + N) % N;  // forward distance round the ring
+const upstream = (place, idx) => Math.min(place - idx, ahead(place, idx));
+
 // walk passes in pass order; a running high-water median is where the message "has reached" -----------
-const problems = [];
+const problems = [], wrapped = [];
 let runMax = -Infinity;
 for (const p of ordered) {
   const med = median(p.rows.map(r => r.idx));
-  if (med < runMax - TOL) {
+  const behind = runMax > -Infinity && med < runMax - TOL;
+  // A pass that has gone round the wrap sits AT its own median, not TOL behind the high-water mark —
+  // the wire really is back at the beginning, so that is where the pass belongs and what its rows are
+  // judged against. Getting this wrong leaves the row check measuring from a place nobody is standing.
+  const wrap = behind && ahead(runMax, med) <= TOL;
+  if (wrap) {
+    wrapped.push(`pass ${p.pass} (${p.file}) quotes around #${med} at the end of the wire — ` +
+                 `${ahead(runMax, med)} statements past #${runMax}, round the wrap`);
+  } else if (behind) {
     problems.push({ kind: 'pass', pass: p.pass, file: p.file,
       msg: `pass ${p.pass} (${p.file}) quotes around statement #${med}, but the diary has already reached #${runMax} — the whole pass sits ${runMax - med} statements upstream` });
   }
-  const anchor = Math.max(med, runMax - TOL);           // where this pass belongs
-  for (const r of p.rows) if (r.idx < anchor - TOL) {
+  const anchor = wrap ? med : Math.max(med, runMax - TOL);   // where this pass belongs
+  for (const r of p.rows) if (upstream(anchor, r.idx) > TOL) {
     problems.push({ kind: 'row', pass: p.pass, file: p.file, line: r.line,
-      msg: `pass ${p.pass} (${p.file}:${r.line}) quotes statement #${r.idx}, ${anchor - r.idx} upstream of where this pass sits (~#${anchor}) — a wire quote that reads right but was sent long before` });
+      msg: `pass ${p.pass} (${p.file}:${r.line}) quotes statement #${r.idx}, ${upstream(anchor, r.idx)} upstream of where this pass sits (~#${anchor}) — a wire quote that reads right but was sent long before` });
   }
-  runMax = Math.max(runMax, med);
+  runMax = wrap ? med : Math.max(runMax, med);          // past the wrap the high-water restarts
 }
 
 if (problems.length) {
@@ -115,3 +140,5 @@ if (problems.length) {
 console.log(`✓ provenance: ${ordered.length} passes read in step with the wire; ` +
             `no quote sits more than ${TOL} statements upstream of its pass` +
             (unknown.length ? ` (${unknown.length} code(s) not in the wire — build-frags is the gate for those)` : ''));
+// never silent: the wrap is the one place a pass may quote from the beginning, so say when it is used
+for (const w of wrapped) console.log('    round the wrap: ' + w);
