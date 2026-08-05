@@ -504,35 +504,87 @@
    var cvs = document.createElement('canvas'); cvs.className = 'circuit-cvs'; frame.appendChild(cvs); wrap.appendChild(frame);
    var bar = document.createElement('div'); bar.className = 'circuit-bar'; wrap.appendChild(bar);
 
-   labels.forEach(function (L) { forcing[L] = false; net.get(grid.getLabel(L)).set(false); });  // a mouth rests LOW (quiet); raise it to signal
+   /* Which way is a mouth QUIET? An undriven part in this family sits high (see prepareForUpdate:
+      with no source it goes true), so on a circuit whose inputs are active-low, resting them low is
+      holding them asserted for ever — the forbidden condition, and it free-runs. data-rest="high"
+      lets such a circuit idle the way it is built to. */
+   var restHigh = {};
+   (box.getAttribute('data-rest') || '').split(',').forEach(function (n) { if (n.trim()) restHigh[n.trim()] = 1; });
+   var REST = function (L) { return !!restHigh[L]; };
+   labels.forEach(function (L) { forcing[L] = REST(L); net.get(grid.getLabel(L)).set(REST(L)); });
    function readOut() { return net.get(grid.get(grid.length() - 1).name).state; }   // the tail = the answer she reads
+
+   /* Has it stopped moving? A sweep advances the whole net by one rank, so on anything with loops
+      in it the tail keeps changing for a while after you touch a mouth, and a reading taken before
+      it stops is a reading of the middle of the motion, not of the answer. Nothing subtle is needed
+      to tell: sweep, and see whether every part stands where it stood. The message settles a
+      circuit for as many sweeps as it has parts (its `sim` is driven by the circuit's own length),
+      which is the same idea with the counting done in advance. */
+   function shot() {
+     var s = '', i;
+     for (i = 0; i < grid.length(); i++) s += net.get(grid.get(i).name).state ? '1' : '0';
+     return s;
+   }
+   var settled = false, turns = false;
    var timer = null;
    function say() {
      var word = readOut() ? 'whole' : 'broken';
-     var raised = labels.some(function (L) { return forcing[L]; });
-     sayEl.textContent = raised ? 'under your hand — ' + word
-       : labels.length ? 'it holds — ' + word
-         : timer ? 'it will not rest — ' + word : 'still — set it going';
+     var raised = labels.some(function (L) { return forcing[L] !== REST(L); });
+     if (turns) {                                            // it came back to where it had been
+       sayEl.textContent = 'it will not rest — ' + word;
+     } else if (!labels.length) {                            // the ring: no mouths to feed it with
+       sayEl.textContent = timer ? 'it will not rest — ' + word : 'still — set it going';
+     } else if (!settled) {
+       sayEl.textContent = 'still going through it — ' + word;
+     } else {
+       sayEl.textContent = (raised ? 'under your hand — ' : 'it holds — ') + word;
+     }
    }
    function render() { paint(cvs, drawGrid(grid, net)); say(); }
-   function sweep() { net.update(); render(); }
+   function sweep() { var was = shot(); net.update(); settled = (shot() === was); if (settled) turns = false; render(); }
+
+   /* Sweep until it stops moving — or until it is plain that it never will. Two outcomes, and the
+      difference between them is the whole of §574:
+        every part stands where it stood  -> it has settled, and the tail is the answer
+        it comes back to a state it was already in -> it turns, and there is no answer to read
+      The ring is the second by construction. The latch is the second too if you raise both mouths
+      and let go, which is a real thing to find and not a fault. So this must never be a fixed
+      count of sweeps: a count cannot tell a slow part from a turning one. */
+   function settle() {
+     var seen = Object.create(null), s = shot(), i;
+     settled = false; turns = false;
+     for (i = 0; i < 500; i++) {
+       if (s in seen) { turns = true; break; }               // been here before: it is going round
+       seen[s] = 1;
+       net.update();
+       var now = shot();
+       if (now === s) { settled = true; break; }             // nothing moved: it is still
+       s = now;
+     }
+     render();
+   }
 
    var relabel = [];
    labels.forEach(function (L) {
      var b = document.createElement('button'); b.type = 'button'; b.className = 'c-in';
      function lab() { b.innerHTML = (disp[L] || L) + ' <span class="sw ' + (forcing[L] ? 'lit' : 'dark') + '"></span>'; }
      b.addEventListener('click', function () {                     // rest(low) <-> raised(high), both forced
-       forcing[L] = !forcing[L]; net.get(grid.getLabel(L)).set(forcing[L]); lab(); render();
+       forcing[L] = !forcing[L]; net.get(grid.getLabel(L)).set(forcing[L]); lab(); settled = false; turns = false; render();
      });
      lab(); relabel.push(lab); bar.appendChild(b);
    });
    if (labels.length) {
      var hoff = document.createElement('button'); hoff.type = 'button'; hoff.className = 'c-off'; hoff.textContent = 'let it fall quiet';
-     hoff.addEventListener('click', function () { labels.forEach(function (L) { forcing[L] = false; net.get(grid.getLabel(L)).set(false); }); relabel.forEach(function (f) { f(); }); render(); });
+     hoff.addEventListener('click', function () { labels.forEach(function (L) { forcing[L] = REST(L); net.get(grid.getLabel(L)).set(REST(L)); }); relabel.forEach(function (f) { f(); }); render(); });
      bar.appendChild(hoff);
    }
    var sweepB = document.createElement('button'); sweepB.type = 'button'; sweepB.className = 'c-sweep'; sweepB.textContent = 'sweep';
    sweepB.addEventListener('click', function () { stop(); sweep(); }); bar.appendChild(sweepB);
+   // One sweep is one rank. On a part with loops in it that is a long way short of the answer, and
+   // clicking twenty-one times to see a both-knot answer is not reading, it is drudgery.
+   var settleB = document.createElement('button'); settleB.type = 'button'; settleB.className = 'c-settle';
+   settleB.textContent = 'sweep till still';
+   settleB.addEventListener('click', function () { stop(); settle(); }); bar.appendChild(settleB);
    var runB = document.createElement('button'); runB.type = 'button'; runB.className = 'c-run'; runB.textContent = 'let it run';
    function stop() { if (timer) { clearInterval(timer); timer = null; runB.textContent = 'let it run'; } }
    function run() { if (timer) return; runB.textContent = 'rest'; timer = setInterval(sweep, 560); }
@@ -541,7 +593,19 @@
 
    if (img) img.style.display = 'none';
    box.appendChild(wrap);
-   render();
+   // Load settled. A part with mouths should present its resting reading, not the middle of the
+   // motion it happens to start in. The ring has no mouths and is left alone: "set it going" is
+   // its right first word, and settling it would only report what §574 spends the pass finding out.
+   if (labels.length) settle(); else render();
+   /* A part with a beat has no state until it has been beaten once — true of the real thing, and
+      not what a reader should meet on a page about a part that holds. data-start names mouths to
+      pulse once at load, which is what its world does to it anyway. */
+   (box.getAttribute('data-start') || '').split(',').forEach(function (n) {
+     var L = n.trim(); if (!L || !(L in forcing)) return;
+     forcing[L] = !REST(L); net.get(grid.getLabel(L)).set(forcing[L]); settle();
+     forcing[L] = REST(L);  net.get(grid.getLabel(L)).set(forcing[L]); settle();
+   });
+   relabel.forEach(function (f) { f(); });
  }
 
  (function () {
