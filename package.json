@@ -1,0 +1,13 @@
+{
+  "name": "cosmicos-listener",
+  "private": true,
+  "description": "Site build helpers and the live-exhibit test suite for the listener lesson.",
+  "scripts": {
+    "build": "scripts/build.sh",
+    "test": "scripts/build.sh >/dev/null && playwright test",
+    "test:exhibits": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

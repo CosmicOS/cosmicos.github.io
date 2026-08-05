@@ -10,3 +10,8 @@ plans/listener_index.json
 
 # the shared note queue (scripts/notes-server.py) — local, never committed
 notes.db
+
+# playwright test deps (declared in package.json; not committed)
+node_modules
+test-results
+playwright-report
