@@ -151,6 +151,13 @@ title: "The Second Book"
   font-family: 'listenermarks', "inconsolataregular", "DejaVu Sans Mono", "Courier New", monospace;
 }
 
+/* WEIGHT. The scrawl face (cosmic_spider) ships a single light weight, and its hairline strokes go
+   faint beside the solid bit-marks — a sign should carry the same ink as the cups and bits around
+   it, since it is all one pen. There is no bold face to switch to and `font-weight:bold` would only
+   get the browser's faux-bold smear, so thicken the strokes themselves. Scoped to this page; the
+   `.scrawl` class is used elsewhere on the site. Tune the px, it is the only knob. */
+.scrawl { -webkit-text-stroke: 0.5px currentColor; }
+
 /* MAREN's TWO SHEETS (§193). One stream written twice; the lower page slid along until the
    marks stand over their own. Monospace with white-space:pre so the columns are real columns —
    the whole point is seeing them fail to stack, and then stack. */

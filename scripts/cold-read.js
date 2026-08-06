@@ -39,7 +39,12 @@ if (!fs.existsSync(SRC)) {
 
 // read.js already flattens the post-JS DOM to the reader's text, with stable glyph tokens and no
 // leaked source names. Reuse it rather than growing a second renderer that can drift from the page.
-const full = execFileSync('node', [path.join(__dirname, 'read.js')], {
+// --figures braille, ALWAYS. The default token mode emits `glyph0`, `glyph1` …, which a reader takes
+// for broken template output rather than notation — read three (08-06) reported "unreplaced
+// placeholders, not text" and then could not check the form where the sign was the point, which is
+// the most valuable thing the instrument does. Braille gives each sign one distinct neutral symbol
+// and leaks nothing. Do not remove this flag.
+const full = execFileSync('node', [path.join(__dirname, 'read.js'), '--figures', 'braille'], {
   encoding: 'utf8', maxBuffer: 64 * 1024 * 1024
 });
 

@@ -40,13 +40,27 @@ echo "blind read: pieces $FROM..$TO of $TOTAL -> $OUT   (cwd $NEUTRAL)"
 for n in $(seq "$FROM" "$TO"); do
   nnn=$(printf '%03d' "$n")
   node scripts/cold-read.js --piece "$n" > "$OUT/piece-$nnn.txt"
-  if [ -z "$SID" ]; then
-    ( cd "$NEUTRAL" && claude -p --output-format json --disallowed-tools "$DIS" ) \
-      < "$OUT/piece-$nnn.txt" > "$OUT/$nnn.json" 2>&1
-  else
-    ( cd "$NEUTRAL" && claude -p --output-format json --resume "$SID" --disallowed-tools "$DIS" ) \
-      < "$OUT/piece-$nnn.txt" > "$OUT/$nnn.json" 2>&1
-  fi
+  # Retry once, then STOP. Never skip. A lost report costs one data point; a skipped PIECE puts a
+  # hole in the reader's accumulated context, and every report after it is then a reading of a book
+  # with an entry missing — so it reports confusion that isn't real, and those false findings get
+  # "fixed" in prose that was fine. Halting is recoverable: resume from the piece named below.
+  # (The original set -e halted too, which was right; what was wrong is that it did so silently.)
+  for try in 1 2; do
+    if [ -z "$SID" ]; then
+      ( cd "$NEUTRAL" && claude -p --output-format json --disallowed-tools "$DIS" ) \
+        < "$OUT/piece-$nnn.txt" > "$OUT/$nnn.json" 2>&1 || true
+    else
+      ( cd "$NEUTRAL" && claude -p --output-format json --resume "$SID" --disallowed-tools "$DIS" ) \
+        < "$OUT/piece-$nnn.txt" > "$OUT/$nnn.json" 2>&1 || true
+    fi
+    grep -q '"result": *"API Error' "$OUT/$nnn.json" || break
+    echo "  piece $nnn errored, retry $try"
+    if [ "$try" = 2 ]; then
+      echo "STOPPED at piece $nnn — failed twice. Do NOT skip it." >&2
+      echo "  resume with:  scripts/blind-read.sh $n" >&2
+      exit 1
+    fi
+  done
   NEW=$(python3 -c "import json,sys;print(json.load(open('$OUT/$nnn.json')).get('session_id',''))" 2>/dev/null || true)
   if [ -n "$NEW" ]; then
     SID="$NEW"
