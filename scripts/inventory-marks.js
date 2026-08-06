@@ -77,6 +77,8 @@ const INVENTORY = [
   { cls: 'cup c',    kind: 'STRUCTURE', shapes: ['⟆'],  what: 'an atom that CLOSES a cup.', gate: 'inventory-marks --check' },
   { cls: 'cup lo',   kind: 'STRUCTURE', shapes: ['⟦'],  what: 'opens a LIST (listener.js:79, `vector`). Renderer-generated, so it was invisible to this inventory until §501 hand-drew Senn\'s own table in the same shape (08-01).', gate: 'inventory-marks --check' },
   { cls: 'cup lc',   kind: 'STRUCTURE', shapes: ['⟧'],  what: 'closes a LIST. Same note as `cup lo`.', gate: 'inventory-marks --check' },
+  { cls: 'lst o',    kind: 'STRUCTURE', shapes: ['᚛'],  what: 'opens a STRUNG ROW (listener.js, `(list N) …`). HERS, not the sender\'s: the wire sends a mark and a count of how many follow, and Bram drops the count and walls both ends instead, so she can feel where a row stops. Declared 08-06 when §372 first drew the pair by hand to introduce it.', gate: 'inventory-marks --check' },
+  { cls: 'lst c',    kind: 'STRUCTURE', shapes: ['᚜'],  what: 'closes a strung row. Same note as `lst o`.', gate: 'inventory-marks --check' },
   { cls: 'cup',      kind: 'STRUCTURE', shapes: ['⟅','⟆'], what: 'both cup marks in one span (a key/legend).', gate: 'inventory-marks --check' },
   { cls: 'tn',       kind: 'STRUCTURE', shapes: ['˩','˨','˦','˥'],
     what: 'the four wire symbols as tone-letters — the message exactly as it arrives, before any reading.',
