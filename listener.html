@@ -354,6 +354,9 @@ title: "The Second Book"
 }
 .frag .cup { color: #6f95a8; } .frag .bit { color: #bfe8c8; } .frag .tick { color: #ffd479; }
 .frag.flood { white-space: normal; overflow: hidden; padding: 12px 14px 2px; }
+/* a .frag used as a RUNG of a peel is not its own exhibit — strip its box so the forms of one
+   statement read as a single ladder and not as boxes stacked inside a box. */
+.peel .frag { background: none; border: 0; border-radius: 0; padding: 0; margin: 0; display: block; }
 .flood .flood-run {
   display: block;
   font-size: 14px; line-height: 1.6; letter-spacing: 3px; color: #cbb794;

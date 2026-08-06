@@ -134,7 +134,10 @@ function buildFile(file) {
 
   // generated .row[data-code]: a QUOTE of a real statement, rendered in her hand by listener.js. Verify it IS a real
   // transmitted statement and register its parse. (.row[data-parse] = a hypothesis / hand-composed row; not checked here.)
-  html = html.replace(/<div class="row"([^>]*\bdata-code="[^"]*"[^>]*)><\/div>/g, (m, attrs) => {
+  // class="row" may carry extra classes (a peel rung is `row msg-view`). Matching the attribute
+  // EXACTLY meant such a row was silently skipped here and then rendered BLANK on the page, with
+  // every gate green — found 08-06 on the closing entry.
+  html = html.replace(/<div class="row[^"]*"([^>]*\bdata-code="[^"]*"[^>]*)><\/div>/g, (m, attrs) => {
     const code = attr(attrs, 'data-code');
     if (!BY_CODE[code]) { errs.push('row data-code is not a real transmitted statement: ' + code); return m; }
     usedCodes.add(code); quote++;
