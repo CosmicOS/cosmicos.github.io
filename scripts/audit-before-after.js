@@ -37,8 +37,7 @@ const ORDER = require('./arc-order');
 const DEBT = new Set([
   'p280 assign', 'p288 ?', 'p297 @', 'p306 true', 'p306 false', 'p310 if',
   'p345 true:*', 'p345 true:+', 'p349 cons',
-  'p441 forall', 'p484 mutable-struct', 'p505 quote',
-  'p511 instanceof', 'p554 unless', 'p564 cos_true:*_gate', 'p602 method', 'p602 class',
+  'p441 forall', 'p484 mutable-struct', 'p554 unless', 'p602 method', 'p602 class',
 ]);
 
 const paid = [], owing = [], broke = [];
