@@ -35,9 +35,8 @@ const ORDER = require('./arc-order');
 /* Coins that changed the page's notation by assertion, inherited 08-01. DELETE a line when it is
  * paid — never add one. */
 const DEBT = new Set([
-  'p280 assign', 'p288 ?', 'p297 @', 'p306 true', 'p306 false', 'p310 if',
-  'p345 true:*', 'p345 true:+', 'p349 cons',
-  'p441 forall', 'p484 mutable-struct', 'p554 unless', 'p602 method', 'p602 class',
+  // EMPTY. Every coining in the book now shows one real statement both ways.
+  // The list may only shrink; a line removed can never be silently put back.
 ]);
 
 const paid = [], owing = [], broke = [];
