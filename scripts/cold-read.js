@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-/* cold-read.js — cut the book into a PREFIX, so a reader can be stuck the way a real one is.
+/* cold-read.js — cut the book up so a reader can be stuck the way a real one is.
+ *
+ * ★ THE RIG THIS FEEDS IS DOCUMENTED IN plans/BLIND_REVIEW_MECHANISM.md — read it before running a
+ * review or acting on one.  The runner is scripts/blind-read.sh.  Prefer `--piece` (one entry, fed
+ * to an accumulating session) over the prefix mode below; the reasons are at that flag.
  *
  * WHY THIS EXISTS.  Every blind review this project has run handed the reviewer the whole
  * manuscript, and a reviewer holding the whole manuscript CANNOT GET STUCK: they meet a mysterious
@@ -51,9 +55,30 @@ if (args.includes('--list')) {
   process.exit(0);
 }
 
+/* --piece N emits entry N ALONE, for the incremental rig (see plans/BLIND_REVIEW_MECHANISM.md and
+ * scripts/blind-read.sh).  The prefix mode above re-sends the whole book on every run, so a reader
+ * meets each entry with no memory of having read the ones before it — the entry is in context but
+ * the READING of it is not.  Feeding one piece per turn into a single session instead gives a reader
+ * that accumulates, and that is what catches arithmetic that stops adding up two hundred passes
+ * later.  Piece 1 carries the standing instructions; the rest are bare. */
+const pi = args.indexOf('--piece');
+if (pi >= 0) {
+  const p = parseInt(args[pi + 1], 10);
+  if (!p || p < 1 || p > chunks.length) {
+    console.error(`usage: cold-read.js --piece <1..${chunks.length}>`);
+    process.exit(2);
+  }
+  const preamble = p === 1
+    ? fs.readFileSync(path.join(__dirname, 'blind-read-prompt.txt'), 'utf8').trimEnd() + '\n\n'
+    : '';
+  process.stdout.write(preamble + chunks[p - 1] + '\n');
+  process.exit(0);
+}
+
 const n = parseInt(args[0], 10);
 if (!n || n < 1 || n > chunks.length) {
   console.error(`usage: cold-read.js <1..${chunks.length}> [--out FILE]   (--list to see them)`);
+  console.error(`       cold-read.js --piece <n>   one entry alone, for the incremental blind read`);
   process.exit(2);
 }
 

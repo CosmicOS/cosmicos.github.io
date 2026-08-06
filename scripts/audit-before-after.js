@@ -36,8 +36,8 @@ const ORDER = require('./arc-order');
  * paid — never add one. */
 const DEBT = new Set([
   'p280 assign', 'p288 ?', 'p297 @', 'p306 true', 'p306 false', 'p310 if',
-  'p345 true:*', 'p345 true:+', 'p349 cons', 'p361 cell:make', 'p400 list:find',
-  'p441 forall', 'p448 element', 'p462 begin', 'p484 mutable-struct', 'p505 quote',
+  'p345 true:*', 'p345 true:+', 'p349 cons',
+  'p441 forall', 'p484 mutable-struct', 'p505 quote',
   'p511 instanceof', 'p554 unless', 'p564 cos_true:*_gate', 'p602 method', 'p602 class',
 ]);
 

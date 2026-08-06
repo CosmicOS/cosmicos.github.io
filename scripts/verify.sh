@@ -14,6 +14,8 @@
 #   6. audit-values   — a "gives" row shows sender-side evaluation: the set is closed & each justified
 #   7. inventory-marks — every span class that puts a mark on the page is declared & within its shapes
 #   8. audit-hands    — every hand-drawn row declares why it is not a wire quote; every wire claim is anchored
+#      audit-drawn    — and every sign a row DRAWS is one that statement actually sent (no invented or
+#                       doubled marks; omission is fine, invention is not) — caught §221 printing a stem twice
 #   9. audit-provenance — every wire quote sits where its pass sits in the message (a statement can be real
 #                         yet quoted at the wrong time; caught §511 and §591, both real yet upstream)
 #  10. audit-assets   — every image (inline or referenced) decodes and validates; no broken material ships
@@ -77,6 +79,7 @@ node scripts/inventory-marks.js --check
 
 step "10/14 audit-hands (every hand-drawn row declares why it is not a wire quote)"
 node scripts/audit-hands.js
+node scripts/audit-drawn.js
 
 step "11/14 audit-provenance (every wire quote sits where its pass sits in the message)"
 node scripts/audit-provenance.js

@@ -2,15 +2,17 @@
 /* READ ONE EXHIBIT. Decode a block back to the marks it puts on the page, with its pass, its
  * type, its declarations, and the prose either side of it.
  *
- * Built 2026-08-01. Exhibits live as a flat array of escaped HTML strings addressed by position,
- * which is safe (byte round-trip, gates, provenance) and miserable to work with: every inspection
- * meant writing a throwaway decoder, `git diff` on blocks.json says nothing about what changed in
- * a figure, and referencing {{EX:13}} when you mean {{EX:15}} silently duplicates one exhibit and
- * orphans another. This makes reading one cheap, which is the precondition for checking it.
+ * Built 2026-08-01. Exhibits live as escaped HTML strings in `_prose/*.blocks.json`, which is safe
+ * (byte round-trip, gates, provenance) and miserable to read: every inspection meant writing a
+ * throwaway decoder, and `git diff` on blocks.json says nothing about what changed in a figure.
+ * This makes reading one cheap, which is the precondition for checking it.
  *
- *   node scripts/exhibit.js k1-maren            list every exhibit: index, kind, pass, first marks
- *   node scripts/exhibit.js k1-maren 12         decode one, with the prose around it
+ *   node scripts/exhibit.js k1-maren            list every exhibit: name, kind, pass, first marks
+ *   node scripts/exhibit.js k5-bram cons        decode one by name, with the prose around it
  *   node scripts/exhibit.js --all               every keeper, one line each
+ *
+ * Blocks are keyed by NAME, not position — the name says what the exhibit shows. See prose.js for
+ * why, and for the rule that they are never renumbered.
  *
  * It does NOT verify anything. A hand-drawn exhibit can still assert something false — the §193
  * sheets claimed "one round, two phases" and were not — and no gate checks that. This only makes
@@ -62,9 +64,9 @@ if (args[0] === '--all' || !args.length) {
   for (const k of KEEPERS) {
     const { html, blocks } = load(k);
     const kinds = {};
-    blocks.forEach((b, i) => { const t = kind(b); kinds[t] = (kinds[t] || 0) + 1; });
-    const orphan = blocks.map((_, i) => i).filter(i => !html.includes(`{{EX:${i}}}`));
-    console.log(`  ${k.padEnd(12)} ${String(blocks.length).padStart(3)} exhibits  ` +
+    Object.values(blocks).forEach(b => { const t = kind(b); kinds[t] = (kinds[t] || 0) + 1; });
+    const orphan = Object.keys(blocks).filter(n => !html.includes(`{{EX:${n}}}`));
+    console.log(`  ${k.padEnd(12)} ${String(Object.keys(blocks).length).padStart(3)} exhibits  ` +
       Object.entries(kinds).map(([t, n]) => `${t}×${n}`).join(' ') +
       (orphan.length ? `   ⚠ UNREFERENCED: ${orphan.join(',')}` : ''));
   }
@@ -76,16 +78,19 @@ if (!KEEPERS.includes(name)) { console.error(`unknown keeper "${name}" — one o
 const { html, blocks } = load(name);
 
 if (args[1] === undefined) {
-  blocks.forEach((b, i) => {
-    const c = context(html, i);
+  Object.entries(blocks).forEach(([n, b]) => {
+    const c = context(html, n);
     const first = strip(b).split('\n').map(s => s.trim()).filter(Boolean)[1] || '';
-    console.log(`  EX:${String(i).padEnd(3)} §${String(c.pass).padEnd(4)} ${kind(b).padEnd(11)} ${first.slice(0, 64)}`);
+    console.log(`  EX:${n.padEnd(24)} §${String(c.pass).padEnd(4)} ${kind(b).padEnd(11)} ${first.slice(0, 52)}`);
   });
   process.exit(0);
 }
 
-const n = Number(args[1]);
-if (!blocks[n]) { console.error(`${name} has no EX:${n} (0..${blocks.length - 1})`); process.exit(2); }
+const n = args[1];
+if (!blocks[n]) {
+  console.error(`${name} has no EX:${n}\n  names: ${Object.keys(blocks).join(' ')}`);
+  process.exit(2);
+}
 const c = context(html, n);
 const hands = [...blocks[n].matchAll(/data-hand="([^"]*)"/g)].map(m => m[1]);
 const codes = [...blocks[n].matchAll(/data-code="(\d+)"/g)].map(m => m[1]);
