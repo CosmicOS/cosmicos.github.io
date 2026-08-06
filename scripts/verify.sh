@@ -48,6 +48,7 @@ node scripts/build-frags.js > /dev/null
 step "1/14  prose-check (coined tokens introduced before use)"
 node scripts/prose-check.js
 node scripts/check-american.js
+node scripts/check-limbs.js
 
 step "2/14  audit-coins (show-before-coin: sign shown before its word is coined)"
 node scripts/audit-coins.js

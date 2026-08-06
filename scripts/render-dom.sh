@@ -26,5 +26,26 @@ SRV=$!; trap 'kill $SRV 2>/dev/null || true' EXIT
 sleep 1
 
 echo "rendering http://127.0.0.1:$PORT/listener.html through $(basename "$CHROME")…" >&2
-timeout 90 "$CHROME" --headless=new --no-sandbox --disable-gpu --enable-logging=stderr --v=1 \
-  --virtual-time-budget=8000 --dump-dom "http://127.0.0.1:$PORT/listener.html" >"$DOM" 2>"$ERR"
+
+# Chrome fans out into a process tree and will happily eat several GB on a workstation, which
+# has made this laptop stutter mid-run. Two belts:
+#   1. flags that cut the footprint without touching what gets rendered (one renderer, capped V8
+#      heap, no /dev/shm growth, no background subsystems). None of these change the DOM.
+#   2. a cgroup scope, when systemd --user is available: MemoryHigh throttles by reclaiming
+#      rather than killing, MemoryMax is only a runaway backstop. If the scope cannot be made,
+#      fall through and run Chrome directly — a memory cap is not worth failing the gate over.
+CHROME_ARGS=(--headless=new --no-sandbox --disable-gpu --enable-logging=stderr --v=1
+  --renderer-process-limit=1 --js-flags=--max-old-space-size=512 --disable-dev-shm-usage
+  --disable-extensions --disable-background-networking --disable-software-rasterizer
+  --virtual-time-budget=8000 --dump-dom "http://127.0.0.1:$PORT/listener.html")
+
+if command -v systemd-run >/dev/null && systemctl --user is-system-running >/dev/null 2>&1; then
+  SCOPE="render-dom-$$"
+  systemd-run --user --scope --quiet --unit="$SCOPE" \
+    -p MemoryHigh=1500M -p MemoryMax=3G -p MemorySwapMax=0 \
+    timeout 90 "$CHROME" "${CHROME_ARGS[@]}" >"$DOM" 2>"$ERR" \
+    || { echo "capped run failed; retrying uncapped" >&2
+         timeout 90 "$CHROME" "${CHROME_ARGS[@]}" >"$DOM" 2>"$ERR"; }
+else
+  timeout 90 "$CHROME" "${CHROME_ARGS[@]}" >"$DOM" 2>"$ERR"
+fi
