@@ -490,6 +490,22 @@
  // data-net (rows separated by ';'), draws in the keeper's ink, and lets the reader feed the
  // mouths and sweep.  Degrades to the still <img class="pic"> inside it when JS is off.
 
+ /* A button whose label changes is a button that changes width, and these bars are centered, so one
+    changing label slides every other button along the row — under the finger that is pressing it, on
+    a reader who is pressing the same button over and over. Give it the width of its widest label,
+    measured from the button itself rather than declared in the stylesheet: the label wording, the
+    font and the font-size all move, and a hard-coded width silently stops matching any of them.
+    (`ch` is not the answer either — in this face a character advance is not one ch.)
+    The twin of this lives in js/listener.js, for the play/pause toggles. */
+ function pinWidth(btn, labels) {
+   var was = btn.textContent, w = 0;
+   labels.forEach(function (t) { btn.textContent = t; w = Math.max(w, btn.getBoundingClientRect().width); });
+   btn.textContent = was;
+   // getBoundingClientRect measures the border box, so say min-width in the same terms or the
+   // padding gets counted twice and every pinned button comes out a padding too wide.
+   if (w) { btn.style.boxSizing = 'border-box'; btn.style.minWidth = Math.ceil(w) + 'px'; }
+ }
+
  function initCircuit(box) {
    var netStr = (box.getAttribute('data-net') || '').replace(/;/g, '\n');
    if (!netStr) return;
@@ -589,6 +605,7 @@
    function stop() { if (timer) { clearInterval(timer); timer = null; runB.textContent = 'let it run'; } }
    function run() { if (timer) return; runB.textContent = 'rest'; timer = setInterval(sweep, 560); }
    runB.addEventListener('click', function () { if (timer) stop(); else run(); }); bar.appendChild(runB);
+   pinWidth(runB, ['let it run', 'rest']);
    var sayEl = document.createElement('span'); sayEl.className = 'circuit-say'; bar.appendChild(sayEl);
 
    if (img) img.style.display = 'none';

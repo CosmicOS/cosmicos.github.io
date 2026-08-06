@@ -57,6 +57,70 @@ test('every moving exhibit is present', async ({ page }) => {
   await expect(page.locator('#engine')).toHaveCount(1);    // the strip and the table
 });
 
+/* ---------- the controls hold still ---------------------------------------------- */
+
+// A reader drives these by pressing the same button over and over. Every bar is a centred row, and
+// the text in it changes as the thing runs — play/pause, let-it-run/rest, and a say-line that is a
+// different length at every step — so before this was pinned down, pressing `step` re-centred the
+// row and slid the button out from under the finger that was pressing it. Measure the buttons,
+// drive the exhibit, measure again: nothing may have moved by so much as a pixel.
+const boxes = bar => bar.locator('button').evaluateAll(
+  bs => bs.map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.x), Math.round(r.width)]; }));
+
+for (const [what, sel, drive] of [
+  ['engine',  '#engine .seekmap-bar',  ['#engine-step', '#engine-step', '#engine-toggle', '#engine-swap']],
+  ['seeker',  '#seekmap .seekmap-bar', ['#seekmap-step', '#seekmap-step', '#seekmap-toggle']],
+  ['two seekers', '#geomap .seekmap-bar', ['#geomap-step', '#geomap-step', '#geomap-toggle']],
+]) {
+  test(`${what}: the buttons do not move as the reading changes`, async ({ page }) => {
+    await page.goto(PAGE);
+    const bar = page.locator(sel);
+    const before = await boxes(bar);
+    expect(before.length).toBeGreaterThan(1);
+    for (const id of drive) { await page.locator(id).click(); await page.waitForTimeout(120); }
+    expect(await boxes(bar)).toEqual(before);
+  });
+}
+
+// Most of this lesson gets read on a phone, and an exhibit that runs off the side of the page is
+// an exhibit with the end of every reading missing. The engine's drawing is the wide one.
+test('mobile: the exhibits fit the page, and the controls still hold still', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(PAGE);
+  for (const sel of ['#engine', '#seekmap', '#geomap', 'figure.circuit']) {
+    const over = await page.locator(sel).first()
+      .evaluate(el => el.scrollWidth - el.clientWidth);
+    expect(over, `${sel} runs off the side by ${over}px`).toBeLessThanOrEqual(1);
+  }
+  const bar = page.locator('#engine .seekmap-bar');
+  const before = await boxes(bar);
+  for (const id of ['#engine-step', '#engine-step', '#engine-toggle']) {
+    await page.locator(id).click(); await page.waitForTimeout(120);
+  }
+  expect(await boxes(bar)).toEqual(before);
+});
+
+test('circuits: the buttons do not move as the reading changes', async ({ page }) => {
+  await page.goto(PAGE);
+  // the latch has two mouths, a run toggle and the longest spread of say-lines of any of them
+  const fig = gate(page, 'sr.png');
+  const bar = fig.locator('.circuit-bar');
+  const before = await boxes(bar);
+  for (const b of ['button.c-sweep', 'button.c-settle', 'button.c-run', 'button.c-run', 'button.c-off']) {
+    await fig.locator(b).click(); await page.waitForTimeout(120);
+  }
+  await mouth(fig, 'the whole side', true);
+  await sweep(fig);
+  expect(await boxes(bar)).toEqual(before);
+  // and the ring, whose say-line runs from "set it going" to "it will not rest"
+  const ring = gate(page, 'osc.png');
+  const rbar = ring.locator('.circuit-bar');
+  const rbefore = await boxes(rbar);
+  await ring.locator('button.c-run').click(); await page.waitForTimeout(400);
+  await ring.locator('button.c-run').click();
+  expect(await boxes(rbar)).toEqual(rbefore);
+});
+
 test('no exhibit throws', async ({ page }) => {
   const errs = [];
   page.on('pageerror', e => errs.push(String(e)));

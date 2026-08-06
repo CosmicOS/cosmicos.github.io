@@ -573,15 +573,42 @@ title: "The Second Book"
 .seekmap .room.press circle { stroke-width:5.5; }
 .seekmap .seeker { fill:#ffd479; opacity:0; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(255,244,214,0.45)); transition:cx .5s ease, cy .5s ease, opacity .4s ease; }
 .seekmap .seeker.on { opacity:1; }
-.seekmap-bar { text-align:center; margin-top:8px; font-family:"inconsolataregular","Courier New",monospace; font-size:12px; color:#a89772; }
-.seekmap-bar button { background:none; border:1px solid #4a3f2e; color:#c3b48f; font:inherit; font-size:11px; padding:2px 11px; border-radius:11px; cursor:pointer; margin-right:8px; }
+.seekmap-bar button { background:none; border:1px solid #4a3f2e; color:#c3b48f; font:inherit; font-size:11px; padding:2px 11px; border-radius:11px; cursor:pointer; }
 .seekmap-bar button:hover { border-color:#e0c48a; color:#f0dcae; }
 .seekmap-say { font-style:italic; color:#a89b80; }
+/* ── THE CONTROLS MUST HOLD STILL UNDER THE READER ────────────────────────────────────────────
+   Both bars are the same object and are now built the same way: a wrapping row of buttons, centered,
+   with the reading on a row of its own beneath it.
+
+   This looks like fussing and is not. A reader drives these by pressing one button over and over.
+   Every reading in the bar changes as the thing runs — play/pause, let-it-run/rest, and a say-line
+   that is a different length at every single step — and in a centred row ANY width change
+   re-centers the whole row. So pressing `step` slid the button out from under the finger that was
+   pressing it, and the longest say-lines wrapped and shoved the row up and down as well.
+
+   The say-line on its own row means its text can never move a button. The two buttons whose LABELS
+   change have their width pinned in JS, measured from their own longest label at load — see
+   pinWidth() in js/circuit-sim.js and js/listener.js. That is deliberately not a number in this
+   stylesheet: a hard-coded width is wrong the moment the font, the font-size or the wording moves,
+   and `ch` is no better, because in this font a character advance is not one ch. */
+.circuit-bar, .seekmap-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
+  gap:6px 8px; margin-top:8px; font-family:"inconsolataregular","Courier New",monospace; font-size:12px; }
+.seekmap-bar { color:#a89772; }
+.seekmap-say, .circuit-say { flex:0 0 100%; margin:2px 0 0; min-height:1.45em; text-align:center; }
+/* A finger is not a pointer. On touch the controls get a target you can actually hit. */
+@media (pointer:coarse) {
+  .circuit-bar button, .seekmap-bar button { font-size:12px; padding:7px 14px; min-height:34px; }
+}
 /* geo-world: a second seeker (cool), and a flash where the two cross */
 .seekmap .seeker.s2 { fill:#7fcbd6; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(214,244,255,0.45)); }
 
 /* THE ENGINE WALKING A STRIP (§501). Same furniture as the map: a raised relief she reads by hand,
    a stone for the reading-place, and the bar under it. The strip is cells; the stone slides. */
+/* The engine's drawing is 460 across and had no width rule of its own, so on a phone it simply ran
+   off the side of the page: the last cell of the strip and the end of every reading were not there
+   to be read. This is the rule .seekmap has always had. */
+.engine { max-width:100%; }
+.engine > svg { display:block; width:100%; height:auto; max-width:460px; margin:0 auto; }
 .engine .cell rect { fill:#241b12; stroke:#cbb488; stroke-width:2;
   filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2));
   transition:stroke .3s ease, stroke-width .18s ease, opacity .4s ease; }
@@ -609,14 +636,14 @@ title: "The Second Book"
 .circuit { margin:0.7em 0; }
 .circuit-frame { background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:12px; }
 .circuit-cvs { image-rendering:pixelated; width:453px; max-width:100%; height:auto; display:block; margin:0 auto; }
-.circuit-bar { text-align:center; margin-top:9px; font-family:"inconsolataregular","Courier New",monospace; font-size:12px; color:#8fa88f; }
-.circuit-bar button { background:none; border:1px solid #2c4436; color:#9fc0a8; font:inherit; font-size:11px; padding:2px 11px; border-radius:11px; cursor:pointer; margin:2px 5px; }
+.circuit-bar { color:#8fa88f; }   /* the shared bar layout is up with .seekmap-bar */
+.circuit-bar button { background:none; border:1px solid #2c4436; color:#9fc0a8; font:inherit; font-size:11px; padding:2px 11px; border-radius:11px; cursor:pointer; }
 .circuit-bar button:hover { border-color:#8fe6a8; color:#c9f0d4; }
 .circuit-bar .sw { display:inline-block; width:9px; height:9px; border-radius:2px; margin-left:5px; vertical-align:middle; border:1px solid #4a6152; }
 .circuit-bar .sw.lit { background:#8fe6a8; border-color:#8fe6a8; }
 .circuit-bar .sw.dark { background:#0a0e14; }
 .circuit-bar .sw.free { background:transparent; border-style:dashed; }
-.circuit-say { font-style:italic; color:#8a9b86; margin-left:6px; }
+.circuit-say { font-style:italic; color:#8a9b86; }
 /* ──────────────────────────────────────────────────────────────────────────────
    NARROW SCREENS. The listener page had NO media query at all until 08-01 — it was
    built and reviewed at desk width, and read on a phone the exhibits either ran off

@@ -178,6 +178,23 @@
   );
 })();
 
+/* A button whose label changes is a button that changes width, and these bars are centered, so the
+   play/pause toggle slid every button beside it along the row each time it was pressed — under the
+   finger of a reader who is pressing the same button over and over. Give it the width of its widest
+   label, measured from the button itself rather than declared in the stylesheet: the wording, the
+   font and the font-size all move, and a hard-coded width silently stops matching any of them.
+   (`ch` is not the answer either — in this face a character advance is not one ch.)
+   The twin of this lives in js/circuit-sim.js, for the let-it-run/rest toggle. */
+function pinWidth(btn, labels) {
+  if (!btn) return;
+  var was = btn.textContent, w = 0;
+  labels.forEach(function (t) { btn.textContent = t; w = Math.max(w, btn.getBoundingClientRect().width); });
+  btn.textContent = was;
+  // getBoundingClientRect measures the border box, so say min-width in the same terms or the padding
+  // gets counted twice and every pinned button comes out a padding too wide.
+  if (w) { btn.style.boxSizing = 'border-box'; btn.style.minWidth = Math.ceil(w) + 'px'; }
+}
+
 /* the seeker's map (§619): the least-recently-seen patrol, drawn and followed.
    World + walk are the real message (msg.json #1420-1448): rooms 0..4, four doors, start at 2. */
 (function () {
@@ -233,6 +250,7 @@
   function play()  { playing = true;  toggle.textContent = 'pause'; if (!timer) timer = setInterval(step, 1100); }
   function pause() { playing = false; toggle.textContent = 'play';  if (timer) { clearInterval(timer); timer = null; } }
   toggle.addEventListener('click', function () { if (playing) pause(); else play(); });
+  pinWidth(toggle, ['play', 'pause']);
   stepB.addEventListener('click', function () { if (playing) pause(); step(); });
   playing = false; toggle.textContent = 'play';   // start paused: step-driven (reading/tracing), not auto-running
 })();
@@ -330,6 +348,7 @@
   function play()  { playing = true;  toggle.textContent = 'pause'; if (!timer) timer = setInterval(step, 900); }
   function pause() { playing = false; toggle.textContent = 'play';  if (timer) { clearInterval(timer); timer = null; } }
   toggle.addEventListener('click', function () { if (playing) pause(); else play(); });
+  pinWidth(toggle, ['play', 'pause']);
   stepB.addEventListener('click', function () { if (playing) pause(); step(); });
   var swapB = document.getElementById('engine-swap');
   if (swapB) swapB.addEventListener('click', function () {
@@ -422,6 +441,7 @@
   function play()  { playing = true;  toggle.textContent = 'pause'; if (!timer) timer = setInterval(step, 1100); }
   function pause() { playing = false; toggle.textContent = 'play';  if (timer) { clearInterval(timer); timer = null; } }
   toggle.addEventListener('click', function () { if (playing) pause(); else play(); });
+  pinWidth(toggle, ['play', 'pause']);
   stepB.addEventListener('click', function () { if (playing) pause(); step(); });
   playing = false; toggle.textContent = 'play';   // start paused: step-driven (reading/tracing), not auto-running
 })();
