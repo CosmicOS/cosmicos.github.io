@@ -20,7 +20,7 @@ const KEEPERS = ['Maren','Ren','Iso','Neru','Bram','Vess','Ona','Senn','Cael','T
    the only one of the three that wasn't load-bearing. 'Sill' replaces it. Keep this list closed; the
    register-name is flavor, and flavor must not take a word the story needs. */
 const TIDES = ['Ful','Sut','Slack','Neap','Bore','Sill','Race'];
-const ROOMS = ['Star','Kettle','Barge','Reed','Skeel','Salt'];
+const ROOMS = ['Star','Kettle','Barge','Lamp','Skeel','Salt'];
 
 const flags = [];
 const bad = (f, msg) => flags.push(`${f.padEnd(10)} ${msg}`);
