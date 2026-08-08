@@ -49,7 +49,27 @@ const full = execFileSync('node', [path.join(__dirname, 'read.js'), '--figures',
 });
 
 const SEP = '\n' + '-'.repeat(72) + '\n';
-const chunks = full.split(SEP).map(s => s.trim()).filter(Boolean);
+/* A PIECE UNDER TWO LINES IS NOT WORTH A TURN — carry it into the next one.
+ *
+ * The splitter cuts on the arc's own separators, so a title page or a two-word front-matter block
+ * became a piece of its own and got a whole turn of the reader's attention. It cannot say anything
+ * useful about three words, and it knows it: the 08-08 read opened with "three words is not enough to
+ * have earned interest or lost it", which is a true observation about the RIG rather than the book —
+ * a reader on the page sees that heading and the entry under it in one glance. Manufactured findings
+ * cost more than the turn does, because each one has to be chased down before it can be dismissed.
+ * So a stub rides along with the piece that follows it, which is how the page presents it anyway. */
+const MIN_LINES = 2, MIN_WORDS = 20;   // words, because a heading + a title is two LINES and one thought
+const raw = full.split(SEP).map(s => s.trim()).filter(Boolean);
+const chunks = [];
+let carry = '';
+for (const c of raw) {
+  const merged = carry ? carry + '\n\n' + c : c;
+  const lines = merged.split('\n').filter(l => l.trim()).length;
+  const words = merged.split(/\s+/).filter(Boolean).length;
+  if (lines < MIN_LINES || words < MIN_WORDS) { carry = merged; continue; }
+  chunks.push(merged); carry = '';
+}
+if (carry) chunks.push(carry);            // a trailing stub has nothing to ride with; send it alone
 
 const args = process.argv.slice(2);
 if (args.includes('--list')) {

@@ -15,8 +15,11 @@
  *     tofu box in plain text, so each distinct one becomes a stable token glyph0, glyph1, …
  *     assigned in first-seen order and REUSED across the whole read (recurrence stays checkable);
  *   - the §189 tone-wall is summarized (it fades off-screen; its length is unstated);
- *   - a message FIGURE bitmap becomes ⟦figure: {alt}⟧ and a seeker ANIMATION becomes ⟦animation:
- *     {aria-label}⟧ (play/step controls dropped), so a flat read isn't blind to those beats;
+ *   - a bitmap or an SVG becomes ⟦a drawing on the page: {alt}⟧ (play/step controls dropped), so a
+ *     flat read isn't blind to those beats. NAMED AS A DRAWING ON PURPOSE: it was ⟦animation: …⟧,
+ *     which a blind reader took for a stage direction leaking out of the authoring — "that is not in
+ *     the world of this book" — and reported as a defect in the prose. The stand-in has to announce
+ *     that it stands in for something a sighted reader SEES, or it manufactures findings;
  *   - no explanatory header and no figure-key footer — hand over just the diary.
  *
  * Usage:  node scripts/read.js [--through N] [--out FILE] [--dom FILE]
@@ -91,8 +94,8 @@ function flatten(frag) {
   // token carrying its alt/aria-label, so a text-only review isn't blind to the picture/animation beats
   // (§544–579 bitmaps, §619/622 seeker animations). Do this BEFORE the generic tag-strip below.
   s = s.replace(/<div class="seekmap-bar">[\s\S]*?<\/div>/g, '');                  // drop play/pause/step controls
-  s = s.replace(/<svg\b[^>]*\baria-label="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g, ' ⟦animation: $1⟧ ');
-  s = s.replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, ' ⟦figure: $1⟧ ');
+  s = s.replace(/<svg\b[^>]*\baria-label="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g, ' ⟦a drawing on the page: $1⟧ ');
+  s = s.replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, ' ⟦a drawing on the page: $1⟧ ');
   s = s.replace(/<span class="lbl"[^>]*>([\s\S]*?)<\/span>/g, '($1) ');            // a way-of-showing label -> ( … )
   s = s.replace(/<span class="pf-k">([\s\S]*?)<\/span>/g, '\t$1 ');                // head field key: it sits tag-to-tag
   // against its value, so a bare strip gives "on watchMaren". Its gap is a column width on the page.
