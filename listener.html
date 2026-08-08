@@ -103,13 +103,20 @@ title: "The Second Book"
    a string literal is a dozen, and they must not fuse. So — one value, and cancel the trailing
    advance with a negative right margin, which is the thing that was actually wrong. */
 .scrawl{ margin-right:-5px; }
-/* A NUMBER IN THEIR OWN NUMERALS (`.rk`) is two or more marks standing side by side, and they must
-   read as separate digits — the way 42 is two digits and not one wide character. The rule above
-   cancels the trailing advance on EVERY scrawl glyph, which is right when a run closes against a
-   cup, and wrong here: it fused a place-value figure into one blob. So keep the tracking between the
-   marks and cancel it only after the last one. */
-.rk .scrawl{ margin-right:0; }
-.rk .scrawl:last-child{ margin-right:-5px; }
+/* ONE RULE FOR NUMBERS, and it is the rule our own digits use. Places inside a single number are
+   FLUSH; separate numbers are separated by a SPACE. So `⣁⣁` is sixty-five and `⣁ ⣁` is two counts of
+   one, exactly as `11` is eleven and `1 1` is two ones. **That rests entirely on the two gaps being
+   visibly different sizes, so both are set here and neither may drift.** Flush was tried and the two
+   places of 189 touched and read as one composite mark; 5px between places was tried and made a
+   two-place figure look like two numbers. So: 2px inside a number, a word-space between numbers, and
+   the word-space widened so the difference is not a judgement call. */
+.rk .scrawl, .num .scrawl{ margin-right:-3px; }   /* 2px BETWEEN PLACES of one number: parted, not spaced */
+/* TWO COUNTS SIDE BY SIDE ARE SEPARATED BY A SPACE, like every other pair of atoms in a row — not by
+   a margin. Digits inside one `.num` stay flush, which is what makes a two-place figure read as one
+   number. The distinction between `⣁⣁` (one number, sixty-five) and `⣁ ⣁` (two counts of one) is
+   therefore exactly the distinction between 11 and 1 1, and rests on the space being a real space.
+   A 4px margin was tried here and is not enough to carry that; write the space in the markup. */
+.rk .scrawl:last-child, .num .scrawl:last-child{ margin-right:-5px; }   /* cancel the trailing advance */
 /* a COMPOUND sign (a :-name the sender built from parts) — kept as ONE grouped unit (.fam), its
    parts joined by a faint · so a compound is never mistaken for separate signs (part-count = dots+1).
    Box/pill styling NEUTERED for now (too distracting); the · joins carry the distinction. */
