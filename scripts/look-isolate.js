@@ -16,7 +16,7 @@ if (!src || !dest || !sel) { console.error('usage: look-isolate.js <src> <dest> 
 const numsJs = nums ? `
   document.querySelectorAll('.scrawl').forEach(function(e){
     var out=[]; for (var ch of e.textContent){ var c=ch.codePointAt(0);
-      out.push(c>=0xf144&&c<=0xf183 ? String(c-0xf144) : c>=0xf100&&c<=0xf143 ? '~' : ch); }
+      out.push(c>=0x2840&&c<=0x287f ? String(c-0x2840) : c>=0x2880&&c<=0x28ff ? '~' : ch); }
     e.textContent=out.join('\\u00b7');
     e.style.cssText='font-family:monospace;font-size:.8em;letter-spacing:0;color:#ffd479;'
       +'border-bottom:1px solid #6f5a2a;padding:0 2px';

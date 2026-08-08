@@ -327,23 +327,27 @@ a.sim-button:hover {
   cursor: pointer;
 }
 
+/* VERSION THE FONT URL, or a changed font never reaches anyone who has already loaded the page.
+   The glyphs were remapped to braille codepoints on 08-07 (scripts/braille-codepoints.js); the file
+   changed, the URL did not, so every browser that had it cached kept drawing the OLD cmap — which
+   has no braille in it, so the signs fell through to a system font and came out as literal braille
+   dots. Bump `v` whenever fonts/cosmic_spider.* is rebuilt or recopied.
+   The `?#iefix` on the eot is not a version, it is the old IE fragment hack; leave it. */
 @font-face {
   font-family: "fontcustom";
-  src: url("../fonts/cosmic_spider.eot");
-  src: url("../fonts/cosmic_spider.eot?#iefix") format("embedded-opentype"),
-  url("../fonts/cosmic_spider.woff") format("woff"),
-  url("../fonts/cosmic_spider.ttf") format("truetype"),
-  url("../fonts/cosmic_spider.svg#fontcustom") format("svg");
+  src: url("../fonts/cosmic_spider.eot?v=braille2");
+  src: url("../fonts/cosmic_spider.eot?v=braille2#iefix") format("embedded-opentype"),
+  url("../fonts/cosmic_spider.woff2?v=braille2") format("woff2"),
+  url("../fonts/cosmic_spider.woff?v=braille2") format("woff"),
+  url("../fonts/cosmic_spider.ttf?v=braille2") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
-
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  @font-face {
-    font-family: "fontcustom";
-    src: url("../fonts/cosmic_spider.svg#fontcustom") format("svg");
-  }
-}
+/* GONE: a second @font-face inside `@media screen and (-webkit-min-device-pixel-ratio:0)` that
+   redeclared this same family with an SVG-font source and nothing else. That media query matches
+   every Chrome and Safari there is, and SVG fonts were dropped from Chrome in 2015 — so on the
+   browsers it targets it offered a family with no usable source at all. It is also why woff2 was
+   shipped but never referenced. The woff2 is in the list now and the SVG is out. */
 
 
 @font-face {

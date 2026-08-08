@@ -1,48 +1,57 @@
 #!/usr/bin/env node
-/* READ A SCRAWL GLYPH AS A NUMBER.  Scrawl is not an alphabet to be looked up — it is derived, and
- * one glyph is one base-64 digit.  This decodes it, so no tool ever has to take a mark on trust.
+/* READ A SCRAWL GLYPH AS A NUMBER.  ** THE ONE PLACE THE MAP IS SPECIFIED. **
  *
- * WHERE THE NUMBER COMES FROM (verified 2026-08-01 against all 232 wire quotes, 0 mismatches):
- *   The font (~/cvs/cosmicos/src/font/generate_glyphs.ts) lays down two tools in the private use
- *   area.  SPIDER (bits=4) fills 0xf100–0xf143: 68 atom glyphs, idx = ((open*2+close)*17 + n),
- *   n=0..15 or 16 for "no number" — that one renders the WIRE, atom by atom.  OCTO (bits=6) fills
- *   0xf144–0xf183: 64 glyphs, one per 6-bit value.  A SIGN is drawn with an octo glyph, so
+ * A glyph is not an alphabet letter to look up — it is a base-64 digit, and that digit is the number
+ * the message sends inside the sign's own cup.  `intro` is 18, and its wire head is ▪⟅10010⟆.
  *
- *        id = codepoint - 0xf144            (0..63)
+ * A braille codepoint is 0x2800 + its dot mask, so:
  *
- *   and that id is not a lookup key — it is the binary number the message actually sends inside
- *   that sign's cup.  `intro` is f156 -> 18, and its wire head is ▪ ⟅ 10010 ⟆ = 18.  `unary` is
- *   f14b -> 7, wire ⟅ 111 ⟆ = 7.  A compound (`is:int`) is two glyphs and therefore two ids.
+ *     dots 1-6   the six-bit value          dot 1 is the LOW bit
+ *     dot 7      it came off the wire
+ *     dot 8      it wears the brackets      = the font's own open/close pair
  *
- * WHY THIS EXISTS.  Working from screenshots and text dumps I could see a scrawl glyph but not
- * READ one, so I checked the `data-s` attribute instead and trusted the renderer had put the right
- * mark there.  That is the same trust that let §207 ship pointing at a mark it never showed.  A
- * number is checkable against the wire; a hooked stroke is not.
+ *     a NAME     0x2840 + id     id = cp - 0x2840
+ *     a NUMBER   0x28c0 + id     the same value, bracketed
+ *     specials   0x2880 + n      ( ) | $ space ;   — `|` and `$` are her ◇ and ◆
  *
- *   node scripts/scrawl.js f156          a codepoint -> its id, and the signs that use it
- *   node scripts/scrawl.js 18            an id -> its glyph and signs
- *   node scripts/scrawl.js --table       every single-glyph sign, by id
+ * The 0x2800 quarter is EMPTY on purpose: U+2800 is BRAILLE PATTERN BLANK, the block's space, and a
+ * glyph there is invisible in a text dump.  Classical braille has no dotless digit either — zero is
+ * ⠼⠚.  Only two of the four 64-cell quarters are needed, so the one with the blank is not used.
+ * Braille at all because a private-use codepoint vanishes when anyone copies a line off the page.
+ *
+ * WHY THIS EXISTS.  Working from screenshots I could see a glyph but not READ one, so I checked the
+ * `data-s` attribute instead and trusted the renderer.  That is the trust that let §207 ship pointing
+ * at a mark it never showed.  A number is checkable against the wire; a hooked stroke is not.
+ *
+ *   node scripts/scrawl.js 2852         a codepoint -> its id, and the signs that use it
+ *   node scripts/scrawl.js 18           an id -> its glyph and signs
+ *   node scripts/scrawl.js --table      every single-glyph sign, by id
  */
 const fs = require('fs'), path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 
-const OCTO_BASE = 0xf144, OCTO_TOP = 0xf183;   // 64 six-bit glyphs
-const SPIDER_BASE = 0xf100, SPIDER_TOP = 0xf143;
+/* The two groups this site actually uses, and what each one IS. Corrected 08-07: the second was
+   labelled SPIDER here and is nothing of the kind — spider glyphs (0xf100–0xf143 as shipped) appear
+   nowhere on the page. Both groups are OCTO. The difference is the bracket bits in the glyph name:
+     bare   `octo_00NNNNNN`  a sign, drawn with no brackets       -> id is the six-bit value
+     cupped `octo_11NNNNNN`  the same value with BOTH brackets    -> what the string glyphs use
+   plus eight `octo_22_____N` specials at the top of the cupped group. */
+const OCTO_BASE = 0x2840, OCTO_TOP = 0x287f;   // a NAME: dot 7, dots 1-6 = the id
+const CUP_BASE  = 0x28c0, CUP_TOP  = 0x28ff;   // a NUMBER: dots 7+8, the same value bracketed
+const SPECIAL_BASE = 0x2880, SPECIAL_TOP = 0x2887;
 
 /** a codepoint -> {kind, id, …}.  null if it is not a message glyph at all. */
 function decode(cp) {
   if (cp >= OCTO_BASE && cp <= OCTO_TOP) return { kind: 'sign', id: cp - OCTO_BASE };
-  if (cp >= SPIDER_BASE && cp <= SPIDER_TOP) {
-    const i = cp - SPIDER_BASE, n = i % 17, oc = (i - n) / 17;
-    return { kind: 'atom', open: !!(oc & 2), close: !!(oc & 1), num: n === 16 ? null : n };
-  }
+  if (cp >= CUP_BASE && cp <= CUP_TOP) return { kind: 'cupped', id: cp - CUP_BASE };
+  if (cp >= SPECIAL_BASE && cp <= SPECIAL_TOP) return { kind: 'special', id: cp - SPECIAL_BASE };
   return null;
 }
 /** every id in a "&#xf174;&#xf175;" string */
 const ids = s => [...s.matchAll(/&#x([0-9a-f]+);/gi)].map(m => decode(parseInt(m[1], 16))).filter(Boolean);
 /** short human form: 48 · 48·49 for a compound */
 const label = s => ids(s).map(d => d.kind === 'sign' ? d.id
-  : `${d.open ? '⟅' : ''}${d.num === null ? '·' : d.num}${d.close ? '⟆' : ''}`).join('·');
+  : d.kind === 'cupped' ? `⟅${d.id}⟆` : `*${d.id}`).join('·');
 
 module.exports = { decode, ids, label, OCTO_BASE };
 if (require.main !== module) { return; }

@@ -22,6 +22,7 @@ const C = require(LIB).cosmicos;
 const JSDIR = path.resolve(path.dirname(LIB), '../js/src/cosmicos');
 const { FourSymbolCodecV2 } = require(path.join(JSDIR, 'FourSymbolCodecV2.js'));
 const { GlyphCode } = require(path.join(JSDIR, 'GlyphCode.js'));
+const { convert: toBraille } = require('./braille-codepoints.js');
 const msg = require(path.resolve(__dirname, '../_data/msg.json'));
 
 // --- reconstruct the exact wire encoder: same vocab setup as CosmicDrive.js, then replay msg in order.
@@ -111,7 +112,9 @@ function buildFile(file) {
       }
       a = setAttr(a, 'data-parse', JSON.stringify(parse), "'");
       a = setAttr(a, 'data-tones', tones, '"');
-      a = setAttr(a, 'data-glyphs', glyphs, '"');
+      // GlyphCode.base is 0xf144 in the generator, so a SNIPPET's glyphs come back private-use while
+      // a real statement's (hit.spider, out of msg.json) are already braille. Same map, one place.
+      a = setAttr(a, 'data-glyphs', toBraille(glyphs).text, '"');
       a = dropAttr(a, 'data-code');                          // no stale competing tone attribute
       const head = Array.isArray(parse) ? parse[0] : null;
       const binding = ['define', '@', 'intro', 'assign', 'make'].indexOf(head) >= 0;

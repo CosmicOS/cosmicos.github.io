@@ -22,7 +22,9 @@ const dir = path.resolve(__dirname, '..', '_includes/listener');
 const ORDER = require('./arc-order');
 
 // structural glyphs legitimately hand-typed in prose (notation, not sign-references)
-const STRUCT = new Set([...'˩˨˦˥⟅⟆⟦⟧᚛᚜▪▫●◦◌⬚○◔·—–…“”‘’×÷≠≤≥→←↔⇛«»▩✱']);
+// ◇ ◆ are THE EMPTIES (see inventory-marks `.nil`/`.nil n`): the two atom forms with nothing in the cup,
+// written as one mark each — hollow for ▫⟅⟆, filled for ▪⟅⟆, the same run as ▪/▫ and ●/◦.
+const STRUCT = new Set([...'˩˨˦˥⟅⟆⟦⟧᚛᚜▪▫●◦◇◆◌⬚○◔·—–…“”‘’×÷≠≤≥→←↔⇛«»▩✱']);
 // INTENTIONAL hand-drawn notation — a keeper's own drawn mark, not a coined alias for a sign.
 const INTENTIONAL = {
   '⟳': 'the beat/tick mark (seeker + mutable-cell clock)',
@@ -55,7 +57,7 @@ const gpos = (f, off) => base[f] + off;
 
 // collect coin spans: token glyph -> earliest global position it is coined
 const coinFirst = {}, tokenSet = new Set();
-const COIN_RE = /<span class="coin[^"]*" data-sign="[^"]*">([^<]*)<\/span>/g;
+const COIN_RE = /<span class="coin[^"]*" data-sign="[^"]*"[^>]*>([^<]*)<\/span>/g;
 for (const f of ORDER) {
   let m; COIN_RE.lastIndex = 0;
   while ((m = COIN_RE.exec(raw[f]))) {

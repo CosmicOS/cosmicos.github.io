@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 /* reader-text — dump the diary as a reviewer can actually read it.
  *
- * The signs on the page are rendered by JS into private-use codepoints (U+E000–U+F8FF) drawn with the
- * project's scrawl font.  Anywhere outside that font — a text file, a subagent, an email — they arrive as
- * blanks, so sentences turn up with holes in them and whole entries become unreadable.  A blind reviewer on
- * 07-31 had to dump codepoints by hand and invent its own labels before it could review §214–228 at all.
+ * The signs used to be private-use codepoints (U+E000–U+F8FF) drawn with the project's scrawl font, and
+ * anywhere outside that font — a text file, a subagent, an email — they arrived as blanks, so sentences
+ * turned up with holes in them and whole entries were unreadable.  A blind reviewer on 07-31 had to dump
+ * codepoints by hand and invent its own labels before it could review §214–228 at all.
  *
- * So: map each distinct sign to a stable BRAILLE cell (U+2800 block).  256 of them, they render in every
- * font, they are visibly distinct from each other, and — this is the point — they carry no meaning. A
- * reviewer can track "this same mark recurs here and here" without being handed the sender's own name for
- * it, which would tell them what the keeper is still in the middle of working out.
+ * This script's answer was to substitute a stable braille cell for each distinct sign.  Since 08-07 it
+ * does not have to: THE PAGE ITSELF EMITS BRAILLE (see scripts/braille-codepoints.js — the font carries a
+ * braille codepoint per glyph, and the data uses it).  The substitution loop is gone.  What a reviewer
+ * gets now is the real character off the page, which is better than a stand-in in two ways: it survives a
+ * copy back out of the review, and it is the same cell in every document instead of being numbered by
+ * order of first appearance in this one.
+ *
+ * The property that mattered is kept for free — a braille cell carries no meaning to a reviewer.  It can
+ * be told apart from its neighbours and tracked across a read; it does not hand over the sender's name for
+ * the thing, which would leak what the keeper is still in the middle of working out.
  *
  * DO NOT substitute `data-s` values.  `unary`, `is:int`, `is:square` are the sender's names; putting them in
  * a review text leaks the answer to the thing under review.
@@ -73,14 +79,15 @@ let t = body
 t = t.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<')
      .replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&mdash;/g, '—');
 
-// stable braille for each distinct sign, in order of first appearance
-const seen = new Map();
-t = [...t].map(c => {
+// the signs are already braille; count the distinct ones for the report, substitute nothing.
+// Anything still in the private-use area is a BUG (a file that missed braille-codepoints.js), so it
+// is counted separately and named on stderr rather than being quietly papered over.
+const seen = new Set(), stray = new Set();
+for (const c of t) {
   const n = c.codePointAt(0);
-  if (n < 0xE000 || n > 0xF8FF) return c;
-  if (!seen.has(c)) seen.set(c, String.fromCodePoint(0x2801 + seen.size));
-  return seen.get(c);
-}).join('');
+  if (n >= 0x2800 && n <= 0x28ff) seen.add(c);
+  else if (n >= 0xE000 && n <= 0xF8FF) stray.add(c);
+}
 
 t = t.replace(/#[ \t]*(?=\n)/g, '')      // strip the heading anchor glyph (tags now leave a space behind it)
      .replace(/\n{3,}/g, '\n\n').replace(/[ \t]+\n/g, '\n').replace(/@@@/g, '').replace(/@@/g, '');
@@ -93,4 +100,9 @@ const out = t.trimStart() + '\n';
 
 const dest = process.argv[2] || '/tmp/reader-text.txt';
 fs.writeFileSync(dest, out);
-console.log(`${dest}: ${out.split(/\s+/).length} words · ${seen.size} distinct signs mapped to braille`);
+console.log(`${dest}: ${out.split(/\s+/).length} words · ${seen.size} distinct signs`);
+if (stray.size) {
+  console.error(`✗ ${stray.size} private-use codepoint(s) on the page — they will not survive a copy.`);
+  console.error(`  Run: node scripts/braille-codepoints.js`);
+  process.exit(1);
+}

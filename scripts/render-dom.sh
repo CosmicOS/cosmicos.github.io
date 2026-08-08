@@ -18,11 +18,17 @@ CHROME="$(command -v google-chrome || command -v chromium || command -v chromium
 
 DOM="${1:-/tmp/rendered.html}"; ERR="${DOM%.html}.err"
 
+# A THROWAWAY PROFILE, ALWAYS. Without --user-data-dir, Chrome uses the default profile, and if the
+# user already has Chrome running on it the new invocation loses the singleton lock and hands the URL
+# to the RUNNING browser instead — so a real window pops open on the user's desktop and the gate gets
+# no DOM. --headless=new does not save you from this.
+PROFILE="$(mktemp -d -t render-dom-XXXXXX)"
+
 echo "building…" >&2; scripts/build.sh >/dev/null 2>&1
 
 PORT="${PORT:-8391}"
 python3 -m http.server "$PORT" --bind 127.0.0.1 --directory _site >/tmp/rc-httpd.log 2>&1 &
-SRV=$!; trap 'kill $SRV 2>/dev/null || true' EXIT
+SRV=$!; trap 'kill $SRV 2>/dev/null || true; rm -rf "$PROFILE"' EXIT
 sleep 1
 
 echo "rendering http://127.0.0.1:$PORT/listener.html through $(basename "$CHROME")…" >&2
@@ -35,6 +41,7 @@ echo "rendering http://127.0.0.1:$PORT/listener.html through $(basename "$CHROME
 #      rather than killing, MemoryMax is only a runaway backstop. If the scope cannot be made,
 #      fall through and run Chrome directly — a memory cap is not worth failing the gate over.
 CHROME_ARGS=(--headless=new --no-sandbox --disable-gpu --enable-logging=stderr --v=1
+  --ozone-platform=headless --user-data-dir="$PROFILE" --no-first-run --no-default-browser-check
   --renderer-process-limit=1 --js-flags=--max-old-space-size=512 --disable-dev-shm-usage
   --disable-extensions --disable-background-networking --disable-software-rasterizer
   --virtual-time-budget=8000 --dump-dom "http://127.0.0.1:$PORT/listener.html")

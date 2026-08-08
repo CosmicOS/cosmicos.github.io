@@ -71,6 +71,7 @@ function indicesOf(value) {
 const dir = path.resolve(__dirname, '../_includes/listener');
 const files = fs.readdirSync(dir).filter(f => f.endsWith('.html'));
 const passes = [];                       // {file, pass, rows:[{idx, code, line}]}
+const retrieved = [];                    // rows that declare a deliberate reach back
 const unknown = [];                      // codes not found in the wire (build-frags is the real check; noted here)
 
 for (const file of files) {
@@ -86,6 +87,12 @@ for (const file of files) {
       if (rbDepth < 0) rbDepth = 0;
       return;                                            // skip rows inside a read-back
     }
+    // A row may DELIBERATELY reach back into an earlier keeper's material — Ona going to Bram's
+    // copied-and-never-read pages for two marks she needs. That is the archive paying off, not a
+    // provenance slip, but it must be DECLARED and must name the pass it reaches back to, so a
+    // backward quote is always a deliberate act and never a mistake that slid through.
+    const back = ln.match(/data-retrieved="p([0-9]+)"/);
+    if (back) { retrieved.push(`${file} line ${i + 1}: reaches back to pass ${back[1]}, declared`); return; }
     const re = /data-(?:code|of)="([0-9 ]+)"/g; let m;
     while ((m = re.exec(ln))) {
       for (const idx of indicesOf(m[1])) {
@@ -108,6 +115,7 @@ const upstream = (place, idx) => Math.min(place - idx, ahead(place, idx));
 
 // walk passes in pass order; a running high-water median is where the message "has reached" -----------
 const problems = [], wrapped = [];
+if (retrieved.length) retrieved.forEach(r => console.log('    declared reach-back — ' + r));
 let runMax = -Infinity;
 for (const p of ordered) {
   const med = median(p.rows.map(r => r.idx));

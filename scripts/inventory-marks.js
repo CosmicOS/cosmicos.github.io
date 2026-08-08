@@ -41,6 +41,23 @@ const INVENTORY = [
     what: 'the closing empty cup that ends a unary run — "◦ for the empty one that ends the run" (§214).',
     gate: 'inventory-marks --check' },
 
+  /* THE EMPTIES. Not a third construct: an atom is a type tag and a cup, and these are that same pair of
+     atoms with NOTHING IN THE CUP (▫⟅⟆ a number with nothing in it, ▪⟅⟆ a name with nothing in it). They are
+     told apart by reach, and the message settles it: ▫⟅⟆ is in tail position 3289/3289, so it runs to the end
+     of its enclosure; ▪⟅⟆ is followed by a sibling 1220 times, so it takes exactly the one name behind it.
+     Hollow for the hollow tag, filled for the filled one — the same run as ▪/▫ and ●/◦, so the page shows the
+     one bit the wire uses. An ABBREVIATION, not a reading: three marks stand behind each and are written
+     above, so it can be undone, which is why she may take it without knowing what either one means. */
+  { cls: 'nil',      kind: 'HERS',      shapes: ['◇'], est: 'p246',
+    what: 'the empty NUMBER-cup ▫⟅⟆, in one mark. Runs to the end of its enclosure — everything behind it goes together, with no cup shut round it. Ren cuts it at §246, NOT at §232 where she takes `tally` apart: the empty cup is the half that did not come that night, and a keeper does not invent a shorthand for something she is not writing. It first stands on her page alone at §239 and is on every line at §246, which is what earns it.',
+    gate: 'inventory-marks --check' },
+  { cls: 'nil w',    kind: 'HERS',      shapes: null, est: 'p214',
+    what: 'the FOUNDER\'S MERGED MARK `tally`: one word for `▫⟅⟆ ▪⟅▪▪▪⟆` together. By §214 she has heard eighteen statements, sixteen carry the empty cup, and in all sixteen it stands immediately before the long run — she has never seen either alone, so the reading her evidence supports is that they are one thing. She is wrong. It comes apart at §232 on the first count that arrives with no empty cup in front of it; the long run keeps `tal`, her word short by the piece that did not come. Free text — a word, not a shape.',
+    gate: 'inventory-marks --check' },
+  { cls: 'nil n',    kind: 'HERS',      shapes: ['◆'], est: 'p214',
+    what: 'the empty NAME-cup ▪⟅⟆, in one mark. Reaches over exactly the one name behind it — which is also what tells a lambda\'s bound slot (◌) from a use of it (◆ ◌).',
+    gate: 'inventory-marks --check' },
+
   /* Ren's cut ledger (§239) and what it grows into. A keeper's OWN bookkeeping notation: it never claims to
      be anything transmitted, which is why it cannot leak. It is also the book's one heirloom — Vess keeps it
      through the famine when she has no hand for prose, and Ona walks to the front of the book to read the key
@@ -72,6 +89,9 @@ const INVENTORY = [
 
   { cls: 'bit',      kind: 'STRUCTURE', shapes: ['▪','▫'],
     what: 'the wire\'s binary digits: ▪ one, ▫ none. House alphabet for an atom\'s number, not a sign.',
+    gate: 'inventory-marks --check' },
+  { cls: 'fj',       kind: 'STRUCTURE', shapes: ['·'],
+    what: 'the JOIN inside a compound sign. Maren cuts it at §221 — "Where two runs stand together like that I am putting a point between them, so nobody reads the pair as one long run." The renderer emits it for any `:`-compound; a hand row drawing a compound out uses the same mark.',
     gate: 'inventory-marks --check' },
   { cls: 'cup o',    kind: 'STRUCTURE', shapes: ['⟅'],  what: 'an atom that OPENS a cup.',  gate: 'inventory-marks --check' },
   { cls: 'cup c',    kind: 'STRUCTURE', shapes: ['⟆'],  what: 'an atom that CLOSES a cup.', gate: 'inventory-marks --check' },

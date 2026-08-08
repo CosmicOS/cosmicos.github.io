@@ -9,75 +9,124 @@ title: "The Second Book"
 
 /* the message index — an editor's key to what each pass decodes (collapsible) */
 .msg-index { max-width: 660px; margin: 0 auto 26px; border: 1px solid #24333f; border-radius: 10px; background: rgba(12,16,23,0.6); }
-.msg-index > summary { cursor: pointer; padding: 12px 18px; font-family: "inconsolataregular","Courier New",monospace; font-size: 80%; letter-spacing: 0.04em; color: #8fb0c0; list-style: none; }
+.msg-index > summary { cursor: pointer; padding: 12px 18px; font-family: var(--voice-station); font-size: 80%; letter-spacing: 0.04em; color: #8fb0c0; list-style: none; }
 .msg-index > summary::-webkit-details-marker { display: none; }
 .msg-index > summary::before { content: "\25B8\00a0"; color: #6f95a8; }
 .msg-index[open] > summary::before { content: "\25BE\00a0"; }
 .msg-index .idx-note { color: #5f7382; font-style: italic; letter-spacing: 0; }
 .msg-index .idx-body { padding: 2px 18px 16px; columns: 15em; column-gap: 28px; }
-.msg-index .idx-arc { break-inside: avoid; color: #c98b5a; font-family: "inconsolataregular","Courier New",monospace; font-size: 72%; text-transform: uppercase; letter-spacing: 0.12em; margin: 13px 0 4px; }
+.msg-index .idx-arc { break-inside: avoid; color: #c98b5a; font-family: var(--voice-station); font-size: 72%; text-transform: uppercase; letter-spacing: 0.12em; margin: 13px 0 4px; }
 .msg-index a { display: block; break-inside: avoid; color: #cdd6df; text-decoration: none; font-size: 87%; line-height: 1.42; padding: 1px 0; }
 .msg-index a:hover { color: #9fe0ff; }
-.msg-index a b { color: #7f9bab; font-weight: normal; font-family: "inconsolataregular","Courier New",monospace; margin-right: 0.45em; }
+.msg-index a b { color: #7f9bab; font-weight: normal; font-family: var(--voice-station); margin-right: 0.45em; }
+
+/* ══ THE DESIGN LANGUAGE — THREE VOICES, FIVE SIZES. Nothing on this page picks a face or a size
+      directly; everything goes through these. Three voices, because three kinds of writing exist
+      inside the fiction:
+
+        --voice-hers      SERIF.  Her sentences: entry prose, margin notes, and every aside inside an
+                          exhibit box — the exhibit is hers and so is the line under it.
+        --voice-station   MONOSPACE.  Anything RULED AND FILLED IN rather than spoken: the register,
+                          the pass head, the taking-up record, her ledger, labels, captions. Also her
+                          coined tokens, which are transcription and belong with the marks.
+        --voice-marks     listener-marks.woff, the 17-character notation subset, plus the alien
+                          scrawl face for the sender's own letters.
+
+      Five sizes, all ABSOLUTE — a percentage silently changes when its container does, which is how
+      a gloss set at 70% of a row ended up at 8.4px:
+
+        --sz-mark 12px   NOTATION. Every mark, in every kind of row: a generated quote, her own hand,
+                         a peel rung, a fold, a frag. A hand row is the same notation as a quote.
+        --sz-tone 15px   TONES ONLY. The four pitch marks differ in stroke height and nothing else,
+                         and telling them apart is the founder's whole first problem.
+        --sz-word 11px   A WORD IN A ROW OF MARKS — a coined token, a row label, a gloss.
+        --sz-cap  10px   A CAPTION — the uppercase label over a rung.
+        --sz-side 13px   AN ASIDE — her sentence inside an exhibit box.
+
+      One rule is inheritance rather than a declaration: A MARK SET INSIDE A SENTENCE TAKES THE
+      SENTENCE'S SIZE. In a row a mark is read; in a sentence it is named. The face never changes. ══ */:root{
+  --voice-hers:    Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  --voice-station: "inconsolataregular", "Courier New", monospace;
+  --voice-marks:   'listenermarks', "inconsolataregular", "DejaVu Sans Mono", "Courier New", monospace;
+  --sz-mark: 12px; --sz-tone: 15px; --sz-word: 11px; --sz-cap: 10px; --sz-side: 13px;
+}
 
 /* ---- message rendering: ONE place to swap glyphs (used by the JS renderer) ---- */
-:root{
-}
-.tn{ color:#cbb794; }   /* tone chars ˩˨˦˥ live in the markup now (was ::before), so they copy-paste */
-.tones{ color:#cbb794; letter-spacing:3px; }   /* generated wire-quote: real tone chars, copy-pasteable */
+.tn, .tones{ font-size: var(--sz-tone); }
+.tones{ letter-spacing:3px; }   /* generated wire-quote: real tone chars, copy-pasteable */
 
 /* ── ONE INK. The signal is tones — heard and gone; nothing on the page is "the wire," it is ALL
       her transcription (§191: her figures, not only her ear). So no mark is more raw than another,
-      and none earns its own color. Shape tells them apart; the pen is one. ── */
-.tn, .tones, .bit, .cup, .gl, .tk, .scrawl, .var, .kind, .rel, .op, .coin,
+      and none earns its own color. Shape tells them apart; the pen is one.
+      This is `!important`, so IT IS THE ONLY PLACE A MARK'S COLOR IS SET. Twenty-odd `color:` lines
+      for these classes were scattered down this file doing nothing; two sessions have now tried to
+      "fix" a mark's color by editing one of them. They are gone. If you want a mark to change color,
+      the answer is that it cannot — take it out of this list first, on purpose. ── */
+.tn, .tones, .bit, .cup, .gl, .tk, .nil, .scrawl, .var, .kind, .rel, .op, .coin,
 .msg-val .msg-view { color:#cbb794 !important; }
 /* a COINED WORD (her homespun name for a sign she has cracked) — one ink, told apart by form:
    small, spaced, lowercase transcription, so a fragment reads as her marks and not as prose. */
-.gl.w{ font-family:"inconsolataregular","Courier New",monospace; font-size:.8em; letter-spacing:.05em; text-transform:lowercase; }
+/* `.nil.w` rides with `.gl.w`: both are a keeper's WORD standing in a row of marks, and a reader has no way to
+   know that one stands for a sign and the other for a pair of wire atoms — so they must not look different.
+   (`tirrel tally ●●●● ◦` had them in two fonts at two sizes.) */
+.gl.w, .nil.w{ font-family: var(--voice-station); font-size: var(--sz-word); letter-spacing:.05em; text-transform:lowercase; }
+/* …EXCEPT in a sentence, where there are no marks for it to be subordinate to. `.8em` made a coined
+   word shrink to whatever 80% of its container happened to be — 13.6px in prose, 10.4px in an aside,
+   9.6px in a row — three sizes for one word. In her prose a coined word is a word: prose size, and
+   told apart by being italic monospace among serif. */
+.entry p .gl.w, .rb-note .gl.w, .more-note .gl.w, .cp-item .gl.w{ font-size:inherit; }
 /* end-of-section READ-BACK: re-show a real fragment now carrying the pass's new term — a
    semi-formal "what I can read now", paying off the coining and consolidating the lesson. */
 .readback{ margin:16px 0 6px; padding:11px 16px 12px; border-left:2px solid #2a3b47; background:rgba(12,16,23,.5); border-radius:0 6px 6px 0; }
-.readback .rb-label{ font-family:"inconsolataregular","Courier New",monospace; font-size:68%; text-transform:uppercase; letter-spacing:.2em; color:#7f9bab; margin-bottom:8px; }
+.readback .rb-label{ font-family: var(--voice-station); font-size: var(--sz-cap); text-transform:uppercase; letter-spacing:.2em; color:#7f9bab; margin-bottom:8px; }
 .readback .row{ margin:4px 0; }
-.readback .rb-note{ margin-top:9px; font-size:92%; color:#8fa2ad; font-style:italic; }
+.readback .rb-note{ margin-top:9px; font-family: var(--voice-hers); font-size: var(--sz-side); color:#8fa2ad; font-style:italic; }
 /* toggleable message widget */
 .msg{ background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:10px 14px; margin:10px 0; }
-.msg-view{ font-size:12px; letter-spacing:0; color:#cdd9e2; }   /* MATCH .row (12px): the .msg widget renders the
+.msg-view{ font-size: var(--sz-mark); letter-spacing:0; color:#cdd9e2; }   /* MATCH .row (12px): the .msg widget renders the
    same notation through the same form() renderer, so it must not be a different size from the wire-quote rows it
-   sits beside. Was 20px+2px — 67% larger than a .row three lines above it in the same entry (Paul, 07-24). */
-.msg .gl{ color:#aab7c4; }          /* scope mark colors to the WHOLE widget (view + val + …) */
-.msg .bit{ color:#bfe8c8; }
-.msg .cup{ color:#6f95a8; }
-.msg .var{ color:#c9a3ff; font-style:italic; font-size:84%; }
-.msg-view .scrawl{ color:#d6b98a; font-size:1.15em; letter-spacing:6px; }
-.msg-view .scrawl.sign-fb{ font-size:.92em; letter-spacing:2px; color:#8f8674; }
+   sits beside. Was 20px+2px — 67% larger than a .row three lines above it in the same entry. */
+/* THE EMPTIES ◇ ◆ — one mark each for ▫⟅⟆ and ▪⟅⟆ (see inventory-marks `.nil`/`.nil n`). They are in the ONE INK
+   list above and take no color of their own; the FILL alone says which of the two it is, the same way ▪ and ▫ do.
+   Two colors were tried here first — cup-slate, then ◦'s dim — and both were wrong for the same reason: any color
+   at all made `.nil` the one mark on the page wearing its own ink, which is precisely how it read. */
+/* SCRAWL TRACKING, AND THE TRAILING SPACE IT LEAVES BEHIND.
+   `letter-spacing` puts its space after EVERY character, the last one included. A scrawl run is
+   nearly always inside something — `⟅⠫⟆`, or a `·`-joined compound — so that last space pushes
+   whatever closes it to the right, and `⟅⠫⟆` comes out lopsided: a wider gap before the `⟆` than
+   after the `⟅`.
+   Both earlier answers to this were local patches. `.fam .scrawl` set tracking to 0 so the `·` would
+   not sit shoved right; `.msg-view .scrawl.sign-fb` set it to 2px. Between them and the site-wide
+   5px (css/main.css, for the big scrawl banners on other pages) that was FOUR values for one thing,
+   and the lopsided cup survived everywhere none of them reached.
+   The tracking itself is real and stays: a compound sign is two glyphs with nothing between them and
+   a string literal is a dozen, and they must not fuse. So — one value, and cancel the trailing
+   advance with a negative right margin, which is the thing that was actually wrong. */
+.scrawl{ margin-right:-5px; }
 /* a COMPOUND sign (a :-name the sender built from parts) — kept as ONE grouped unit (.fam), its
    parts joined by a faint · so a compound is never mistaken for separate signs (part-count = dots+1).
    Box/pill styling NEUTERED for now (too distracting); the · joins carry the distinction. */
 .fam{ }
-.fam .scrawl{ letter-spacing:0; }   /* kill the 5px TRAILING letter-spacing inside a compound, so the · sits symmetric & tight (not shoved right) */
 .fam .fj{ margin:0 1px; }            /* the · is the compound-marker — keep it FULLY visible, it carries the distinction */
 /* separate signs must sit clearly apart, so two scrawl signs "C C" never read as one run "CC".
    The gap between terms (a real space) is widened; compound parts stay tight, held by their · joins
    (which are NOT spaces, so word-spacing leaves them alone). Tune the value if it reads too airy. */
-.row, .msg-view, .fold, .peel .rows{ word-spacing:0.4em; }
-.msg-val .msg-view{ color:#d7c3ff; }   /* the yielded value, set apart from the ways-of-showing */
+.row, .msg-view, .fold{ word-spacing:0.4em; }
 .msg-view .tn{ letter-spacing:3px; }
 .msg-line{ margin:8px 0; }
 .msg-line + .msg-line{ padding-top:8px; border-top:1px solid #16202a; }
-.msg-line .lbl{ display:block; letter-spacing:.16em; font-size:11px; text-transform:uppercase; color:#5f7f90; margin-bottom:4px; }
+.msg-line .lbl{ display:block; letter-spacing:.16em; font-size: var(--sz-cap); text-transform:uppercase; color:#5f7f90; margin-bottom:4px; }
 
 
 .preface {
   background: rgba(10,14,20,0.82); border-radius: 14px; padding: 24px 30px;
   color: #cdd6df; margin-bottom: 30px;
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif; line-height: 1.65;
+  font-family: var(--voice-hers); line-height: 1.65;
 }
 .preface h1 {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   color: #eaf2f6; text-shadow: none; font-size: 190%; margin: 0 0 4px; font-weight: normal;
 }
-.preface .sub { color: #8fb0c0; font-style: italic; margin: 0 0 14px; }
 .preface p { margin: 0 0 10px; text-align: left; }
 .preface p:last-child { margin-bottom: 0; }
 
@@ -90,7 +139,7 @@ title: "The Second Book"
    that line. Kin to `.taking-up` — both are station forms — and colder, because this one
    belongs to the coast and a clerk reads it. ── */
 .register {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   border: 1px solid #2a3a45; border-radius: 3px; background: rgba(9,13,18,0.86);
   color: #b8c6d0; font-size: 84%; margin: 0 0 22px; padding-top: 13px;
 }
@@ -116,7 +165,11 @@ title: "The Second Book"
    coast's gray because a different hand writes it: "it sits at the foot of the page because it
    isn't anybody's column." Every keeper in this room has written that sentence and no other. */
 .register .reg-foot {
-  padding: 12px 14px 13px; font-style: italic; color: #c6a97a; font-size: 98%;
+  /* HER voice, and it is the only line of the station's form that is: the register is ruled and
+     filled in (station face), and this line is not in the ruling. The comment above says a different
+     hand writes it; now a different face does. */
+  font-family: var(--voice-hers);
+  padding: 12px 14px 13px; font-style: italic; color: #c6a97a; font-size: var(--sz-side);
 }
 
 .entry {
@@ -124,14 +177,10 @@ title: "The Second Book"
   border-radius: 0 12px 12px 0; padding: 18px 26px 20px; margin: 0 0 20px;
 }
 .entry .stamp {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   font-size: 74%; letter-spacing: 0.2em; text-transform: uppercase; color: #6f95a8; margin-bottom: 6px;
 }
-.entry h2 {
-  font-family: Georgia, "Iowan Old Style", serif; font-weight: normal;
-  color: #f0ece2; text-shadow: none; font-size: 146%; margin: 0 0 10px;
-  cursor: pointer;
-}
+.entry h2 { cursor: pointer; }   /* everything else about the h2 is set by `.entry > h2`, below */
 /* ── THE MARKS NOW HAVE A FONT OF THEIR OWN.
    The four tone letters were chosen deliberately (65f2610: "literally tones, and legible at
    flood-run density") and the whole notation is a closed set declared in MARK_INVENTORY.md.
@@ -146,10 +195,14 @@ title: "The Second Book"
   src: url('{{site.baseurl}}/fonts/listener-marks.woff') format('woff');
   font-weight: normal; font-style: normal; font-display: block;
 }
-.tn, .tones, .flood-run, .bit, .cup, .tk, .gl, .gap, .sheets .row, .binstack .fig,
+.tn, .tones, .flood-run, .bit, .cup, .tk, .gl, .nil, .gap, .sheets .row, .binstack .fig,
 .msg-view, .peel, .reduce, .row {
-  font-family: 'listenermarks', "inconsolataregular", "DejaVu Sans Mono", "Courier New", monospace;
+  font-family: var(--voice-marks);
 }
+/* `.nil` (◇ ◆) was NOT in that list until 08-07, so the two empties were the only marks in the book
+   drawn in the page's SERIF whenever they stood in a sentence — a different shape from the same mark
+   four lines below in a row. If you add a mark class, add it here; the list and MARK_INVENTORY.md are
+   supposed to be the same set. */
 
 /* WEIGHT. The scrawl face (cosmic_spider) ships a single light weight, and its hairline strokes go
    faint beside the solid bit-marks — a sign should carry the same ink as the cups and bits around
@@ -166,9 +219,9 @@ title: "The Second Book"
 .sheets .row { white-space:pre; line-height:2.0; word-spacing:0; letter-spacing:1px; }
 .sheets .pc { letter-spacing:0; padding:0 0.45em; }
 .sheets .lbl { display:inline-block; width:5.5em; letter-spacing:0; font-style:normal;
-  color:#6f8494; font-size:88%; text-align:right; padding-right:1.1em; }
-.sheets .say { display:block; letter-spacing:0; word-spacing:normal; font-style:italic;
-  color:#8fa2ad; font-size:90%; margin:2px 0 12px 5.5em; white-space:normal; }
+  color:#6f8494; font-size: var(--sz-word); text-align:right; padding-right:1.1em; }
+.sheets .say { display:block; font-family: var(--voice-hers); letter-spacing:0; word-spacing:normal; font-style:italic;
+  color:#8fa2ad; font-size: var(--sz-word); margin:2px 0 12px 5.5em; white-space:normal; }
 .sheets .row:last-child .say { margin-bottom:0; }
 
 /* ── THE PASS HEAD. Until 08-01 an entry opened with a stamp and a serif chapter title, and
@@ -198,7 +251,7 @@ title: "The Second Book"
    the page because it isn't anybody's column." A form has fields for what the station wants, and
    the station does not want this. That is the premise. */
 .passfields {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   font-size: 74%; letter-spacing: 0.06em; color: #90a8b8; margin: 0 0 9px;
 }
 .passfields .pf-k {
@@ -223,13 +276,13 @@ title: "The Second Book"
 /* the third line of the head, and it belongs to the HEAD, not to the entry. It was #cbd8e2 —
    brighter than the prose under it — so it read as a chapter title sitting on top of a form.
    It takes the stamp's own color now, so pass, watch and note are one block a reader's eye
-   passes over on the way in (Paul, 08-01). */
+   passes over on the way in. */
 /* SAME SIZE, SAME INK as the watch line above it — 74% and #90a8b8, straight off `.passfields`.
    It was 104% and a different color, which made it a chapter title wearing a field key. The head
    is a form: three keys in one column, three values in another, and no line of it louder than the
-   next (Paul, 08-01). */
+   next. */
 .entry > h2 {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   font-size: 74%; font-weight: normal; letter-spacing: 0.06em;
   color: #90a8b8; text-shadow: none; margin: 0 0 12px; clear: both;
 }
@@ -244,7 +297,7 @@ title: "The Second Book"
 }
 /* click a header to pin the URL to its anchor (and copy the link where allowed) */
 .entry h2 .anchor-link {
-  font-family: "inconsolataregular","Courier New",monospace; font-weight: normal;
+  font-family: var(--voice-station); font-weight: normal;
   font-size: 86%; color: #6f95a8; text-decoration: none; margin-left: 0.55em;
   vertical-align: 0.12em; opacity: 0; transition: opacity .15s ease; white-space: nowrap;
 }
@@ -252,11 +305,11 @@ title: "The Second Book"
 .entry h2 .anchor-link.flash { color: #9fe0ff; }
 /* terse: short clipped lines, tighter rhythm */
 .entry p {
-  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-family: var(--voice-hers);
   color: #dde3ea; line-height: 1.6; font-size: 106%; margin: 0 0 10px; text-align: left;
 }
 .entry p:last-child { margin-bottom: 0; }
-.entry .coin { font-style: italic; color: #ffe4a3; }
+.entry .coin { font-style: italic; }
 /* a dispatch: a short in-the-moment note, kept closer to the wire than a full entry.
    lighter box, greener accent, no title — a quick hand, not a considered pass. */
 .entry.dispatch {
@@ -268,7 +321,7 @@ title: "The Second Book"
    FACTS of succession (from/to, trade, the copied creed) so the prose need not. Born at the first succession
    (Ren, a letter-cutter, §232); the form and its creed drift a little down the line. */
 .taking-up {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   max-width: 440px; margin: 40px auto 8px; padding: 12px 20px 13px;
   border: 1px solid #35443d; border-radius: 3px;
   background: rgba(18,24,20,0.6); color: #c2cfc6; font-size: 88%; line-height: 1.8; text-align: center;
@@ -292,11 +345,11 @@ title: "The Second Book"
    cut at the front of it. Inherited: Vess keeps it through the famine when she has no hand for prose,
    and Ona reads the key a hundred and sixty passes later to find out what an empty column meant. */
 .tally {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   background: rgba(10,14,20,0.7); border-left: 2px solid #4a4332;
   padding: 10px 16px; margin: 12px 0; color: #cbbf9e; font-size: 92%; line-height: 1.75;
 }
-.tally .key { color: #8a7f63; font-size: 88%; font-style: italic; display: block; margin-bottom: 6px; }
+.tally .key { font-family: var(--voice-hers); color: #8a7f63; font-size: var(--sz-side); font-style: italic; display: block; margin-bottom: 6px; }
 .tally .row { display: block; white-space: pre; overflow-x: auto; }
 .tally .gap { display: inline-block; width: 1.15em; border-bottom: 1px solid #6b6250;
   vertical-align: baseline; }   /* a column she could not fill: ruled to the width of the missing
@@ -306,7 +359,7 @@ title: "The Second Book"
    line under the stamp, every entry, whatever it costs her to fill it. Exactly one echo afterwards
    (Vess, the vine dead) and then it stops. If it spreads, cut it back. */
 .gauge {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   font-size: 76%; letter-spacing: 0.12em; color: #7f9a86;
   margin: -2px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #24332b;
 }
@@ -317,7 +370,7 @@ title: "The Second Book"
    hand found, in the order it found it — no verbs, no argument. A different grammar from her prose,
    set right under the figure it belongs to. */
 .cap {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   font-size: 88%; line-height: 1.7; color: #b9a98c;
   margin: -4px 0 14px; padding-left: 14px; border-left: 2px solid #3d3628;
 }
@@ -326,7 +379,7 @@ title: "The Second Book"
    runs both ways. When a letter matters the letter is on the page in the other hand's own cadence, not
    summarized in hers — the one keeper whose entries are sometimes somebody else's words. */
 .letter {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   font-size: 92%; line-height: 1.85; color: #c3ccd6;
   background: rgba(10,14,20,0.55); border: 1px solid #2b3540; border-radius: 3px;
   padding: 12px 18px; margin: 12px 0;
@@ -338,28 +391,42 @@ title: "The Second Book"
 /* ISO's later hand (§271–306). She marks her guesses as noticing, so she is the one who comes back
    and writes against herself. Dated, bracketed, in the entry it corrects. */
 .later {
-  font-family: Georgia, "Iowan Old Style", serif; font-size: 96%; line-height: 1.55;
+  font-family: var(--voice-hers); font-size: 96%; line-height: 1.55;
   color: #b9b2c6; margin: 10px 0; padding-left: 14px; border-left: 2px solid #3a3348;
 }
 
 .frag {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px;
   padding: 12px 14px; margin: 10px 0; color: #d6e6ef;
-  font-size: 108%; letter-spacing: 3px; overflow-x: auto; white-space: nowrap;
+  font-size: var(--sz-mark); letter-spacing: 3px; overflow-x: auto; white-space: nowrap;
 }
 .frag .lbl {
-  display: block; letter-spacing: 0.16em; font-size: 60%; text-transform: uppercase;
+  display: block; letter-spacing: 0.16em; font-size: var(--sz-cap); text-transform: uppercase;
   color: #5f7f90; margin-bottom: 6px;
 }
-.frag .cup { color: #6f95a8; } .frag .bit { color: #bfe8c8; } .frag .tick { color: #ffd479; }
 .frag.flood { white-space: normal; overflow: hidden; padding: 12px 14px 2px; }
+/* the atoms view exists to show which marks belong together, so the gap BETWEEN atoms has to beat the
+   gap between marks inside one. `.frag`'s 3px letter-spacing is tuned for the founder's loose tone
+   runs, where every mark is its own thing; here it flattens the grouping the view is for. */
+.frag[data-view="atoms"] { letter-spacing: 0; word-spacing: 0.8em; }
+.frag[data-view="atoms"] .bit, .frag[data-view="atoms"] .cup { letter-spacing: 1px; }
 /* a .frag used as a RUNG of a peel is not its own exhibit — strip its box so the forms of one
    statement read as a single ladder and not as boxes stacked inside a box. */
-.peel .frag { background: none; border: 0; border-radius: 0; padding: 0; margin: 0; display: block; }
+.peel .frag { background: none; border: 0; border-radius: 0; padding: 0; margin: 0; display: block;
+  /* and it must WRAP. `.frag` is nowrap+scroll above 640px, which is right for the founder's tone
+     streams (one unbroken string, nothing to break at) and wrong here: a cups rung is a row the
+     reader is asked to count the marks in, and §232's is long enough to run off the side at desk
+     width. The renderer already puts a space between every mark, so it breaks cleanly. */
+  white-space: normal; overflow-x: visible;
+  /* and it must be the SIZE OF THE OTHER RUNGS. `.frag` is 108% (17.28px) because a standalone frag
+     is a magnifier; `.peel .msg-view` and a `.row[data-code]` rung are 12px. In §232's peel that put
+     "as I have it" and "as it came" — the same statement, the whole point of the ladder — at two
+     sizes, one above the other. A rung is not its own exhibit; it takes the ladder's size. */
+  font-size: var(--sz-mark); }
 .flood .flood-run {
   display: block;
-  font-size: 14px; line-height: 1.6; letter-spacing: 3px; color: #cbb794;
+  line-height: 1.6; letter-spacing: 3px; color: #cbb794;
   white-space: normal; word-break: break-all; overflow-wrap: anywhere;
   max-height: 15em; overflow: hidden;
   -webkit-mask-image: linear-gradient(#000 80%, transparent);
@@ -369,12 +436,7 @@ title: "The Second Book"
 /* the "peel" stepper */
 .peel { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 12px 14px; margin: 10px 0; }
 .peel .msg-view { display: block; margin-top: 4px; }
-.peel .gl { color: #aab7c4; }
-.peel .bit { color: #bfe8c8; letter-spacing: 3px; }
-.peel .cup { color: #6f95a8; }
-.peel .tk { color: #ffd479; letter-spacing: 2px; }
-.peel .tk.z { color: #566572; letter-spacing: 0; }
-.peel-say { color: #8fb0c0; font-size: 80%; font-style: italic; margin-top: 3px; }
+.peel-say { font-family: var(--voice-hers); color: #8fb0c0; font-size: var(--sz-word); font-style: italic; margin-top: 3px; }
 /* §267: the figures set in a right-aligned column so the place-columns line up and the reader
    can read DOWN each column and watch it toggle (units every step, twos every two, …). */
 /* §267: the short figures cut one under the next, RIGHT EDGE SQUARE — "read down the right-hand
@@ -384,22 +446,30 @@ title: "The Second Book"
    so the four-box run for eight overflowed, wrapped, and left a lone ▫ beside the word "eight",
    which reads as none. A max-content grid column is exactly as wide as the widest run, in any font,
    and cannot wrap. Nothing to keep in step by hand. */
-.binstack { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 1.7;
-  display: grid; grid-template-columns: max-content max-content; column-gap: 1.6em; }
+/* IT HAS TO SCROLL, like every other exhibit box. §267's table went to six columns on 08-07 and
+   overflowed a phone by 93px with `overflow-x: visible` — so the entry clipped it, the document did
+   not scroll, and the last two columns were simply unreachable. A table is a table; it scrolls. */
+.binstack { font-family: var(--voice-station); margin: 12px 0 14px; line-height: 1.7;
+  display: grid; grid-template-columns: repeat(6, max-content); column-gap: 1.3em;
+  max-width: 100%; overflow-x: auto; }
+.binstack .num { text-align: center; }
+.binstack .hd { display: contents; }
+.binstack .hd > * { font-size: var(--sz-cap); letter-spacing: .12em; text-transform: uppercase;
+  color: #5f7f90; text-align: left; padding-bottom: 4px; border-bottom: 1px solid #1d2a34; }
 .binstack .row { display: contents; }
 .binstack .fig { text-align: right; letter-spacing: 3px; white-space: nowrap; }
-.binstack .bit { color: #bfe8c8; }
 /* A GLOSS BESIDE HER MARKS (Ren's readings §239–260, Senn's walk and tables §501). `.say` had NO
    rule inside a plain `.rows` — only .sheets/.binstack/.reduce ever styled it — so in 16 rows it
    inherited the marks' font, size, letter-spacing AND word-spacing, with no gap: "▪standing at the
    last cell" ran the words straight off the notation, and a wrapped line started again at the far
    left, beneath the marks, merging one row's words into the next row's figure. inline-block gives
-   the gloss its own column, so it wraps inside itself and never under the notation. Found by Paul
+   the gloss its own column, so it wraps inside itself and never under the notation. Found
    08-01, looking at a screenshot I had never taken. */
 .rows .row.hand .say { display: inline-block; vertical-align: top; margin-left: 1.1em;
-  font-size: 70%; font-style: italic; letter-spacing: 0; word-spacing: normal; color: #8fa2ad; }
+  font-family: var(--voice-hers); font-size: var(--sz-word); font-style: italic;
+  letter-spacing: 0; word-spacing: normal; color: #8fa2ad; }
 
-.binstack .say { color: #8fb0c0; font-style: normal; font-size: 100%; }
+.binstack .say { font-family: var(--voice-hers); color: #8fb0c0; font-style: normal; font-size: var(--sz-word); }
 /* §310: NERU'S DESCENT, listed the way she'd list a bad tide — indented going in, level coming out.
    The V IS the content, so a row must never wrap: a wrapped line at the deepest indent destroys the
    turn, and one at the outermost destroys the return. nowrap guarantees the shape whatever the text
@@ -434,7 +504,7 @@ title: "The Second Book"
 .rows.labeled .row { display: contents; }
 .rows.labeled .row.hand .lbl,
 .rows.beats .row.hand .lbl { display: inline; color: #c9a3ff; letter-spacing: 0;
-  word-spacing: normal; font-size: 76%; text-transform: none; margin-bottom: 0; }
+  word-spacing: normal; font-size: var(--sz-word); text-transform: none; margin-bottom: 0; }
   /* beats `.rows .row.hand .lbl` (the §207 rule, 4 classes) on specificity — that one is a
      block, uppercase caption, and these labels are her coined WORDS, which are never uppercase. */
 .rows.labeled .fig { white-space: nowrap; }
@@ -453,50 +523,49 @@ title: "The Second Book"
 
 /* §288: the keeper's OWN worked reduction (her scratch, not transmitted wire) — pour a value into a
    maker's slots and watch it reduce, so the reader sees the substitution the message only asserts. */
-.reduce { font-family: "inconsolataregular",monospace; margin: 12px 0 14px; line-height: 2; }
-.step { color: #8a94a0; font-style: italic; font-size: 85%; margin: 0 5px; }  /* narration word ("becomes"), not a mark */
-.reduce .say { color: #8fb0c0; font-size: 80%; font-style: italic; margin-left: 1.6em; }
-.reduce .gl { color: #aab7c4; } .reduce .bit { color: #bfe8c8; } .reduce .cup { color: #6f95a8; }
+.reduce { font-family: var(--voice-station); font-size: var(--sz-mark); margin: 12px 0 14px; line-height: 2; }
+.step { font-family: var(--voice-hers); color: #8a94a0; font-style: italic; font-size: var(--sz-word); margin: 0 5px; }  /* narration word ("becomes"), not a mark */
+.reduce .say { font-family: var(--voice-hers); color: #8fb0c0; font-size: var(--sz-word); font-style: italic; margin-left: 1.6em; }
 
-/* ---- the log continues: each section an entry (rows, then the mull) ---- */
-.sect-entry {
-  background: rgba(12,16,23,0.6); border-left: 2px solid #24333f;
-  border-radius: 0 12px 12px 0; padding: 15px 24px 17px; margin: 0 0 16px;
-}
-.sect-entry .stamp {
-  font-family: "inconsolataregular","Courier New",monospace;
-  font-size: 72%; letter-spacing: 0.2em; text-transform: uppercase; color: #6f95a8; margin-bottom: 8px;
-}
 .rows { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 10px 14px; margin: 10px 0; overflow-x: auto; }
-.mull {
-  font-family: Georgia, "Iowan Old Style", serif; font-style: italic;
-  color: #cbd6de; font-size: 105%; line-height: 1.55; margin: 12px 0 0; text-align: left;
-}
 .row {
-  font-family: "inconsolataregular","Courier New",monospace; font-size: 12px;
+  font-family: var(--voice-station); font-size: var(--sz-mark);
   line-height: 1.55; color: #8aa2b0; white-space: pre-wrap; word-break: break-word;
   padding: 0; border-left: none; margin: 0;
 }
-.row-gate { color: #7fae8f; font-style: italic; }
-.row-file { color: #4a5f6c; font-style: italic; }
-.more-note { color: #61748a; font-style: italic; font-size: 13px; padding: 4px 0; }
+/* AN ASIDE INSIDE AN EXHIBIT — her sentence, not her notation. `.more-note` ("…and on, the same, more
+   times than I will copy…"), `.rb-note` under a read-back, `.cp-item` in a copied block: one job, and
+   they were 13px / 14.72px / 14.88px because two of them were percentages of the ENTRY. One size now.
+   13px is a caption: clearly below body prose (16px) so it reads as inside the box, and one pixel off
+   the marks so it does not tower over the rows it is a note on.
+   The row-level glosses (`.say`, `.lbl`) are absolute for the opposite reason: they were percentages
+   of `.row.hand`, so dropping hand rows 17px→12px shrank a `.say` to 8.4px. An aside's size must not
+   be a function of the marks' size. */
+.more-note { font-family: var(--voice-hers); color: #61748a; font-style: italic; font-size: var(--sz-side); padding: 4px 0; }
 
 /* "copied, not read" — the line copies every pass faithfully and only reads some of it. What a keeper
    passed over is still in the archive as marks; it is just unworked. Noting it is not filler: nothing
    unnoted survives the four hundred passes to the next turn, so an honest log says what it set aside. */
 .copied { margin: 14px 0 4px; padding: 9px 0 2px; border-top: 1px solid #1d2a34; }
-.copied .cp-label { font-family: "inconsolataregular","Courier New",monospace; font-size: 66%;
+.copied .cp-label { font-family: var(--voice-station); font-size: var(--sz-cap);
   text-transform: uppercase; letter-spacing: .2em; color: #6c8494; margin-bottom: 7px; }
-.copied .cp-item { color: #93a5b1; font-size: 93%; line-height: 1.5; padding: 1px 0 1px 1.1em; text-indent: -1.1em; }
+.copied .cp-item { font-family: var(--voice-hers); color: #93a5b1; font-size: var(--sz-side); line-height: 1.5; padding: 1px 0 1px 1.1em; text-indent: -1.1em; }
 .copied .cp-item::before { content: "\2014\00a0"; color: #4a5f6c; }
 
-/* the listener's own hand (early sections, pictorial) */
-.row.hand { font-size: 17px; color: #cdd9e2; padding: 2px 0; letter-spacing: 1px; }
-/* `.row hand` conflated two jobs: the audit-hands contract, and PICTORIAL styling at 17px meant for her
-   drawings (the §214 tallies). A hand row that is a LEDGER — a trace of wire values read beside a real
-   quote — must be the size of the quote it sits with, or it reads as a different kind of thing. Same
-   notation, same size (07-24). The wider question of whether 17px is right for the drawings is P7b. */
-.row.hand.ledger { font-size: 12px; letter-spacing: 0; }
+/* THE LISTENER'S OWN HAND — AND WHY IT IS THE SIZE OF A QUOTE.
+   This was 17px with 1px letter-spacing while `.row[data-code]` (the generated wire quotes, which are
+   most of the book) is 12px with none. Same marks, two sizes, often four inches apart inside one entry:
+   §232 showed her comparison rungs at 17px and the run they are a comparison OF at 12px, and the eye
+   reads the size difference as a difference in kind. It is not one — a hand row is the SAME notation,
+   drawn by her instead of generated. So: same notation, same size. (The `.ledger` exception below had
+   already reached this conclusion for one case in 07-24; this is that argument applied everywhere.)
+   NO EXCEPTIONS, and there were three: `.binstack` (§267), `.sheets` (§193) and `.descent` (§310) were
+   held back at 17px as "drawings rather than rungs". That is not a reason a reader can recover. §267's
+   stack of figures sits four lines under a generated row of the same marks; §193's two sheets are the
+   founder's own copying of a stream she also quotes; §310 is words, not marks at all. What those three
+   exhibits actually need is COLUMN ALIGNMENT, and each already has it from its own container
+   (`.binstack .fig` right-aligned in a max-content grid, `.sheets .row` white-space:pre) at any size. */
+.row.hand { font-size: var(--sz-mark); color: #cdd9e2; padding: 2px 0; }
 /* a label inside a hand row (§207: the run, against the mark she sets down instead). `.row` carries
    word-spacing .4em and `.row.hand` letter-spacing 1px — both for MARKS — and words inherit them and
    come out spaced like notation. Reset that, and put the label on its own line exactly as `.frag .lbl`
@@ -504,42 +573,27 @@ title: "The Second Book"
    which is the comparison the exhibit exists to make. A right-aligned label column (the `.sheets`
    treatment) indents the marks ~100px and breaks that alignment. */
 .rows .row.hand .lbl { display: block; letter-spacing: 0.16em; word-spacing: normal;
-  font-size: 60%; text-transform: uppercase; color: #5f7f90; margin-bottom: 4px; }
-.row.hand .tk { color: #ffd479; letter-spacing: 2px; }
-.row.hand .tk.z { color: #566572; letter-spacing: 0; }
-.row.hand .gp { display: inline-block; width: 7px; }
-.row.hand .cup { color: #6f95a8; }
-.row.hand .kind { color: #c9a3ff; }
-.row.hand .rel { color: #f0a35e; }
-.row.hand .op { color: #9fe0ff; }
-.row.hand .gl { color: #aab7c4; }              /* an opaque mark — meaning not yet known */
-.row.hand .raw { color: #61748a; letter-spacing: 3px; }  /* an uninterpreted run */
-.row.hand .bit { color: #bfe8c8; letter-spacing: 3px; }  /* the two tones, packed as a figure */
-.stem { font-size: 66%; opacity: 0.72; vertical-align: 0.28em; letter-spacing: 0; color: #c9a3ff; }  /* a shared family-root, seen on the wire as a compound symbol */
+  font-size: var(--sz-cap); text-transform: uppercase; color: #5f7f90; margin-bottom: 4px; }
+/* TALLIES ARE FOR COUNTING, IN EVERY KIND OF ROW. The spacing between `●` marks and the empty `.gp`
+   that groups them in fives were scoped to `.row.hand` and `.peel` — so a GENERATED `.row[data-code]`,
+   which is most of the book, got neither, and the longest run in the arc (25) came out as one
+   unbroken block while the hand-drawn one four lines above it was spaced and grouped. The renderer
+   emits the `.gp` for both; only the stylesheet told them apart. Global now. */
+.tk { letter-spacing: 2px; }
+.tk.z { letter-spacing: 0; }
+.gp { display: inline-block; width: 7px; }
 .row.hand .head { outline: 1px solid #ffd479; border-radius: 2px; padding: 0 2px; }  /* the reading-place on the strip */
 
 /* an expression opened all the way — cups within cups, no floor */
 .fold {
-  font-family: "inconsolataregular","Courier New",monospace;
+  font-family: var(--voice-station);
   background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px;
-  padding: 12px 14px; margin: 10px 0; font-size: 15px; line-height: 1.75;
+  padding: 12px 14px; margin: 10px 0; font-size: var(--sz-mark); line-height: 1.75;
   white-space: pre; overflow-x: auto; color: #cdd9e2;
 }
-.fold .cup { color: #5f7f90; }
-.fold .gl { color: #aab7c4; }
-.fold .bit { color: #bfe8c8; letter-spacing: 2px; }
-.row.coin { border-left-color: transparent; padding: 6px 0 3px; }
-.row.coin .cl { color: #7f9bab; font-style: italic; font-size: 13px; }
-.row.coin .cl b { color: #ffe4a3; font-style: normal; font-size: 150%; }
-
-.tx-key {
-  text-align: center; font-family: "inconsolataregular","Courier New",monospace;
-  color: #6f8a9a; font-size: 84%; margin: 0 0 18px; letter-spacing: 0.5px;
-}
-.tx-key .tk { color: #ffd479; } .tx-key .cup { color: #6f95a8; } .tx-key .tk.z { color: #566572; }
-
+.fold .bit { letter-spacing: 2px; }
 .coda {
-  text-align: center; font-family: "inconsolataregular","Courier New",monospace;
+  text-align: center; font-family: var(--voice-station);
   color: #7f9bab; font-size: 86%; line-height: 1.8; margin: 34px 0 40px;
 }
 .coda a { color: #9fe0ff; }
@@ -561,19 +615,19 @@ title: "The Second Book"
 .board .peg circle { fill:#1b2118; stroke:#bcd0aa; stroke-width:2;
   filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)); }
 .board .rule { stroke:#c98b5a; stroke-width:2; stroke-dasharray:3 3; }
-.board .rule-tag { fill:#c98b5a !important; font-size:10px; }
+.board .rule-tag { fill:#c98b5a !important; font-size: var(--sz-cap); }
 .board .tick circle { r:4; fill:#cbb794; stroke:none; }
-.board .peg .tag { font-family:"inconsolataregular","Courier New",monospace; fill:#cbb794;
-  font-size:11px; letter-spacing:1px; text-anchor:middle; }
-.seekmap { position:relative; border:1px solid #3a2f22; border-radius:10px; padding:12px 8px 8px; margin:8px 0;
+.board .peg .tag { font-family: var(--voice-station); fill:#cbb794;
+  font-size: var(--sz-word); letter-spacing:1px; text-anchor:middle; }
+.seekmap { position:relative; border:1px solid #3a2f22; border-radius:8px; padding:12px 8px 8px; margin:10px 0;
   background:radial-gradient(rgba(216,201,168,0.05) 0.5px, transparent 0.7px) 0 0 / 6px 6px, radial-gradient(120% 100% at 30% 8%, #1d1710, #120d08);
-  box-shadow:inset 0 0 26px rgba(0,0,0,0.55); border-radius:8px; margin:10px 0; }
+  box-shadow:inset 0 0 26px rgba(0,0,0,0.55); }
 .seekmap svg { display:block; width:100%; height:auto; max-width:460px; margin:0 auto; overflow:visible; }
 /* the map is a relief she feels out: raised ridges (emboss), her warm "hand" palette */
 .seekmap .door { stroke:#b79b6f; stroke-width:2.5; filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2)); transition:opacity .5s ease, stroke .3s ease; }
 .seekmap .room circle { fill:#241b12; stroke:#cbb488; stroke-width:2; filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2)); transition:opacity .5s ease, stroke .3s ease, stroke-width .18s ease; }
-.seekmap .room .rm  { font-family:"inconsolataregular","Courier New",monospace; fill:#ecdcb8; font-size:16px; text-anchor:middle; transition:opacity .5s ease; }
-.seekmap .room .tag { font-family:"inconsolataregular","Courier New",monospace; fill:#bfe8c8; font-size:10px; letter-spacing:1px; text-anchor:middle; transition:opacity .5s ease; }
+.seekmap .room .rm  { font-family: var(--voice-station); fill:#ecdcb8; font-size:16px; text-anchor:middle; transition:opacity .5s ease; }
+.seekmap .room .tag { font-family: var(--voice-station); fill:#bfe8c8; font-size: var(--sz-cap); letter-spacing:1px; text-anchor:middle; transition:opacity .5s ease; }
 /* reveal mode (JS on): the not-yet-touched lie flat and faint; the hand's passing raises them into relief */
 .seekmap.reveal .door:not(.seen),
 .seekmap.reveal .room:not(.seen) circle { opacity:.32; filter:none; }
@@ -583,9 +637,9 @@ title: "The Second Book"
 .seekmap .room.press circle { stroke-width:5.5; }
 .seekmap .seeker { fill:#ffd479; opacity:0; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(255,244,214,0.45)); transition:cx .5s ease, cy .5s ease, opacity .4s ease; }
 .seekmap .seeker.on { opacity:1; }
-.seekmap-bar button { background:none; border:1px solid #4a3f2e; color:#c3b48f; font:inherit; font-size:11px; padding:2px 11px; border-radius:11px; cursor:pointer; }
+.seekmap-bar button { background:none; border:1px solid #4a3f2e; color:#c3b48f; font:inherit; font-size: var(--sz-word); padding:2px 11px; border-radius:11px; cursor:pointer; }
 .seekmap-bar button:hover { border-color:#e0c48a; color:#f0dcae; }
-.seekmap-say { font-style:italic; color:#a89b80; }
+.seekmap-say { font-family: var(--voice-hers); font-style:italic; color:#a89b80; }
 /* ── THE CONTROLS MUST HOLD STILL UNDER THE READER ────────────────────────────────────────────
    Both bars are the same object and are now built the same way: a wrapping row of buttons, centered,
    with the reading on a row of its own beneath it.
@@ -602,12 +656,12 @@ title: "The Second Book"
    stylesheet: a hard-coded width is wrong the moment the font, the font-size or the wording moves,
    and `ch` is no better, because in this font a character advance is not one ch. */
 .circuit-bar, .seekmap-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
-  gap:6px 8px; margin-top:8px; font-family:"inconsolataregular","Courier New",monospace; font-size:12px; }
+  gap:6px 8px; margin-top:8px; font-family: var(--voice-station); font-size: var(--sz-mark); }
 .seekmap-bar { color:#a89772; }
 .seekmap-say, .circuit-say { flex:0 0 100%; margin:2px 0 0; min-height:1.45em; text-align:center; }
 /* A finger is not a pointer. On touch the controls get a target you can actually hit. */
 @media (pointer:coarse) {
-  .circuit-bar button, .seekmap-bar button { font-size:12px; padding:7px 14px; min-height:34px; }
+  .circuit-bar button, .seekmap-bar button { font-size: var(--sz-mark); padding:7px 14px; min-height:34px; }
 }
 /* geo-world: a second seeker (cool), and a flash where the two cross */
 .seekmap .seeker.s2 { fill:#7fcbd6; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(214,244,255,0.45)); }
@@ -622,7 +676,7 @@ title: "The Second Book"
 .engine .cell rect { fill:#241b12; stroke:#cbb488; stroke-width:2;
   filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2));
   transition:stroke .3s ease, stroke-width .18s ease, opacity .4s ease; }
-.engine .cell .mk { font-family:"inconsolataregular","Courier New",monospace; fill:#ecdcb8; font-size:19px;
+.engine .cell .mk { font-family: var(--voice-station); fill:#ecdcb8; font-size:19px;
   text-anchor:middle; transition:opacity .35s ease; }
 .engine .cell.blank rect { stroke-dasharray:3 3; opacity:.5; }
 .engine .cell.at rect { stroke:#ffd479; stroke-width:3; }
@@ -631,7 +685,7 @@ title: "The Second Book"
 .engine .stone { fill:#ffd479; opacity:0; transition:cx .42s ease, opacity .4s ease;
   filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(255,244,214,0.45)); }
 .engine .stone.on { opacity:1; }
-.engine .cond { font-family:"inconsolataregular","Courier New",monospace; fill:#bfe8c8; font-size:11px;
+.engine .cond { font-family: var(--voice-station); fill:#bfe8c8; font-size: var(--sz-word);
   letter-spacing:1px; text-anchor:middle; transition:opacity .3s ease; }
 .engine .cond.done { fill:#ffd479; }
 /* the run home changes nothing, so it reads quieter than the part that does */
@@ -647,13 +701,13 @@ title: "The Second Book"
 .circuit-frame { background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:12px; }
 .circuit-cvs { image-rendering:pixelated; width:453px; max-width:100%; height:auto; display:block; margin:0 auto; }
 .circuit-bar { color:#8fa88f; }   /* the shared bar layout is up with .seekmap-bar */
-.circuit-bar button { background:none; border:1px solid #2c4436; color:#9fc0a8; font:inherit; font-size:11px; padding:2px 11px; border-radius:11px; cursor:pointer; }
+.circuit-bar button { background:none; border:1px solid #2c4436; color:#9fc0a8; font:inherit; font-size: var(--sz-word); padding:2px 11px; border-radius:11px; cursor:pointer; }
 .circuit-bar button:hover { border-color:#8fe6a8; color:#c9f0d4; }
 .circuit-bar .sw { display:inline-block; width:9px; height:9px; border-radius:2px; margin-left:5px; vertical-align:middle; border:1px solid #4a6152; }
 .circuit-bar .sw.lit { background:#8fe6a8; border-color:#8fe6a8; }
 .circuit-bar .sw.dark { background:#0a0e14; }
 .circuit-bar .sw.free { background:transparent; border-style:dashed; }
-.circuit-say { font-style:italic; color:#8a9b86; }
+.circuit-say { font-family: var(--voice-hers); font-style:italic; color:#8a9b86; }
 /* ──────────────────────────────────────────────────────────────────────────────
    NARROW SCREENS. The listener page had NO media query at all until 08-01 — it was
    built and reviewed at desk width, and read on a phone the exhibits either ran off
@@ -680,27 +734,42 @@ title: "The Second Book"
 
   /* the founder's raw runs: wrap them. They are a stream, not a structured row —
      there is nothing to lose by breaking one, and everything to lose by hiding it. */
-  .frag { white-space: normal; overflow-x: hidden;
-          font-size: 96%; letter-spacing: 2px; padding: 10px 11px; }
+  .frag { white-space: normal; overflow-x: hidden; letter-spacing: 2px; padding: 10px 11px; }
   /* the break has to go on the RUN, not the box: a tone stretch is one unbroken string of
      modifier letters, and a container-level rule never reaches inside it. This is the same
      recipe .frag.flood already uses, which is why the founder's big block wrapped and these
      six did not. */
-  .frag .tones, .frag .tn, .msg-view, .msg-view .tn, .msg-view .scrawl {
+  .frag .tones, .msg-view, .msg-view .tn, .msg-view .scrawl {
      white-space: normal; word-break: break-all; overflow-wrap: anywhere; }
   .msg, .msg-line { max-width: 100%; }
   .tones { letter-spacing: 2px; }
 
   .rows, .peel, .msg, .readback { padding: 9px 10px; }
-  .row { font-size: 13px; line-height: 1.6; }
-  .row, .msg-view, .fold, .peel .rows { word-spacing: 0.22em; }
+  /* THE SCALE MOVES AS ONE. 12px notation is a desk size; a phone wants a point more. This used to
+     bump `.row` alone, which was wrong twice: `.row.hand` is two classes and outranked it, so her own
+     rows stayed at 12 while the generated rows beside them went to 13 — inside the same box — and
+     `.frag`, `.fold`, `.reduce` and `.msg-view` never moved at all. Move the variables instead and
+     every kind of row goes together, which is the whole reason they are variables. */
+  :root { --sz-mark: 13px; --sz-tone: 16px; }
+  .row { line-height: 1.6; }
+  .row, .msg-view, .fold { word-spacing: 0.22em; }
   .reduce { line-height: 1.75; }
 
   /* her ledger and her ruled blank keep their columns (white-space:pre), so give
      them room by shrinking instead of wrapping — a broken column is a wrong column. */
   .tally { padding: 9px 11px; font-size: 84%; }
-  .binstack { font-size: 92%; }
+  .binstack { column-gap: 0.75em; }   /* six columns on a 360px screen: buy back what the gaps cost */
   .binstack .say { margin-left: 1em; }
+
+  /* A LABELED TABLE HAS NO ROOM FOR TWO COLUMNS ON A PHONE. The label column plus a nowrap figure
+     runs 40–140px past a 360px screen, so the marks sit behind a sideways scroll the reader may never
+     find — the exact fault this whole media query was written for. Stack it: caption over rung, which
+     is what `.peel` already does with the same material, and let the figure wrap. */
+  .rows.labeled { display: block; }
+  .rows.labeled .row { display: block; margin-bottom: 7px; }
+  .rows.labeled .row:last-child { margin-bottom: 0; }
+  .rows.labeled .row.hand .lbl { display: block; margin-bottom: 2px; }
+  .rows.labeled .fig { white-space: normal; }
 
   .taking-up { padding: 10px 12px 11px; font-size: 82%; letter-spacing: 0; }
   .taking-up .tu-head, .taking-up .tu-creed { letter-spacing: 0.12em; }

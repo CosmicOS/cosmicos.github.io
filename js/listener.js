@@ -25,8 +25,38 @@
   }
   // number rendering is FORM-DRIVEN: a (unary …) form -> ● tallies (counting era); a bare int -> packed bits.
   function tally(n){ n=Math.abs(Number(n)); var s=''; for(var i=0;i<n;i++){ if(i>0&&i%5===0) s+='<span class="gp"></span>'; s+='<span class="tk">●</span>'; } return s+'<span class="tk z">◦</span>'; }
+  function rawUnary(items){                    // a count nobody has a shorthand for yet: every mark as it came
+    var out = mark('unary');
+    for (var i=1;i<items.length;i++)
+      out += ' <span class="bit">▫</span><span class="cup o">⟅</span><span class="bit">'
+           + (String(items[i])==='1' ? '▪' : '▫') + '</span><span class="cup c">⟆</span>';
+    return out;
+  }
   function unaryVal(items){ var c=0; for(var i=1;i<items.length;i++) if(String(items[i])==='1') c++; return c; }  // (unary 1 1 0) -> 2
-  function bitsOf(n){ return num(Math.abs(Number(n)).toString(2).split('')); }
+  function bitsOf(n){ return num(Math.abs(Number(n)).toString(2).split('')); }   // the bits alone: a PAYLOAD, never a whole atom
+  /* A COUNT IS AN ATOM AND HAS TO LOOK LIKE ONE. `hand()` used to write a plain number as its bits and
+     nothing else — so `▫⟅▪⟆` came out `▪`, the tag and both cup marks gone, undeclared, from the first
+     exhibit of §267 onward. Two things were wrong with that beyond the missing declaration:
+       - The mark it KEPT is the payload; the mark it DROPPED is the one that says what kind of thing
+         this is. Two paragraphs later the same entry recovers that distinction ("the mark in front
+         says which sort you have: a name, or a plain count").
+       - Every other abbreviation in the book substitutes a NEW mark for a fixed run of tones — `●` for
+         `▫⟅▪⟆`, `◇` for `▫⟅⟆`, a reckoning mark for `▪⟅N⟆`. Those cannot be misread at any depth.
+         Bare bits reuse the wire's OWN symbols one layer up, so `⟅▪▫▫⟆` stops having one reading.
+     The same atom appeared twice in one row of §267 written two different ways — `▪` on the left of
+     `= 1 (unary 1 0)` and `●` inside the run on the right. So: a count goes down as it comes, and any
+     shortening of it has to be cut on the page like every other one. */
+  function numAtomValue(n){        // the count itself, in whatever notation the page has reached
+    var v = Math.abs(Number(n));
+    if (!numeralsOn) return bitsOf(v);
+    var d = []; do { d.unshift(v % 64); v = Math.floor(v / 64); } while (v > 0);
+    return d.map(function(x){ return reckon(x, true); }).join('');
+  }
+  function numAtom(n){
+    /* before §267 she has no mark for a count, so it goes down as it came: tag, cup, bits. */
+    if (numeralsOn) return numAtomValue(n);
+    return '<span class="bit">▫</span><span class="cup o">⟅</span>' + bitsOf(n) + '<span class="cup c">⟆</span>';
+  }
   /* fold: break+indent nested makings (per data-fold). foldMax caps how DEEP breaking goes; foldMin sets a
      FLOOR, so the shallow scaffolding of a big statement can stay inline while the interesting run deeper
      down breaks one-per-line. Added 07-24: with a cap alone, a statement whose payload sits below its own
@@ -35,17 +65,37 @@
   var foldMode = false, foldMin = 0, foldMax = Infinity;
   function indent(d){ var s=''; for(var i=0;i<d;i++) s+='   '; return s; }
   /* SCRAWL IS THEIR NUMERALS, AND A KEEPER CANNOT USE IT UNTIL SHE CAN READ A CUP AS A NUMBER.
-     A sign arrives as a lone bit and a cup holding its id in bits. Writing that id in their own
-     numerals — one glyph — is transcription, but it needs place value, and Ren does not crack place
-     value until §267. So before 267 a sign is written the only way it can be: as its run. After 267
-     the numerals are available for every sign, meaning known or not, and the runs stop.
-     (Paul, 08-02. Before this the whole founding era showed numerals it had no way to write.) */
-  var NUMERALS_FROM = 267, numeralsOn = false;
-  function idOf(name){                          // the number in the sign's cup: codepoint - 0xf144
+     A sign arrives as a lone bit and a cup holding its id in bits. Writing that id in one glyph is
+     transcription, but it needs place value, and Ren does not crack place value until §267. So
+     before that a sign is written the only way it can be: as its run. After it the glyphs are
+     available for every sign, meaning known or not, and the runs stop.
+     POSITIONAL, keyed to `[data-numerals]`, like every other era switch in this file — NOT a pass
+     number. It was `NUMERALS_FROM = 267`, which turned the glyphs on at the TOP of §267, four
+     exhibits before she works out that she can write one: the reader met `⠉` on a row while the
+     entry was still spelling out why a mark has a number at all. Same defect the founder's merged
+     mark had at §232, and the same fix — the switch stands where she says the words. */
+  var numeralsOn = false;
+  /* THE FOUNDER'S MERGED MARK, AND WHAT COMES OF TAKING IT APART.
+     §214 Maren defines `●`/`◦` for the small cups, and `tally` for `▫⟅⟆ ▪⟅▪▪▪⟆` TOGETHER — one word for the
+     pair, because in every count she has, they stand together. That is a rule about the FRONT FORM only.
+     A count also arrives cupped — `⟅ ▪⟅▪▪▪⟆ ▫⟅▪⟆ ▫⟅▫⟆ ⟆`, no empty cup — and there `tally` cannot apply and
+     she has no name for the long run alone. So it goes down as it came: `⟅▪⟅▪▪▪⟆ ● ◦⟆`. Writing `⟅●◦⟆` there
+     would be using a convention nobody has stated, which is exactly the nonsense this replaced.
+     Ren splits the pair at §232 on the first such statement (39, `= (unary 1 0) (unary 1 0)`), keyed to
+     `[data-split]` on her sentence — she argues her way to it two thirds of the way down the entry and
+     everything above it is still written in Maren's hand.
+     TWO SEPARATE SWITCHES, because the two runs earn their shorthands on different nights. `tal` is just a
+     COINING of the sign `unary` (a `.coin[data-sign="unary"]` in her §232 prose), so `mark('unary')` picks it
+     up like any other coined word — the run is all over her page and shortening it pays at once. The empty
+     cup is NOT on her page that night; it is the piece that did not come. So it stays written out until §246,
+     where it has arrived on its own often enough to be worth a mark, and `[data-nil]` switches `▫⟅⟆` to `◇`. */
+  var splitOn = false, nilOn = false, MERGED = '<span class="nil w">tally</span>';
+  // a sign's id, off its braille codepoint. The map is in scripts/scrawl.js.
+  function idOf(name){
     var g = SCRAWL[name]; if (!g) return null;
     var m = /&#x([0-9a-f]+);/i.exec(g); if (!m) return null;
     if (/&#x[0-9a-f]+;.*&#x/i.test(g)) return null;      // a multi-glyph sign: leave it to the compound path
-    var id = parseInt(m[1], 16) - 0xf144;
+    var id = parseInt(m[1], 16) - 0x2840;
     return (id >= 0 && id < 64) ? id : null;
   }
   function runOf(name){                         // a sign as she can write it before she has numerals
@@ -53,6 +103,15 @@
     return '<span class="bit">▪</span><span class="cup o">⟅</span>'
       + id.toString(2).split('').map(function(b){ return '<span class="bit">'+(b==='1'?'▪':'▫')+'</span>'; }).join('')
       + '<span class="cup c">⟆</span>';
+  }
+  /* her reckoning mark for a value: bare for a name, barred for a count. Map: scripts/scrawl.js. */
+  function reckon(v, barred){
+    v = Number(v);
+    if (!(v >= 0 && v < 64)) return '';
+    // BARE or BARRED, and that is the tag. The sender draws a NAME's number bare and a COUNT's number
+    // with a bar at the head and one at the foot — the same distinction the wire carries as `▪` or `▫`
+    // in front of the cup, moved into the shape of the mark. `<span class="num barred" data-n="4">`.
+    return '<span class="scrawl">&#x' + ((barred ? 0x28c0 : 0x2840) + v).toString(16) + ';</span>';
   }
   function scrawlSpan(name){
     if (!numeralsOn) { var r = runOf(name); if (r) return r; }
@@ -85,32 +144,65 @@
     if (!Array.isArray(node)){
       var s=String(node);
       if (slots && (s in slots)) return mark(s);                                  // a hinted/bound name (incl. compound) -> her coined glyph, wins over family
-      if (/^-?\d+$/.test(s)) return bitsOf(node);
+      if (/^-?\d+$/.test(s)) return numAtom(node);   // a whole atom, tag and cup and all
       if (s.charAt(0)==='"') return strblob(s);                                   // string -> opaque byte-blob
       return mark(s);                                                            // a sign OR a :-compound (name or op) -> mark(), which pills+dots any compound
     }
-    if (node[0]===-2){ var rn=node[1]; return (slots && (rn in slots)) ? '<span class="gl">'+slots[rn]+'</span>' : mark(rn); }  // $ref: a bound lambda-slot, else a free NAME (scrawl/token)
-    var items = (node[0]===-1) ? node.slice(1) : node;         // strip grouping marker
-    return form(items, true, depth+1);                        // group -> may be cupped, one level deeper
+    if (node[0]===-2){ var rn=node[1];   // a NAME with nothing in its cup (▪⟅⟆) — reaches over exactly the ONE name behind it
+      return NIL_NAME+' '+((slots && (rn in slots)) ? '<span class="gl">'+slots[rn]+'</span>' : mark(rn)); }  // a bound lambda-slot, else a free NAME (scrawl/token)
+    if (node[0]===-1) return form(node.slice(1), 'front', depth+1);   // front-standing cup -> goes down as it came, members bare behind it
+    return form(node, 'cup', depth+1);                                // round-shutting cup -> cupped, one level deeper
   }
-  function form(items, cupped, depth){          // render a form; special heads, else a (cupped) sequence
+  /* THE EMPTIES. There is no third construct on the wire: an atom is a TYPE TAG and a cup, and these two are
+     that same pair of atoms WITH NOTHING IN THE CUP. ▫⟅⟆ is a number with nothing in it; ▪⟅⟆ is a name with
+     nothing in it. What tells them apart is how far each reaches, and the message settles it — ▫⟅⟆ is in tail
+     position 3289 times out of 3289, so it runs to the end of its enclosure; ▪⟅⟆ is followed by a sibling
+     1220 times, so it cannot, and it takes exactly the one name behind it (all 2416, always one, always a name).
+     She writes each as ONE mark, hollow for the hollow tag and filled for the filled one, the same way ▪/▫ and
+     ●/◦ already run. That is an abbreviation, not a reading: three marks stand behind each, written above, so
+     it can be undone — the same bargain as `tirrel`, and it costs nothing to be wrong about what they mean. */
+  var NIL      = '<span class="nil">◇</span>';        // ▫⟅⟆ — reaches to the end of its enclosure
+  var NIL_NAME = '<span class="nil n">◆</span>';      // ▪⟅⟆ — reaches over the one name behind it
+  var NIL_RAW  = '<span class="bit">▫</span><span class="cup o">⟅</span><span class="cup c">⟆</span>';  // before §246, as it came
+  // WRAP is the whole of the keepers' bracketing rule: `cup` = a cup that shuts round its members;
+  // `front` = the empty number-cup above, whose members run on behind it unshut; `bare` = the statement
+  // itself, which has no enclosure to mark. Nothing may swallow a group's boundary.
+  function form(items, wrap, depth){            // render a form; special heads, else a wrapped sequence
     depth = depth || 0;
     var kids = function(arr){ return arr.map(function(n){ return hand(n, depth); }).join(' '); };
-    var head = items[0];
-    if (head==='unary')  return tally(unaryVal(items));                                // a counting-era number -> tallies
-    if (head==='vector') return '<span class="cup lo">⟦</span>'+kids(items.slice(1))+'<span class="cup lc">⟧</span>';  // a list
-    if (Array.isArray(head) && head[0]==='list')  // (list N) e1 e2 … -> her strung list, an alien (ogham) feather-bracket, NOT human [a,b,c]
-      return '<span class="lst o">᚛</span>'+kids(items.slice(1))+'<span class="lst c">᚜</span>';
-    if (head==='s' && items.length===2 && String(items[1]).charAt(0)==='"'){       // a string -> its glyph blob (substrate)
-      var sc=String(items[1]).replace(/^"|"$/g,''); if (STR[sc]) return '<span class="scrawl">'+STR[sc]+'</span>'; }
-    if (head==='?'||head==='lambda')                                  // a lambda: its parameter IS an anonymous slot
-      return mark(head)+' '+slot(items[1])+' '+kids(items.slice(2));
-    if (head==='define'||head==='@'||head==='make'||head==='assign')  // binds a NAME -> render it as a sign (scrawl/token), not a hollow slot
-      return mark(head)+' '+mark(items[1])+' '+kids(items.slice(2));
-    var body = kids(items);
-    if (!cupped) return body;
-    var cup = '<span class="cup o">⟅</span>'+body+'<span class="cup c">⟆</span>';
-    return (foldMode && depth>0 && depth>=foldMin && depth<=foldMax) ? '\n'+indent(depth)+cup : cup;   // fold: nested making onto its own indented line
+    var head = items[0], inner, selfBracketed = false;
+    /* These three bring a bracket of their own, and it stands for the wire's CUP one-for-one — the same bargain
+       as `tirrel`, undoable for the same reason. But a cup is the only thing it can stand for. A front-mark is
+       not a cup; it is an atom with an empty cup that reaches to the end of its enclosure, and no closing
+       bracket can spell that. So a self-bracketed form swallows a `cup` wrap and NEVER a `front` one — else
+       §400's list loses the very mark Vess spends the entry complaining about. */
+    if (head==='vector'){ selfBracketed = true;   // a list
+      inner = '<span class="cup lo">⟦</span>'+kids(items.slice(1))+'<span class="cup lc">⟧</span>'; }
+    else if (Array.isArray(head) && head[0]==='list'){ selfBracketed = true;  // (list N) e1 e2 … -> her strung list, an alien (ogham) feather-bracket, NOT human [a,b,c]
+      inner = '<span class="lst o">᚛</span>'+kids(items.slice(1))+'<span class="lst c">᚜</span>'; }
+    else if (head==='s' && items.length===2 && String(items[1]).charAt(0)==='"'
+             && STR[String(items[1]).replace(/^"|"$/g,'')]){                    // a string -> its glyph blob (substrate)
+      selfBracketed = true; inner = '<span class="scrawl">'+STR[String(items[1]).replace(/^"|"$/g,'')]+'</span>'; }
+    else if (head==='unary')
+      /* Maren's notation covers ONE shape: `tally ●…◦`, a count with the empty cup in front. `●` and `◦` were
+         cut inside that shape and have no life outside it — `◦` is defined as "the one at the END", of that
+         run. A CUPPED count has no empty cup, so `tally` cannot apply and neither can the marks she cut with
+         it. Until Ren takes the pair apart there is no way to write one at all, so it goes down as it came. */
+      inner = (wrap==='front' && !splitOn) ? tally(unaryVal(items))     // `tally` swallows the long run: it IS the pair
+            : !splitOn                        ? rawUnary(items)           // no name for a cupped count at all yet
+            : mark('unary')+' '+tally(unaryVal(items));                   // split: ●/◦ hold, and the run is `tal` once she coins it
+    else if (head==='?'||head==='lambda')                             // a lambda: its parameter IS an anonymous slot
+      inner = mark(head)+' '+slot(items[1])+' '+kids(items.slice(2));
+    else if (head==='define'||head==='@'||head==='make'||head==='assign')  // binds a NAME -> render it as a sign (scrawl/token), not a hollow slot
+      inner = mark(head)+' '+mark(items[1])+' '+kids(items.slice(2));
+    else inner = kids(items);
+    if (wrap==='bare' || (selfBracketed && wrap==='cup')) return inner;   // its own bracket already spells the cup
+    // before §232 an empty cup in front of the long run is not two marks to her, it is one word: `tally`.
+    // after the split it is a thing with no name, written out as it came, until she cuts `◇` for it at §246.
+    var front = (!splitOn && head==='unary') ? MERGED : (nilOn ? NIL : NIL_RAW);
+    var out = wrap==='front' ? front+' '+inner
+            : '<span class="cup o">⟅</span>'+inner+'<span class="cup c">⟆</span>';
+    return (foldMode && depth>0 && depth>=foldMin && depth<=foldMax) ? '\n'+indent(depth)+out : out;   // fold: nested making onto its own indented line
   }
   var MODES = {
     raw:   function(el){ return tones(el.getAttribute('data-code') || el.getAttribute('data-tones')); },
@@ -118,15 +210,17 @@
     // hand mode, so a sign draws identically in both (hand just swaps CRACKED signs for her marks). NOT the octo `spider`
     // (that's a byte-level transliteration whose figures disagreed with the per-sign ones).
     glyph: function(el){ allFigures = true; resetSlots();
-      var h = form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), false); allFigures = false; return h; },
-    hand:  function(el){ resetSlots(); return form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), false); }
+      var h = form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), 'bare'); allFigures = false; return h; },
+    hand:  function(el){ resetSlots(); return form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), 'bare'); }
   };
   function renderVal(v){                       // what a fragment YIELDS (from Evaluate), in her marks
     // through mark(), like every other sign in the arc: her coined word once she has one (holds/fails, §306),
     // the real scrawl before that. NEVER a shape of our own — the widget teaches the word one line above.
     if (v===true)  { resetSlots(); return mark('true'); }
     if (v===false) { resetSlots(); return mark('false'); }
-    if (typeof v==='number') return num(Math.abs(v).toString(2).split(''));
+    // a yielded number is a number: she writes it the way she writes every other count. It was never
+    // on the wire — she worked it out — which is all the more reason it goes down in her own marks.
+    if (typeof v==='number') return numAtomValue(v);
     return '';
   }
   var LABEL = { raw:'as it comes', glyph:'in plain figures', hand:'as I set it down' };
@@ -154,7 +248,7 @@
     var rng = fm && fm.match(/^(\d+)-(\d+)$/);                       // "M-N": break only between depths M and N
     foldMin = rng ? +rng[1] : 0;
     foldMax = rng ? +rng[2] : ((fm && /^\d+$/.test(fm)) ? +fm : Infinity);
-    el.innerHTML = form(parse, false, 0);
+    el.innerHTML = form(parse, 'bare', 0);
     foldMode = false;
   }
 
@@ -164,16 +258,18 @@
      raw scrawl. The token itself is the span's own visible glyph — no duplication, no pass numbers.
      `.sg` prose marks (is/int) and `.msg`/`.row` exhibits all render through the same COINED map. */
   Array.prototype.forEach.call(
-    document.querySelectorAll('.coin[data-sign], .msg, .row[data-parse], .row[data-code], .sg[data-s]'),
+    document.querySelectorAll('.coin[data-sign], [data-split], [data-nil], [data-numerals], .msg, .row[data-parse], .row[data-code], .sg[data-s], .num[data-n]'),
     function(el){
-      /* reading order decides the era as well as the coinings: once the walk reaches §267 the
-         numerals are available and stay available. */
-      var ent = el.closest && el.closest('.entry[id]');
-      if (ent && /^p\d+$/.test(ent.id) && +ent.id.slice(1) >= NUMERALS_FROM) numeralsOn = true;
+      // era flags do NOT return: a marker rides on the very span that does the thing — §232's on the
+      // span that coins `tal`, §267's on the rung that first shows a sign written as one glyph.
+      if (el.hasAttribute('data-split'))    splitOn    = true;   // §232: Ren takes the founder's pair apart, here
+      if (el.hasAttribute('data-nil'))      nilOn      = true;   // §246: and cuts a mark for the half that stayed away
+      if (el.hasAttribute('data-numerals')) numeralsOn = true;   // §267: and can write a sign's number as one glyph
       if (el.classList.contains('coin')) { COINED[el.getAttribute('data-sign')] = (el.textContent||'').trim(); return; }
       if (el.classList.contains('msg')) { renderMsg(el); return; }
       if (el.classList.contains('sg'))  { allFigures = false; resetSlots(); el.innerHTML = mark(el.getAttribute('data-s')); return; }
-      renderRow(el);
+      if (el.classList.contains('num')) { el.innerHTML = reckon(el.getAttribute('data-n'), el.classList.contains('barred')); return; }
+      if (el.hasAttribute('data-parse') || el.hasAttribute('data-code')) renderRow(el);
     }
   );
 })();
@@ -466,10 +562,43 @@ function pinWidth(btn, labels) {
     }
     flush(); return out.join(' ');
   }
+  /* ATOMS: the same marks as `cups`, but held in the groups they are actually in. `cups` puts one
+     space between EVERY token, so `▫⟅▪⟆` — one atom, the number one — reads as four loose marks, and
+     a row of unary units becomes a field of floating cups with nothing to tell a tagged one from a
+     bare one. That is right for the founder's first pages, where she has cut the tones into cups and
+     bits and has NOT yet found that a mark and the cup behind it go together. It is wrong from §207
+     on, and it is wrong wherever the point of the exhibit is which cups wear a mark. So: a tag sticks
+     to its cup and its contents; a space falls only between siblings; a BARE cup keeps its space on
+     both sides, which is what makes it visible. Matches how the hand rows have always been written. */
+  function atoms(code) {
+    var out = '', tagged = [], i = 0;
+    function put(sep, s) { out += (out && sep ? ' ' : '') + s; }
+    while (i < code.length) {
+      if (code.slice(i) === '2233') { put(true, '<span class="cup">⟅⟅⟆⟆</span>'); break; }
+      var d = code.charAt(i);
+      if ((d === '0' || d === '1') && code.charAt(i + 1) === '2') {         // type tag, then its cup
+        put(true, '<span class="bit">' + (d === '1' ? '▪' : '▫') + '</span>' +
+                  '<span class="cup">⟅</span>');
+        tagged.push(true); i += 2;
+      } else if (d === '2') {                                              // a cup wearing nothing
+        put(true, '<span class="cup">⟅</span>'); tagged.push(false); i++;
+      } else if (d === '3') {
+        put(!tagged.pop(), '<span class="cup">⟆</span>'); i++;
+      } else {                                                            // the numeral in a cup
+        var bits = '';
+        while (i < code.length && (code.charAt(i) === '0' || code.charAt(i) === '1') &&
+               code.charAt(i + 1) !== '2') { bits += code.charAt(i) === '1' ? '▪' : '▫'; i++; }
+        if (!bits) { i++; continue; }                                     // guard: never spin
+        put(false, '<span class="bit">' + bits + '</span>');
+      }
+    }
+    return out;
+  }
   Array.prototype.forEach.call(document.querySelectorAll('.frag[data-code]'), function (el) {
     var code = el.getAttribute('data-code'), view = el.getAttribute('data-view');
     if (!code || !view) return;
-    var html = view === 'tones' ? tones(code) : view === 'cups' ? cups(code) : '';
+    var html = view === 'tones' ? tones(code) : view === 'cups' ? cups(code)
+             : view === 'atoms' ? atoms(code) : '';
     if (html) el.insertAdjacentHTML('beforeend', html);   // appended after the <span class="lbl">
   });
 })();

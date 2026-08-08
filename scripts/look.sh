@@ -27,19 +27,32 @@ OUT="/tmp/look-${SAFE}-${WIDTH}.png"
 CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
 [ -n "$CHROME" ] || { echo "no chrome/chromium found" >&2; exit 2; }
 
+# A THROWAWAY PROFILE, ALWAYS — see the same note in render-dom.sh. Without --user-data-dir, Chrome
+# falls back to the default profile; if one is already running there, this invocation loses the
+# singleton lock and hands the URL to the RUNNING browser, popping a real window on the user's
+# desktop and returning no screenshot. --headless=new does not prevent it.
+PROFILE="$(mktemp -d -t look-XXXXXX)"
+# --ozone-platform=headless IS THE ONE THAT MATTERS HERE, AND IT MUST NOT BE REMOVED. This script asks
+# Chrome to actually DRAW (--screenshot, --run-all-compositor-stages-before-draw). `--headless=new` is
+# the real browser with its window suppressed, so when it draws and Ozone picks the session's platform
+# (wayland here), it can attach to the compositor and put a real window on the user's desktop. Forcing
+# the headless Ozone platform means it has no display server to attach to. render-dom.sh only dumps the
+# DOM and never draws, which is why it never did this. Seen on Chrome 144.
+ISOLATE=(--ozone-platform=headless --user-data-dir="$PROFILE" --no-first-run --no-default-browser-check)
+
 PORT="${PORT:-8399}"
 if ! curl -s -o /dev/null "http://127.0.0.1:$PORT/listener.html" 2>/dev/null; then
   python3 -m http.server "$PORT" --bind 127.0.0.1 --directory _site >/tmp/look-httpd.log 2>&1 &
-  SRV=$!; trap 'kill $SRV 2>/dev/null || true; rm -f _site/.look-iso.html' EXIT; sleep 1
+  SRV=$!; trap 'kill $SRV 2>/dev/null || true; rm -f _site/.look-iso.html; rm -rf "$PROFILE"' EXIT; sleep 1
 else
-  trap 'rm -f _site/.look-iso.html' EXIT
+  trap 'rm -f _site/.look-iso.html; rm -rf "$PROFILE"' EXIT
 fi
 
 NUMS=""; [ "${SCRAWL:-}" = "numbers" ] && NUMS="nums"
 node scripts/look-isolate.js _site/listener.html _site/.look-iso.html "$SEL" $NUMS
 
 # one pass to learn the isolated element's height, one to shoot it at that height
-GEOM=$(timeout 60 "$CHROME" --headless=new --no-sandbox --disable-gpu \
+GEOM=$(timeout 60 "$CHROME" --headless=new --no-sandbox --disable-gpu "${ISOLATE[@]}" \
   --window-size="$WIDTH",900 --virtual-time-budget=9000 \
   --dump-dom "http://127.0.0.1:$PORT/.look-iso.html" 2>/dev/null \
   | grep -o 'LOOK [0-9]* [0-9]*' | head -1 || true)
@@ -47,7 +60,7 @@ GEOM=$(timeout 60 "$CHROME" --headless=new --no-sandbox --disable-gpu \
 H=$(echo "$GEOM" | cut -d' ' -f2); VW=$(echo "$GEOM" | cut -d' ' -f3)
 
 # 160px of slack: H is the ELEMENT's height, but it still sits below its ancestors' padding.
-timeout 180 "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+timeout 180 "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars "${ISOLATE[@]}" \
   --window-size="$WIDTH",$(( H + 160 )) --virtual-time-budget=18000 \
   --run-all-compositor-stages-before-draw \
   --screenshot="$OUT" "http://127.0.0.1:$PORT/.look-iso.html" >/dev/null 2>&1

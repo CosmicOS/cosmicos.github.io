@@ -97,7 +97,7 @@ for (const file of files) {
       (signs[name] || (signs[name] = { scrawl: scrawl[name] || null, shownIn: new Set() })).shownIn.add(pass);
     }
     // coined tokens
-    for (const m of ln.matchAll(/<span class="coin[^"]*" data-sign="([^"]+)">([^<]*)<\/span>/g)) {
+    for (const m of ln.matchAll(/<span class="coin[^"]*" data-sign="([^"]+)"[^>]*>([^<]*)<\/span>/g)) {
       coins.push({ word: m[2], sign: m[1], file, line, pass });
     }
   });
