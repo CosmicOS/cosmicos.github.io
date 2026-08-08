@@ -66,6 +66,31 @@ if (args.includes('--list')) {
  * the READING of it is not.  Feeding one piece per turn into a single session instead gives a reader
  * that accumulates, and that is what catches arithmetic that stops adding up two hundred passes
  * later.  Piece 1 carries the standing instructions; the rest are bare. */
+/* --freeze DIR cuts EVERY piece in one go, off a single render.
+ *
+ * `--piece N` renders the whole book to pick chunk N out of it and throws the other hundred away, so
+ * a full read did a hundred and one Jekyll builds and a hundred and one Chrome renders to produce a
+ * hundred and one chunks of ONE render's worth of text.  That is where the ninety minutes went, and
+ * it also made the review a lock on the working tree: every piece was cut from the tree as it stood
+ * when its turn came, so editing an entry still queued changed the book under the reader mid-read.
+ *
+ * Cutting all of them at once fixes both.  The review then reads a fixed manuscript — a snapshot,
+ * with a date on it — and the working copy is free the moment the freeze finishes. */
+const fi = args.indexOf('--freeze');
+if (fi >= 0) {
+  const dir = args[fi + 1];
+  if (!dir) { console.error('usage: cold-read.js --freeze <dir>'); process.exit(2); }
+  fs.mkdirSync(dir, { recursive: true });
+  const preamble = fs.readFileSync(path.join(__dirname, 'blind-read-prompt.txt'), 'utf8').trimEnd() + '\n\n';
+  chunks.forEach((c, i) => {
+    const nnn = String(i + 1).padStart(3, '0');
+    fs.writeFileSync(path.join(dir, `piece-${nnn}.txt`), (i === 0 ? preamble : '') + c + '\n');
+  });
+  fs.writeFileSync(path.join(dir, 'COUNT'), String(chunks.length) + '\n');
+  console.error(`froze ${chunks.length} pieces in ${dir}`);
+  process.exit(0);
+}
+
 const pi = args.indexOf('--piece');
 if (pi >= 0) {
   const p = parseInt(args[pi + 1], 10);

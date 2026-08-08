@@ -103,6 +103,13 @@ title: "The Second Book"
    a string literal is a dozen, and they must not fuse. So — one value, and cancel the trailing
    advance with a negative right margin, which is the thing that was actually wrong. */
 .scrawl{ margin-right:-5px; }
+/* A NUMBER IN THEIR OWN NUMERALS (`.rk`) is two or more marks standing side by side, and they must
+   read as separate digits — the way 42 is two digits and not one wide character. The rule above
+   cancels the trailing advance on EVERY scrawl glyph, which is right when a run closes against a
+   cup, and wrong here: it fused a place-value figure into one blob. So keep the tracking between the
+   marks and cancel it only after the last one. */
+.rk .scrawl{ margin-right:0; }
+.rk .scrawl:last-child{ margin-right:-5px; }
 /* a COMPOUND sign (a :-name the sender built from parts) — kept as ONE grouped unit (.fam), its
    parts joined by a faint · so a compound is never mistaken for separate signs (part-count = dots+1).
    Box/pill styling NEUTERED for now (too distracting); the · joins carry the distinction. */

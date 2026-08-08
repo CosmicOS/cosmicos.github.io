@@ -106,6 +106,14 @@ function flatten(frag) {
   const CLS = c => new RegExp('<span class="(?:[^"]*\\s)?' + c + '(?:\\s[^"]*)?"[^>]*>', 'g');
   s = s.replace(CLS('ln'), '\n');                                                 // .ln  is display:block
   s = s.replace(CLS('say'), '\t');                                                // .say is set off beside the row
+  /* A GRID CELL IS A CELL EVEN WITHOUT AN INLINE STYLE. The CELL rule below only catches
+     `style="display:inline-block"`, so every exhibit the stylesheet lays out as a max-content grid —
+     `.binstack`, `.rows.ledgered`, `.rows.beats`, `.rows.glossed` — came out with its columns welded
+     together: §267's six-column table read `the figureis▪ in frontone mark`, which a reader takes for
+     broken output rather than a table. That is what voided read three. The rows are `display:contents`
+     and the cells are these classes, plus the bare `<span>` the binstack header uses. */
+  ['fig','num','ord','does','trace','beat','keeps'].forEach(c => { s = s.replace(CLS(c), '\t'); });
+  s = s.replace(/<span>/g, '\t');
   s = s.replace(/<(?:br)\s*\/?>/g, '\n');
   s = s.replace(/<\/(?:p|div|li|h1|h2|h3|tr)>/g, '\n');                            // block breaks -> newlines
   // A span laid out as a COLUMN (fixed-width inline-block) is a table cell: on the page its width

@@ -113,6 +113,21 @@
     // in front of the cup, moved into the shape of the mark. `<span class="num barred" data-n="4">`.
     return '<span class="scrawl">&#x' + ((barred ? 0x28c0 : 0x2840) + v).toString(16) + ';</span>';
   }
+  /* A NUMBER IN THE KEEPERS' OWN NUMERALS, whatever its size. `<span class="rk" data-n="200">`.
+     Base sixty-four with place value, as many marks as it takes — theirs, older than the post, and so
+     NOT waiting on §267. That pass is only where Ren starts writing the MESSAGE's counts in them; it
+     invents nothing about the numerals themselves and no keeper ever explains them, any more than we
+     explain that forty-two takes two digits.
+     This exists so an ordinary large figure can go down in an ordinary line long before the message
+     forces one. Without that, the first number too big for a single mark lands inside an exhibit at
+     §310 and reads as an unannounced change of notation in a book where four keepers have made
+     showing a change before and after a rule — which is exactly how it read on the blind read. */
+  function reckonNum(v, barred){
+    v = Math.abs(Number(v));
+    if (!(v >= 0)) return '';
+    var d = []; do { d.unshift(v % 64); v = Math.floor(v / 64); } while (v > 0);
+    return d.map(function(x){ return reckon(x, barred); }).join('');
+  }
   function scrawlSpan(name){
     if (!numeralsOn) { var r = runOf(name); if (r) return r; }
     return SCRAWL[name] ? '<span class="scrawl sign-fb">'+SCRAWL[name]+'</span>' : '<span class="gl" style="opacity:.4">▩</span>'; }
@@ -258,7 +273,7 @@
      raw scrawl. The token itself is the span's own visible glyph — no duplication, no pass numbers.
      `.sg` prose marks (is/int) and `.msg`/`.row` exhibits all render through the same COINED map. */
   Array.prototype.forEach.call(
-    document.querySelectorAll('.coin[data-sign], [data-split], [data-nil], [data-numerals], .msg, .row[data-parse], .row[data-code], .sg[data-s], .num[data-n]'),
+    document.querySelectorAll('.coin[data-sign], [data-split], [data-nil], [data-numerals], .msg, .row[data-parse], .row[data-code], .sg[data-s], .num[data-n], .rk[data-n]'),
     function(el){
       // era flags do NOT return: a marker rides on the very span that does the thing — §232's on the
       // span that coins `tal`, §267's on the rung that first shows a sign written as one glyph.
@@ -268,7 +283,8 @@
       if (el.classList.contains('coin')) { COINED[el.getAttribute('data-sign')] = (el.textContent||'').trim(); return; }
       if (el.classList.contains('msg')) { renderMsg(el); return; }
       if (el.classList.contains('sg'))  { allFigures = false; resetSlots(); el.innerHTML = mark(el.getAttribute('data-s')); return; }
-      if (el.classList.contains('num')) { el.innerHTML = reckon(el.getAttribute('data-n'), el.classList.contains('barred')); return; }
+      if (el.classList.contains('rk'))  { el.innerHTML = reckonNum(el.getAttribute('data-n'), !el.classList.contains('bare')); return; }
+      if (el.classList.contains('num')) { el.innerHTML = reckonNum(el.getAttribute('data-n'), el.classList.contains('barred')); return; }
       if (el.hasAttribute('data-parse') || el.hasAttribute('data-code')) renderRow(el);
     }
   );
