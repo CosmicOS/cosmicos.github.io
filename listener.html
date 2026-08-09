@@ -555,7 +555,6 @@ title: "The Second Book"
 .rows.ledgered .row { display: contents; }
 .rows.ledgered .does { color: #7f8598; }
 .rows.ledgered .trace { color: #bfe8c8; white-space: nowrap; }
-.rows.ledgered .trace .gp { display: inline-block; width: 9px; }
 
 /* A LABELED TABLE (Tamsin's gate answers §564-579, Lio's §587). The label column used to be an
    inline `width:5.5em` per row — a number that happened to fit "both-knot" and would silently
@@ -643,14 +642,22 @@ title: "The Second Book"
    treatment) indents the marks ~100px and breaks that alignment. */
 .rows .row.hand .lbl { display: block; letter-spacing: 0.16em; word-spacing: normal;
   font-size: var(--sz-cap); text-transform: uppercase; color: #5f7f90; margin-bottom: 4px; }
-/* TALLIES ARE FOR COUNTING, IN EVERY KIND OF ROW. The spacing between `●` marks and the empty `.gp`
-   that groups them in fives were scoped to `.row.hand` and `.peel` — so a GENERATED `.row[data-code]`,
-   which is most of the book, got neither, and the longest run in the arc (25) came out as one
-   unbroken block while the hand-drawn one four lines above it was spaced and grouped. The renderer
-   emits the `.gp` for both; only the stylesheet told them apart. Global now. */
+/* TALLIES ARE FOR COUNTING, IN EVERY KIND OF ROW. The spacing between `●` marks was scoped to
+   `.row.hand` and `.peel`, so a GENERATED `.row[data-code]` — most of the book — got none of it, and
+   the longest run in the arc (25) came out as one unbroken block while the hand-drawn one four lines
+   above it was spaced. Global now.
+   The grouping that used to sit here is GONE (08-09): a gap after every fifth `●` is one hand, and
+   these people have sixteen feet and no hands. Do not put it back. If a run is ever to be grouped,
+   the group has to be a number they would reach for and a keeper has to cut it on the page. */
 .tk { letter-spacing: 2px; }
 .tk.z { letter-spacing: 0; }
-.gp { display: inline-block; width: 7px; }
+/* WHERE THE SEAM FALLS. Ren's cut-tests (§232) print one run three ways — as it comes, cut at the
+   doubling, and cut a tone early — and the gap IS the exhibit: it shows where she puts the knife. */
+.seam { display: inline-block; width: 7px; }
+/* TWO THINGS ON THE PILE, NOT ONE LONGER RUN. In Lio's engine trace `▪▫▪ ▪▫▫▪` is two values and the
+   row below it, `▪▫▪▪▫▪`, is one — a single space carries too little of that. This used to borrow
+   `.gp`, the tally grouping, which was a different job under the same name and went out with it. */
+.trace .apart { display: inline-block; width: 9px; }
 .row.hand .head { outline: 1px solid #ffd479; border-radius: 2px; padding: 0 2px; }  /* the reading-place on the strip */
 
 /* an expression opened all the way — cups within cups, no floor */

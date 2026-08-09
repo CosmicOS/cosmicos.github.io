@@ -60,7 +60,11 @@ function reckonNum(v, barred){
     return bits.map(function(b){ return '<span class="bit">'+(b==='1'?'▪':'▫')+'</span>'; }).join('');
   }
   // number rendering is FORM-DRIVEN: a (unary …) form -> ● tallies (counting era); a bare int -> packed bits.
-  function tally(n){ n=Math.abs(Number(n)); var s=''; for(var i=0;i<n;i++){ if(i>0&&i%5===0) s+='<span class="gp"></span>'; s+='<span class="tk">●</span>'; } return s+'<span class="tk z">◦</span>'; }
+  /* A RUN IS A RUN — no grouping. This used to put a gap after every fifth `●`, which is counting on
+     one hand, and these people have sixteen feet and none. `check-limbs.js` guards exactly that and
+     could not see it: the gate reads `_prose`, so it governs WORDS, and this was a MARK. Nothing
+     about them makes five a group either — four tones, base sixty-four numerals, sixteen feet. */
+  function tally(n){ n=Math.abs(Number(n)); var s=''; for(var i=0;i<n;i++){ s+='<span class="tk">●</span>'; } return s+'<span class="tk z">◦</span>'; }
   function rawUnary(items){                    // a count nobody has a shorthand for yet: every mark as it came
     var out = mark('unary');
     for (var i=1;i<items.length;i++)

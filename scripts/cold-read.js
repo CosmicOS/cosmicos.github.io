@@ -101,7 +101,10 @@ if (fi >= 0) {
   const dir = args[fi + 1];
   if (!dir) { console.error('usage: cold-read.js --freeze <dir>'); process.exit(2); }
   fs.mkdirSync(dir, { recursive: true });
-  const preamble = fs.readFileSync(path.join(__dirname, 'blind-read-prompt.txt'), 'utf8').trimEnd() + '\n\n';
+  /* BLIND_READ_PROMPT names the prompt file, so one harness can run more than one kind of read
+     (the stuck-point read, the wire reconstruction) without editing this. */
+  const promptFile = process.env.BLIND_READ_PROMPT || 'blind-read-prompt.txt';
+  const preamble = fs.readFileSync(path.join(__dirname, promptFile), 'utf8').trimEnd() + '\n\n';
   chunks.forEach((c, i) => {
     const nnn = String(i + 1).padStart(3, '0');
     fs.writeFileSync(path.join(dir, `piece-${nnn}.txt`), (i === 0 ? preamble : '') + c + '\n');
@@ -119,7 +122,7 @@ if (pi >= 0) {
     process.exit(2);
   }
   const preamble = p === 1
-    ? fs.readFileSync(path.join(__dirname, 'blind-read-prompt.txt'), 'utf8').trimEnd() + '\n\n'
+    ? fs.readFileSync(path.join(__dirname, process.env.BLIND_READ_PROMPT || 'blind-read-prompt.txt'), 'utf8').trimEnd() + '\n\n'
     : '';
   process.stdout.write(preamble + chunks[p - 1] + '\n');
   process.exit(0);

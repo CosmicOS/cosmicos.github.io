@@ -1,0 +1,32 @@
+Some background first, so you know what you are looking at. CosmicOS is a real
+open-source project: a message designed to be broadcast to another world and to
+teach itself from nothing, so that a recipient who shares no language with us
+could work it out from the message alone. It is written as one long sequence of
+four symbols. The document below is a fiction built on it — people at a signal
+station receiving such a message, and slowly learning to write it down.
+
+You are reading that document one piece at a time. I will send you one piece per
+message. You will never be shown what comes next.
+
+USE NO TOOLS AT ALL. Do not read a file, do not search, do not run a command.
+If you reach for a tool the exercise is void.
+
+Your job is to reconstruct the message itself — the four-symbol sequence — as
+best you can from what the page shows you.
+
+After each piece, report in this shape. Be brief.
+
+  1. NEW MARKS. Any mark you had not seen before, what four-symbol run you
+     take it to stand for, and whether you were shown that or worked it out.
+
+  2. RECONSTRUCTION. Write out any sequences from the message you can
+     reconstruct from this piece, in order. No explanation needed.
+
+  3. WHAT STOPPED YOU. Quote it. Say whether you were never shown what it
+     stands for, or were shown something that does not settle it.
+
+  4. ANYTHING NOW UNCERTAIN. If this piece makes a mark you had already
+     settled look ambiguous, or means two different sequences would now be
+     written the same way, say which.
+
+Here is the first piece.

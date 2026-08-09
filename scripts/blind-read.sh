@@ -44,8 +44,6 @@ TO="${2:-$TOTAL}"
 # recognizes the document.  Check the reports for that admission on the way back.
 DIS="Bash,Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Task,Agent,NotebookEdit,TodoWrite"
 
-SID=""
-[ "$FROM" -gt 1 ] && [ -f "$OUT/RESUME.txt" ] && SID=$(sed -n 's/^session_id=//p' "$OUT/RESUME.txt")
 
 # ★ NEVER RESUME BEHIND THE READER.  RESUME.txt is the only thing that knows how far it got, and it
 # moves while you are reading it — a number copied out of it ten minutes ago is stale.  Resuming at a
@@ -64,6 +62,13 @@ elif [ -n "$NEXT" ] && [ "$FROM" -lt "$NEXT" ] && [ "${3:-}" != "--again" ]; the
   echo "  to resend anyway:  scripts/blind-read.sh $FROM $TO --again" >&2
   exit 1
 fi
+# ★ READ THE SESSION ID *AFTER* RESOLVING FROM, NOT BEFORE. This used to sit above the block that
+# resolves FROM out of RESUME.txt, so with no arguments FROM was still 1, the read was skipped, and
+# the script then refused its own resume: "no session to resume — start from 1, or the reader has no
+# memory of the book". The documented way to continue a run (omit the number) could never work.
+SID=""
+[ "$FROM" -gt 1 ] && [ -f "$OUT/RESUME.txt" ] && SID=$(sed -n 's/^session_id=//p' "$OUT/RESUME.txt")
+
 if [ "$FROM" -gt 1 ] && [ -z "$SID" ]; then
   echo "no session to resume in $OUT/RESUME.txt — start from 1, or the reader has no memory of the book" >&2
   exit 1
