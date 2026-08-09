@@ -48,7 +48,21 @@ if (!domFile) {
   domFile = '/tmp/read-dom.html';
   execFileSync(path.resolve(__dirname, 'render-dom.sh'), [domFile], { stdio: ['ignore', 'ignore', 'inherit'] });
 }
-const html = fs.readFileSync(domFile, 'utf8');
+/* EVERY FIGURE BACK INTO THE READER'S OWN NUMERALS, before anything else looks at this file.
+ * The page writes numbers in the keepers' numerals (js/listener.js, `keeperNumerals`), which is
+ * right for the book and wrong for a flat read, three ways:
+ *   - a reviewer cannot cite a pass, and the whole point of a read is being able to say where;
+ *   - `--through N` reads the pass number off the stamp, and there is no longer a digit in it;
+ *   - the codepoints are braille only as an ADDRESS into the scrawl face — a reader sees an alien
+ *     figure, not a dot pattern — so putting them in plain text tells a text-only reviewer a lie
+ *     about what is drawn, and invites a finding about a notation nobody can see.
+ * The numerals are not content a reader has to decode; nothing in the book turns on reading one.
+ * So the read says the number and stays quiet about the shape. Done on the whole DOM at once so
+ * the stamp parser, the `--through` filter and the body all agree. */
+const html = fs.readFileSync(domFile, 'utf8')
+  /* the inner spans are matched EXPLICITLY, not with `[\s\S]*?`: a lazy match stops at the first
+   * `</span>`, which is the first PLACE of the number, and leaves the rest — "Pass 189 ⣽". */
+  .replace(/<(span|a) class="(?:rknum|passref)"[^>]*\b(?:data-v|title)="(?:pass )?(\d+)"[^>]*>(?:<span class="scrawl">[^<]*<\/span>)*<\/\1>/g, '$2');
 
 // ---- the figure registry, and it should now never fire.  Since 08-07 a sign IS a braille codepoint
 //      (scripts/braille-codepoints.js), so it survives into plain text as itself and falls straight

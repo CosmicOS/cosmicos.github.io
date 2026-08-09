@@ -5,10 +5,18 @@ title: "The Second Book"
 
 <style>
 /* ---- listener: the decoder's log ---- */
-.diary { max-width: 660px; margin: 0 auto; padding: 0 6px; }
+/* THE BOOK'S TYPE SIZE, IN ONE PLACE. 118% puts body prose at 20px, and holds the line to ~66
+   characters in this fixed 606px column. It goes on `.diary` rather than `.entry p` because nearly
+   everything here is sized in `%`, so one number carries the preface, register, records and letters
+   too, in proportion.
+   KNOWN DEBT: `--sz-mark` and this column are px, so the marks do NOT follow a reader who has
+   enlarged their browser default — prose grows, notation stays at 12px. The fix is marks in `em`
+   and the column in `rem`/`ch`; it is not a one-liner, because several exhibits carry meaning in
+   their layout and want looking at once the marks move. */
+.diary { max-width: 660px; margin: 0 auto; padding: 0 6px; font-size: 118%; }
 
 /* the message index — an editor's key to what each pass decodes (collapsible) */
-.msg-index { max-width: 660px; margin: 0 auto 26px; border: 1px solid #24333f; border-radius: 10px; background: rgba(12,16,23,0.6); }
+.msg-index { max-width: 660px; margin: 0 auto 26px; border: 1px solid #24333f; border-radius: 10px; background: var(--ground); }
 .msg-index > summary { cursor: pointer; padding: 12px 18px; font-family: var(--voice-station); font-size: 80%; letter-spacing: 0.04em; color: #8fb0c0; list-style: none; }
 .msg-index > summary::-webkit-details-marker { display: none; }
 .msg-index > summary::before { content: "\25B8\00a0"; color: #6f95a8; }
@@ -49,21 +57,27 @@ title: "The Second Book"
   --voice-station: "inconsolataregular", "Courier New", monospace;
   --voice-marks:   'listenermarks', "inconsolataregular", "DejaVu Sans Mono", "Courier New", monospace;
   --sz-mark: 12px; --sz-tone: 15px; --sz-word: 11px; --sz-cap: 10px; --sz-side: 13px;
+
+  /* --ground   every panel that holds running text; opaque, so the background photograph is never
+                behind words. --gap-para between paragraphs, --gap-block around an exhibit.
+     KEEP gap-block > gap-para, or an exhibit reads as just another paragraph. Both are px because
+     the prose size is set in one place (`.diary`, below); if that goes reader-relative, so do these. */
+  --ground: #0d1117;
+  --gap-para: 18px; --gap-block: 30px;
 }
 
 /* ---- message rendering: ONE place to swap glyphs (used by the JS renderer) ---- */
 .tn, .tones{ font-size: var(--sz-tone); }
 .tones{ letter-spacing:3px; }   /* generated wire-quote: real tone chars, copy-pasteable */
 
-/* ── ONE INK. The signal is tones — heard and gone; nothing on the page is "the wire," it is ALL
-      her transcription (§191: her figures, not only her ear). So no mark is more raw than another,
-      and none earns its own color. Shape tells them apart; the pen is one.
-      This is `!important`, so IT IS THE ONLY PLACE A MARK'S COLOR IS SET. Twenty-odd `color:` lines
-      for these classes were scattered down this file doing nothing; two sessions have now tried to
-      "fix" a mark's color by editing one of them. They are gone. If you want a mark to change color,
-      the answer is that it cannot — take it out of this list first, on purpose. ── */
+/* The notation's color, set here and nowhere else. `!important` because twenty-odd dead `color:`
+   lines for these classes were scattered down this file and two sessions "fixed" a mark by editing
+   one of them. Change it here. */
 .tn, .tones, .bit, .cup, .gl, .tk, .nil, .scrawl, .var, .kind, .rel, .op, .coin,
 .msg-val .msg-view { color:#cbb794 !important; }
+/* Keepers' own figures — a pass in a heading, a reference in a sentence, a ledger count — take the
+   color of the line they sit in. A count inside a message row (`.num`) keeps the notation color. */
+.rknum .scrawl, .passref .scrawl, .rk .scrawl { color: inherit !important; }
 /* a COINED WORD (her homespun name for a sign she has cracked) — one ink, told apart by form:
    small, spaced, lowercase transcription, so a fragment reads as her marks and not as prose. */
 /* `.nil.w` rides with `.gl.w`: both are a keeper's WORD standing in a row of marks, and a reader has no way to
@@ -77,12 +91,12 @@ title: "The Second Book"
 .entry p .gl.w, .rb-note .gl.w, .more-note .gl.w, .cp-item .gl.w{ font-size:inherit; }
 /* end-of-section READ-BACK: re-show a real fragment now carrying the pass's new term — a
    semi-formal "what I can read now", paying off the coining and consolidating the lesson. */
-.readback{ margin:16px 0 6px; padding:11px 16px 12px; border-left:2px solid #2a3b47; background:rgba(12,16,23,.5); border-radius:0 6px 6px 0; }
+.readback{ margin:var(--gap-block) 0; padding:11px 16px 12px; border-left:2px solid #2a3b47; background:rgba(255,255,255,.03); border-radius:0 6px 6px 0; }
 .readback .rb-label{ font-family: var(--voice-station); font-size: var(--sz-cap); text-transform:uppercase; letter-spacing:.2em; color:#7f9bab; margin-bottom:8px; }
 .readback .row{ margin:4px 0; }
 .readback .rb-note{ margin-top:9px; font-family: var(--voice-hers); font-size: var(--sz-side); color:#8fa2ad; font-style:italic; }
 /* toggleable message widget */
-.msg{ background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:10px 14px; margin:10px 0; }
+.msg{ background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:10px 14px; margin:var(--gap-block) 0; }
 .msg-view{ font-size: var(--sz-mark); letter-spacing:0; color:#cdd9e2; }   /* MATCH .row (12px): the .msg widget renders the
    same notation through the same form() renderer, so it must not be a different size from the wire-quote rows it
    sits beside. Was 20px+2px — 67% larger than a .row three lines above it in the same entry. */
@@ -110,13 +124,14 @@ title: "The Second Book"
    places of 189 touched and read as one composite mark; 5px between places was tried and made a
    two-place figure look like two numbers. So: 2px inside a number, a word-space between numbers, and
    the word-space widened so the difference is not a judgement call. */
-.rk .scrawl, .num .scrawl{ margin-right:-3px; }   /* 2px BETWEEN PLACES of one number: parted, not spaced */
+.rk .scrawl, .num .scrawl, .rknum .scrawl, .passref .scrawl{ margin-right:-3px; }   /* 2px BETWEEN PLACES of one number: parted, not spaced */
 /* TWO COUNTS SIDE BY SIDE ARE SEPARATED BY A SPACE, like every other pair of atoms in a row — not by
    a margin. Digits inside one `.num` stay flush, which is what makes a two-place figure read as one
    number. The distinction between `⣁⣁` (one number, sixty-five) and `⣁ ⣁` (two counts of one) is
    therefore exactly the distinction between 11 and 1 1, and rests on the space being a real space.
    A 4px margin was tried here and is not enough to carry that; write the space in the markup. */
-.rk .scrawl:last-child, .num .scrawl:last-child{ margin-right:-5px; }   /* cancel the trailing advance */
+.rk .scrawl:last-child, .num .scrawl:last-child,
+.rknum .scrawl:last-child, .passref .scrawl:last-child{ margin-right:-5px; }   /* cancel the trailing advance */
 /* a COMPOUND sign (a :-name the sender built from parts) — kept as ONE grouped unit (.fam), its
    parts joined by a faint · so a compound is never mistaken for separate signs (part-count = dots+1).
    Box/pill styling NEUTERED for now (too distracting); the · joins carry the distinction. */
@@ -127,13 +142,35 @@ title: "The Second Book"
    (which are NOT spaces, so word-spacing leaves them alone). Tune the value if it reads too airy. */
 .row, .msg-view, .fold{ word-spacing:0.4em; }
 .msg-view .tn{ letter-spacing:3px; }
+/* A CROSS-REFERENCE TO ANOTHER PASS — present, and quiet. The number is part of her sentence, so it
+   keeps the prose color and takes no link decoration; a faint rule under it says it can be followed,
+   and firms up on hover. Overrides the site-wide `a:hover{text-decoration:underline}` so the number
+   does not jump when the pointer crosses it. */
+.entry a.passref, .entry a.passref:link, .entry a.passref:visited{
+  color: inherit; text-decoration: none;
+  border-bottom: 1px dotted rgba(150,180,200,.32); }
+.entry a.passref:hover{ text-decoration: none; border-bottom-color: rgba(170,205,230,.85); }
+/* Ask a mark what it is: hover, or tap where there is no pointer. Shows BESIDE the mark — on a
+   phone the finger covers what it just pressed. What a gloss may say is fixed in js/listener.js. */
+.gloss{ cursor: help; position: relative; }
+.gloss.showing::after{
+  content: attr(data-v); position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+  margin-left: 0.5em; padding: 1px 6px; border-radius: 4px; white-space: nowrap; z-index: 3;
+  background: #1d2a34; color: #cdd6df; border: 1px solid #3a5567;
+  font-family: var(--voice-station); font-size: 12px; letter-spacing: 0.08em; text-transform: none;
+}
+/* THE STAMP'S FIGURES CARRY THE HEAD. The stamp runs at 74% and the marks are hairlines, so a pass
+   whose figures both fall in the bare column — 520, 528, 544, and 544 opens a cycle — came out as
+   two faint scratches where the heading should be. Size and stroke are set here and nowhere else. */
+.entry .stamp .rknum .scrawl, .taking-up .tu-head .rknum .scrawl{
+  font-size: 132%; -webkit-text-stroke: 0.7px currentColor; }
 .msg-line{ margin:8px 0; }
 .msg-line + .msg-line{ padding-top:8px; border-top:1px solid #16202a; }
 .msg-line .lbl{ display:block; letter-spacing:.16em; font-size: var(--sz-cap); text-transform:uppercase; color:#5f7f90; margin-bottom:4px; }
 
 
 .preface {
-  background: rgba(10,14,20,0.82); border-radius: 14px; padding: 24px 30px;
+  background: var(--ground); border-radius: 14px; padding: 24px 30px;
   color: #cdd6df; margin-bottom: 30px;
   font-family: var(--voice-hers); line-height: 1.65;
 }
@@ -154,7 +191,7 @@ title: "The Second Book"
    belongs to the coast and a clerk reads it. ── */
 .register {
   font-family: var(--voice-station);
-  border: 1px solid #2a3a45; border-radius: 3px; background: rgba(9,13,18,0.86);
+  border: 1px solid #2a3a45; border-radius: 3px; background: var(--ground);
   color: #b8c6d0; font-size: 84%; margin: 0 0 22px; padding-top: 13px;
 }
 .register .reg-head { padding: 0 14px 10px; border-bottom: 1px solid #2a3a45; }
@@ -187,8 +224,8 @@ title: "The Second Book"
 }
 
 .entry {
-  background: rgba(12,16,23,0.78); border-left: 2px solid #2b4a5c;
-  border-radius: 0 12px 12px 0; padding: 18px 26px 20px; margin: 0 0 20px;
+  background: var(--ground); border-left: 2px solid #2b4a5c;
+  border-radius: 0 12px 12px 0; padding: 22px 28px 24px; margin: 0 0 28px;
 }
 .entry .stamp {
   font-family: var(--voice-station);
@@ -229,7 +266,7 @@ title: "The Second Book"
    marks stand over their own. Monospace with white-space:pre so the columns are real columns —
    the whole point is seeing them fail to stack, and then stack. */
 .sheets { background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:12px 14px;
-  margin:10px 0; overflow-x:auto; }
+  margin:var(--gap-block) 0; overflow-x:auto; }
 .sheets .row { white-space:pre; line-height:2.0; word-spacing:0; letter-spacing:1px; }
 .sheets .pc { letter-spacing:0; padding:0 0.45em; }
 .sheets .lbl { display:inline-block; width:5.5em; letter-spacing:0; font-style:normal;
@@ -298,7 +335,9 @@ title: "The Second Book"
 .entry > h2 {
   font-family: var(--voice-station);
   font-size: 74%; font-weight: normal; letter-spacing: 0.06em;
-  color: #90a8b8; text-shadow: none; margin: 0 0 12px; clear: both;
+  /* last line of the head: the gap under it must out-rank a paragraph gap, or the head reads as
+     the first paragraph. The form's own three lines stay tight above. */
+  color: #90a8b8; text-shadow: none; margin: 0 0 var(--gap-block); clear: both;
 }
 /* …and it gets a field key like the two lines above it, so the head is three fields and not two
    fields with a title stuck under them. NOTE, because that is what §189 says the line is: "two or
@@ -320,15 +359,16 @@ title: "The Second Book"
 /* terse: short clipped lines, tighter rhythm */
 .entry p {
   font-family: var(--voice-hers);
-  color: #dde3ea; line-height: 1.6; font-size: 106%; margin: 0 0 10px; text-align: left;
+  color: #dde3ea; line-height: 1.6; font-size: 106%; margin: 0 0 var(--gap-para); text-align: left;
+  letter-spacing: 0.01em;   /* reversed type irradiates; a hair of tracking opens the counters */
 }
 .entry p:last-child { margin-bottom: 0; }
 .entry .coin { font-style: italic; }
 /* a dispatch: a short in-the-moment note, kept closer to the wire than a full entry.
    lighter box, greener accent, no title — a quick hand, not a considered pass. */
 .entry.dispatch {
-  background: rgba(12,16,23,0.5); border-left-color: #3a5a3f;
-  padding: 12px 26px 13px; margin: 0 0 20px;
+  background: var(--ground); border-left-color: #3a5a3f;   /* lighter = smaller, not transparent */
+  padding: 14px 28px 15px; margin: 0 0 28px;
 }
 .entry.dispatch .stamp { color: #6f9a7a; }
 /* the "taking-up": a spare, diegetic change-of-watch record when a new keeper inherits the log — carries the
@@ -338,7 +378,7 @@ title: "The Second Book"
   font-family: var(--voice-station);
   max-width: 440px; margin: 40px auto 8px; padding: 12px 20px 13px;
   border: 1px solid #35443d; border-radius: 3px;
-  background: rgba(18,24,20,0.6); color: #c2cfc6; font-size: 88%; line-height: 1.8; text-align: center;
+  background: #121812; color: #c2cfc6; font-size: 88%; line-height: 1.8; text-align: center;
 }
 .taking-up .tu-head {
   text-transform: uppercase; letter-spacing: 0.24em; font-size: 74%; color: #7fa389;
@@ -361,10 +401,12 @@ title: "The Second Book"
 .tally {
   font-family: var(--voice-station);
   background: rgba(10,14,20,0.7); border-left: 2px solid #4a4332;
-  padding: 10px 16px; margin: 12px 0; color: #cbbf9e; font-size: 92%; line-height: 1.75;
+  padding: 10px 16px; margin: var(--gap-block) 0; color: #cbbf9e; font-size: 92%; line-height: 1.75;
 }
 .tally .key { font-family: var(--voice-hers); color: #8a7f63; font-size: var(--sz-side); font-style: italic; display: block; margin-bottom: 6px; }
-.tally .row { display: block; white-space: pre; overflow-x: auto; }
+/* `.tally-row`, not `.row` — `.row` is what the message renderer draws into, and a page-wide sweep
+   cannot tell them apart by element alone. */
+.tally .tally-row { display: block; white-space: pre; overflow-x: auto; }
 .tally .gap { display: inline-block; width: 1.15em; border-bottom: 1px solid #6b6250;
   vertical-align: baseline; }   /* a column she could not fill: ruled to the width of the missing
   thing and left empty — her own words. Drawn, never typed; the span holds no characters at all. */
@@ -395,8 +437,8 @@ title: "The Second Book"
 .letter {
   font-family: var(--voice-station);
   font-size: 92%; line-height: 1.85; color: #c3ccd6;
-  background: rgba(10,14,20,0.55); border: 1px solid #2b3540; border-radius: 3px;
-  padding: 12px 18px; margin: 12px 0;
+  background: rgba(255,255,255,.03); border: 1px solid #2b3540; border-radius: 3px;
+  padding: 12px 18px; margin: var(--gap-block) 0;
 }
 .letter .sig { display: block; margin-top: 8px; color: #8095a6; }
 /* one line of a block that is LINES rather than prose — a quoted letter, a bench list. Never a mark. */
@@ -406,13 +448,13 @@ title: "The Second Book"
    and writes against herself. Dated, bracketed, in the entry it corrects. */
 .later {
   font-family: var(--voice-hers); font-size: 96%; line-height: 1.55;
-  color: #b9b2c6; margin: 10px 0; padding-left: 14px; border-left: 2px solid #3a3348;
+  color: #b9b2c6; margin: var(--gap-para) 0; padding-left: 14px; border-left: 2px solid #3a3348;
 }
 
 .frag {
   font-family: var(--voice-station);
   background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px;
-  padding: 12px 14px; margin: 10px 0; color: #d6e6ef;
+  padding: 12px 14px; margin: var(--gap-block) 0; color: #d6e6ef;
   font-size: var(--sz-mark); letter-spacing: 3px; overflow-x: auto; white-space: nowrap;
 }
 .frag .lbl {
@@ -420,6 +462,12 @@ title: "The Second Book"
   color: #5f7f90; margin-bottom: 6px;
 }
 .frag.flood { white-space: normal; overflow: hidden; padding: 12px 14px 2px; }
+/* A TONE RUN WRAPS, AT EVERY WIDTH. It is one unbroken string of modifier letters, so nothing in it
+   is a break opportunity and `.frag`'s nowrap sent it off the side to be dragged at. Having nothing
+   to break at is the reason to let it break ANYWHERE, not the reason to refuse. The break has to go
+   on the run, not the box — a container rule never reaches inside a string. Same recipe as
+   `.frag.flood` and as the narrow-screen block, which had this right for phones only. */
+.frag .tones { white-space: normal; word-break: break-all; overflow-wrap: anywhere; }
 /* the atoms view exists to show which marks belong together, so the gap BETWEEN atoms has to beat the
    gap between marks inside one. `.frag`'s 3px letter-spacing is tuned for the founder's loose tone
    runs, where every mark is its own thing; here it flattens the grouping the view is for. */
@@ -448,7 +496,7 @@ title: "The Second Book"
 }
 
 /* the "peel" stepper */
-.peel { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 12px 14px; margin: 10px 0; }
+.peel { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 12px 14px; margin: var(--gap-block) 0; }
 .peel .msg-view { display: block; margin-top: 4px; }
 .peel-say { font-family: var(--voice-hers); color: #8fb0c0; font-size: var(--sz-word); font-style: italic; margin-top: 3px; }
 /* §267: the figures set in a right-aligned column so the place-columns line up and the reader
@@ -516,12 +564,19 @@ title: "The Second Book"
 .rows.labeled { display: grid; grid-template-columns: max-content minmax(0,1fr);
   column-gap: 1.4em; align-items: baseline; row-gap: 3px; }
 .rows.labeled .row { display: contents; }
-.rows.labeled .row.hand .lbl,
-.rows.beats .row.hand .lbl { display: inline; color: #c9a3ff; letter-spacing: 0;
+.rows.labeled .row .lbl,
+.rows.beats .row .lbl { display: inline; color: #c9a3ff; letter-spacing: 0;
   word-spacing: normal; font-size: var(--sz-word); text-transform: none; margin-bottom: 0; }
   /* beats `.rows .row.hand .lbl` (the §207 rule, 4 classes) on specificity — that one is a
      block, uppercase caption, and these labels are her coined WORDS, which are never uppercase. */
 .rows.labeled .fig { white-space: nowrap; }
+/* except a tone row, which is a string of pitches with no break opportunity in it — nowrap sends it
+   off the side, and the tail is usually the point of showing it. Same recipe as `.frag .tones`. */
+.rows.labeled .row[data-as="tones"] .fig { white-space: normal; word-break: break-all; overflow-wrap: anywhere; }
+/* a run of tones standing inside a longer one (`data-echo`). A BAND BEHIND THE MARKS, not a color on
+   them: the marks keep the notation's one color, and the band survives a line break, which matters
+   because the run being marked is usually long enough to wrap. */
+.echo { background: rgba(140,180,220,.17); box-shadow: 0 0 0 1px rgba(140,180,220,.22); border-radius: 2px; }
 
 /* §501: SENN'S WALK and her four tables — a figure with a gloss beside it. The gloss must start at
    the same place on every line, and it cannot: the reading-place box (`.head`) has width, so a row
@@ -541,7 +596,7 @@ title: "The Second Book"
 .step { font-family: var(--voice-hers); color: #8a94a0; font-style: italic; font-size: var(--sz-word); margin: 0 5px; }  /* narration word ("becomes"), not a mark */
 .reduce .say { font-family: var(--voice-hers); color: #8fb0c0; font-size: var(--sz-word); font-style: italic; margin-left: 1.6em; }
 
-.rows { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 10px 14px; margin: 10px 0; overflow-x: auto; }
+.rows { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 10px 14px; margin: var(--gap-block) 0; overflow-x: auto; }
 .row {
   font-family: var(--voice-station); font-size: var(--sz-mark);
   line-height: 1.55; color: #8aa2b0; white-space: pre-wrap; word-break: break-word;
@@ -734,16 +789,21 @@ title: "The Second Book"
    hidden behind a scrollbar the reader may never find.
    ────────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .diary, .entry, .taking-up, .register, .rows, .frag, .tally, .msg, .peel, .readback, .board, .letter, .cap
+  .diary, .entry, .taking-up, .register, .rows, .frag, .tally, .msg, .peel, .readback, .board, .letter, .cap,
+  .msg-index    /* bordered: without border-box it is 660 PLUS the border, and gave the whole page
+                   a horizontal scrollbar on a phone */
     { box-sizing: border-box; max-width: 100%; }
   /* the register keeps its columns and scrolls; shrink it rather than break a rule across a row */
   .register { font-size: 78%; }
   .register .reg-k, .register .reg-c { padding: 6px 10px; }
+  /* tighter gaps, same ordering — override the variables, not the rules that use them */
+  :root { --gap-para: 15px; --gap-block: 24px; }
   .diary { padding: 0; }
-  .entry { padding: 14px 13px 15px; border-radius: 0 8px 8px 0; }
-  .entry.dispatch { padding: 11px 13px 12px; }
-  .entry .stamp { padding: 11px 13px 0; margin: 0 -13px 7px; }
-  .entry > h2 { margin-bottom: 10px; }   /* size follows .passfields now — no override */
+  /* 16px, not the 13 this block was built with: that bought width for exhibits which now wrap or
+     scroll inside themselves, and it cost an hour's reading its side margin. */
+  .entry { padding: 16px 16px 17px; border-radius: 0 8px 8px 0; }
+  .entry.dispatch { padding: 13px 16px 14px; }
+  .entry .stamp { padding: 11px 16px 0; margin: 0 -16px 7px; }
   .entry p { font-size: 102%; }
 
   /* the founder's raw runs: wrap them. They are a stream, not a structured row —
@@ -782,7 +842,7 @@ title: "The Second Book"
   .rows.labeled { display: block; }
   .rows.labeled .row { display: block; margin-bottom: 7px; }
   .rows.labeled .row:last-child { margin-bottom: 0; }
-  .rows.labeled .row.hand .lbl { display: block; margin-bottom: 2px; }
+  .rows.labeled .row .lbl { display: block; margin-bottom: 2px; }
   .rows.labeled .fig { white-space: normal; }
 
   .taking-up { padding: 10px 12px 11px; font-size: 82%; letter-spacing: 0; }

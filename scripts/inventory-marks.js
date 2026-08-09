@@ -78,8 +78,8 @@ const INVENTORY = [
   { cls: 'key',      kind: 'HERS',      shapes: null, est: 'p239',
     what: 'the translation key Ren cuts at the front of the book so her shorthand survives her: r read and worked, c copied and not worked, b blank.',
     gate: 'inventory-marks --check' },
-  { cls: 'row',      kind: 'HERS',      shapes: null, est: 'p239', el: 'span',
-    what: 'one line of that ledger: pass, the mark it was about, then the counts. Free text — words and numbers, never a mark. ★ `row` IS TWO THINGS: `<span class="row">` is this ledger line, and `<div class="row">` is a generated message row (data-code/data-parse), which is not hers at all. The `el` field is what keeps the establishment check from testing this entry against the wrong one — the first `<div class="row">` is at §232, seven passes before Ren cuts the ledger. Worth renaming one of them; until somebody does, they are told apart by their element and nothing else.',
+  { cls: 'tally-row', kind: 'HERS',     shapes: null, est: 'p239', el: 'span',
+    what: 'one line of that ledger: pass, the mark it was about, then the counts. Free text — words and numbers, never a mark. It was `row` until 08-09, which was also the class of a generated message row — the exact opposite thing, the wire\'s marks rather than a keeper\'s figures about them. They were told apart by their element and nothing else, and a page-wide sweep duly got it wrong: the numeral pass skipped every ledger line as if it were the renderer\'s output. The `el` field stays because it is cheap and true, not because anything now depends on it.',
     gate: 'inventory-marks --check' },
   { cls: 'beat',     kind: 'HERS',      shapes: null, est: 'p587',
     what: 'Lio\'s §587 table: whether a beat came on this line, in her words ("a beat" / "no beat"). Free text. The `.none` modifier is the absent case, dimmed.',
@@ -181,8 +181,8 @@ const problems = [];
   for (const r of INVENTORY.filter(r => r.kind === 'HERS')) {
     if (!r.est) { problems.push(`class "${r.cls}" is claimed as HERS with no establishment citation — cite the pass that shows the reader what it means, or it is not hers`); continue; }
     if (!arc.includes(`id="${r.est}"`)) { problems.push(`class "${r.cls}" cites ${r.est}, which is not a pass in the arc (this is how the phantom §300 survived)`); continue; }
-    /* Scoped by ELEMENT, because `row` is two different things: `<span class="row">` is a line of Ren's
-       cut ledger (§239) and `<div class="row">` is a generated message row. Same class, different jobs. */
+    /* Scoped by ELEMENT where an entry asks for it. This was load-bearing while `row` named two
+       different things; since the ledger line became `tally-row` (08-09) it is only a tightening. */
     const tag = r.el || '[a-z]+';
     const re = new RegExp(`<${tag}\\s+class="${r.cls.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`, 'g');
     const first = [...arc.matchAll(re)][0];

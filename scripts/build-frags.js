@@ -140,7 +140,12 @@ function buildFile(file) {
   // class="row" may carry extra classes (a peel rung is `row msg-view`). Matching the attribute
   // EXACTLY meant such a row was silently skipped here and then rendered BLANK on the page, with
   // every gate green — found 08-06 on the closing entry.
-  html = html.replace(/<div class="row[^"]*"([^>]*\bdata-code="[^"]*"[^>]*)><\/div>/g, (m, attrs) => {
+  // ★ AND THE SAME BUG A SECOND TIME, 08-08: this insisted the row be EMPTY (`></div>`). Once a
+  // generated row could carry a `<span class="lbl">` it stopped matching, its code never reached
+  // wire_quotes.json, and it rendered blank — invisible unless that code was used nowhere else in
+  // the book, which is why it survived four labelled exhibits before showing. Match the row's
+  // CONTENT, not its emptiness. The registration check below is the real guard.
+  html = html.replace(/<div class="row[^"]*"([^>]*\bdata-code="[^"]*"[^>]*)>(?:(?!<\/div>)[\s\S])*<\/div>/g, (m, attrs) => {
     const code = attr(attrs, 'data-code');
     if (!BY_CODE[code]) { errs.push('row data-code is not a real transmitted statement: ' + code); return m; }
     usedCodes.add(code); quote++;
@@ -171,5 +176,24 @@ files.forEach(buildFile);
    back to _data/ for tidiness. */
 const table = {};
 for (const code of usedCodes) table[code] = BY_CODE[code];
+/* ★ EVERY `.row[data-code]` ON THE PAGE MUST BE IN THE BUNDLE IT WILL BE LOOKED UP IN.
+   The collector above has now been too narrow TWICE — once by demanding an exact class, once by
+   demanding an empty row — and both times the symptom was identical: a row rendering blank on the
+   page with every gate green, because `listener.js` resolves `data-code` through wire_quotes.json
+   and silently returns when the code is absent. Checking the regex is not the fix; checking the
+   RESULT is. Scan the built includes for every row code and fail if one did not make it in. */
+{
+  const missing = [];
+  for (const f of files) {
+    const html = fs.readFileSync(f, 'utf8');
+    for (const m of html.matchAll(/<div class="row[^"]*"[^>]*\bdata-code="([^"]*)"/g))
+      if (!table[m[1]]) missing.push(`${path.basename(f)}: ${m[1].slice(0, 40)}…`);
+  }
+  if (missing.length) {
+    console.error(`\n✗ ${missing.length} row data-code(s) never reached wire_quotes.json — these render BLANK:`);
+    missing.forEach(x => console.error('    ' + x));
+    process.exitCode = 1;
+  }
+}
 fs.writeFileSync(path.resolve(__dirname, '../_includes/wire_quotes.json'), JSON.stringify(table));
 console.log(`_includes/wire_quotes.json: ${Object.keys(table).length} entr${Object.keys(table).length === 1 ? 'y' : 'ies'}`);

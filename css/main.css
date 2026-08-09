@@ -463,6 +463,14 @@ a.sim-button:hover {
   text-decoration: inherit;
   text-rendering: optimizeLegibility;
   text-transform: none;
+  /* ★ THESE THREE ARE DEAD AND HAVE ALWAYS BEEN. The vendor prefixes are missing their leading
+     dashes — `webkit-font-smoothing`, not `-webkit-font-smoothing`; `moz-osx-`, not `-moz-osx-` —
+     so every one parses as an unknown property and is dropped, and `font-smoothing` is not a
+     property in any engine at all. Left as they are ON PURPOSE for now: correcting them switches
+     this face from subpixel to grayscale antialiasing on every page that uses it, which is a
+     visible change to how the scrawl is drawn everywhere, and it wants deciding rather than
+     slipping in. (Found while wrongly blaming subpixel fringing for something that turned out to
+     be the ONE INK rule in listener.html.) */
   moz-osx-font-smoothing: grayscale;
   webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;

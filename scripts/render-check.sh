@@ -43,6 +43,10 @@ echo "  label-only (unrendered) frags: $n_frag"
 [ "$n_box" -eq 0 ]  || { echo "❌ ▩ present — a sign has no glyph/scrawl"; fail=1; }
 [ "$n_frag" -eq 0 ] || { echo "❌ some .frag widgets rendered label-only (JS didn't fill them)"; fail=1; }
 
+# THE BOOK HAS NO ARABIC NUMERALS — checked here and not in verify.sh's static gates, because it is
+# a fact about what the renderer PRODUCED. See scripts/audit-numerals.js for why it is worth a gate.
+node scripts/audit-numerals.js "$DOM" | sed 's/^/  /' || fail=1
+
 echo
 echo "  post-JS DOM  -> $DOM"
 echo "  rendered text-> $TXT   (what a reader sees; grep it to spot-check any section)"
