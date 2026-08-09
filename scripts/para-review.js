@@ -72,7 +72,13 @@ function collect() {
     while ((m = re.exec(src))) {
       if (m[1] || m[2]) { const np = m[1] || m[2]; if (np !== pass) { pass = np; nth = 0; } continue; }
       if (m[4] || m[5]) { prev = '[EXHIBIT' + (m[4] ? ' ' + m[4] : ' ' + m[5]) + ']'; continue; }
-      const text = m[3].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      /* A SIGN SPAN IS EMPTY IN THE SOURCE — the renderer fills it. Strip tags naively and every
+         sentence built around a sign loses its subject: §528 read "…still be two. is what lets a made
+         thing be this one", which looks like a dropped word and is not. Put the sign's name back as
+         ⟨name⟩ so the sentence can be judged; a `.coin` already contains its word, so it needs nothing. */
+      const text = m[3]
+        .replace(/<span class="gl sg" data-s="([^"]+)"><\/span>/g, '⟨$1⟩')
+        .replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
       if (!text) continue;
       items.push({ id: `${k}:${pass}:${++nth}`, keeper: k, pass, text, before: prev });
       prev = 'paragraph';

@@ -28,11 +28,15 @@ else
   echo "✓ no JS console errors"
 fi
 
-n_gl=$( { grep -o 'class="gl"' "$DOM" || true; } | wc -l)
+# COUNT THE SIGN GLYPHS, not `.gl`. `.gl` used to hold the lambda-slot hollows and so ran to hundreds;
+# those were removed on 08-08 (a bound name is a sign and renders as its scrawl), leaving `.gl` at
+# single digits and this check red for the wrong reason. `.scrawl` is what a rendered row is made of,
+# so it is the honest proxy for "the rows rendered".
+n_gl=$( { grep -o 'class="scrawl' "$DOM" || true; } | wc -l)
 n_bit=$( { grep -o 'class="bit"' "$DOM" || true; } | wc -l)
 n_box=$( { grep -o '▩' "$DOM" || true; } | wc -l)
 n_frag=$( { grep -oE 'class="frag"[^>]*>[^<]*<span class="lbl">[^<]*</span></div>' "$DOM" || true; } | wc -l)  # label-only = unrendered
-echo "  rendered glyph spans: $n_gl   bit spans: $n_bit"
+echo "  rendered scrawl spans: $n_gl   bit spans: $n_bit"
 echo "  ▩ unrenderable signs in DOM: $n_box"
 echo "  label-only (unrendered) frags: $n_frag"
 [ "$n_gl" -gt 100 ] || { echo "❌ suspiciously few rendered glyph spans — rows likely didn't render"; fail=1; }

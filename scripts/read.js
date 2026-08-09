@@ -94,6 +94,16 @@ function flatten(frag) {
   // token carrying its alt/aria-label, so a text-only review isn't blind to the picture/animation beats
   // (§544–579 bitmaps, §619/622 seeker animations). Do this BEFORE the generic tag-strip below.
   s = s.replace(/<div class="seekmap-bar">[\s\S]*?<\/div>/g, '');                  // drop play/pause/step controls
+  /* AND EVERY OTHER BUTTON. The seekmap bar was dropped by NAME, so the circuit simulator's own
+     controls (js/circuit-sim.js: "sweep", "sweep till still", "let it run", "set it going") survived
+     and ran together into the reader's text as `sweepsweep till stilllet it runstill — set it going`.
+     A blind reader meets that as broken output in the middle of an entry. Nothing a reader CLICKS
+     belongs in a flat read; drop the element, not the class. */
+  s = s.replace(/<button\b[\s\S]*?<\/button>/g, '');
+  /* and the live status readout, which read.js sees because it reads the POST-JS DOM: the simulator
+     writes 'still — set it going' into it, an instruction to click, in a text-only read where there
+     is nothing to click. */
+  s = s.replace(/<span class="(?:seekmap|circuit)-say"[\s\S]*?<\/span>/g, '');
   s = s.replace(/<svg\b[^>]*\baria-label="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g, ' ⟦a drawing on the page: $1⟧ ');
   s = s.replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, ' ⟦a drawing on the page: $1⟧ ');
   s = s.replace(/<span class="lbl"[^>]*>([\s\S]*?)<\/span>/g, '($1) ');            // a way-of-showing label -> ( … )

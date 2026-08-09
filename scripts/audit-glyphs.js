@@ -21,13 +21,13 @@ const fs = require('fs'), path = require('path');
 const DIR = path.resolve(__dirname, '../_includes/listener');
 const SCRAWL = require(path.resolve(__dirname, '../_data/sign_scrawl.json'));
 
-// the keeper's own diagram notation — stands for nothing the message sends
-const HERS = {
-  // Slot-marks only.  A bound name has no sign of its own on the wire — it is a position in a maker, so there
-  // is nothing transmitted to render and a shape is the only option.  Hollow because §288 is where she meets
-  // it: "a new mark takes a HOLLOW for a slot, then a body that leans on that slot".
-  '◌': 'a slot', '⬚': 'a slot', '○': 'a slot', '◔': 'a slot',
-};
+// The keeper's own diagram notation — shapes that stand for nothing the message sends.
+// EMPTY ON PURPOSE, and it should stay that way.  Its only entries were the four lambda-slot marks
+// ◌ ⬚ ○ ◔, removed 08-08 along with the claim they rested on: a bound name is NOT absent from the
+// wire.  `x` is sign id 43, sent as ▪⟅101011⟆, its run literally in statement 362.  A slot draws as
+// its own scrawl like any other sign.  Anything added here is a shape substituted for a real signal,
+// so it needs an argument the reader can check on the page — not one this file makes on its own.
+const HERS = {};
 /* KILLED 07-23 (user: "there are perfectly good scrawls; you need some compelling reason to use something
    else — and even then it should generally be a regular coining"):
      ⌂ -> .sg data-s="room"  (msg 1301 `intro room`, scrawl f147f148)

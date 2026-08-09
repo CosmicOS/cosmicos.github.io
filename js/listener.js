@@ -131,8 +131,7 @@
   function scrawlSpan(name){
     if (!numeralsOn) { var r = runOf(name); if (r) return r; }
     return SCRAWL[name] ? '<span class="scrawl sign-fb">'+SCRAWL[name]+'</span>' : '<span class="gl" style="opacity:.4">▩</span>'; }
-  function mark(name){                             // a bound var -> its slot; else her token (once introduced); else the sign in spider scrawl
-    if (slots && (name in slots)) return '<span class="gl">'+slots[name]+'</span>';  // bound-var name (e.g. (x) from assign) -> slot
+  function mark(name){                             // her token once introduced; else the sign in spider scrawl
     if (allFigures) return scrawlSpan(name);                                         // plain-scrawl view: every sign as its scrawl
     if (COINED[name] !== undefined) { var t=COINED[name];                                 // she has coined it (a `.coin` span above, in reading order) -> her token
       return '<span class="gl'+(/[a-z]/i.test(t)?' w':'')+'">'+t+'</span>'; }              //   a WORD token (has letters) gets `.w` so it reads as her coined word, not a glyph
@@ -140,13 +139,19 @@
       return '<span class="fam">'+name.split(':').map(function(p){ return /^-?\d+$/.test(p)?bitsOf(p):mark(p); }).join('<span class="fj">·</span>')+'</span>';  //   so the part-count is legible (no opaque glyph-run)
     return scrawlSpan(name);                                                             // else: the sign in real spider scrawl (the base)
   }
-  // bound names (lambda params / $var refs) -> HER slot-marks, not the sender's letters. Hollow shapes because
-  // §288 is where she meets the thing: "a new mark takes a HOLLOW for a slot, then a body that leans on that slot".
-  var SLOTS=['◌','⬚','○','◔'], slots, slotN;   // hollow slot-marks, no numerals
-  function resetSlots(){ slots={}; slotN=0; }
-  function slot(name){ if (COINED[name] !== undefined) return mark(name);  // an already-coined sign, not a fresh lambda slot
-    if(!(name in slots)) slots[name]=SLOTS[slotN++] || '⬚';
-    return '<span class="gl">'+slots[name]+'</span>'; }
+  /* A maker's slot is one name (`? x`) or a cup of them (`lambda (x y)`, and typed as `(x number)`),
+     which is what the wire sends. Draw it as it came. */
+  function params(p){
+    if (!Array.isArray(p)) return mark(p);
+    return '<span class="cup o">⟅</span>' + p.map(params).join(' ') + '<span class="cup c">⟆</span>';
+  }
+
+  /* A BOUND NAME IS A SIGN AND RENDERS AS ONE. It has an id on the wire like anything else — x is 43,
+     sent as ▪⟅101011⟆ — so it draws as its scrawl, and the same scrawl standing in the head and again
+     in the body IS the correspondence. Four invented shapes (◌ ⬚ ○ ◔) used to stand here instead,
+     justified by "a bound name has no sign on the wire", which was simply false. Removed 08-08: the
+     message that comes in is rendered in the notation live at that moment, and nothing is substituted
+     for it without the paired line. */
   function strblob(s){                          // a string -> its glyph sequence (substrate); bytes-in-cup only if unmapped
     var t=s.replace(/^"|"$/g,'');
     if (STR[t]) return '<span class="scrawl">'+STR[t]+'</span>';
@@ -158,13 +163,12 @@
     depth = depth || 0;
     if (!Array.isArray(node)){
       var s=String(node);
-      if (slots && (s in slots)) return mark(s);                                  // a hinted/bound name (incl. compound) -> her coined glyph, wins over family
       if (/^-?\d+$/.test(s)) return numAtom(node);   // a whole atom, tag and cup and all
       if (s.charAt(0)==='"') return strblob(s);                                   // string -> opaque byte-blob
       return mark(s);                                                            // a sign OR a :-compound (name or op) -> mark(), which pills+dots any compound
     }
     if (node[0]===-2){ var rn=node[1];   // a NAME with nothing in its cup (▪⟅⟆) — reaches over exactly the ONE name behind it
-      return NIL_NAME+' '+((slots && (rn in slots)) ? '<span class="gl">'+slots[rn]+'</span>' : mark(rn)); }  // a bound lambda-slot, else a free NAME (scrawl/token)
+      return NIL_NAME+' '+mark(rn); }
     if (node[0]===-1) return form(node.slice(1), 'front', depth+1);   // front-standing cup -> goes down as it came, members bare behind it
     return form(node, 'cup', depth+1);                                // round-shutting cup -> cupped, one level deeper
   }
@@ -207,9 +211,9 @@
             : !splitOn                        ? rawUnary(items)           // no name for a cupped count at all yet
             : mark('unary')+' '+tally(unaryVal(items));                   // split: ●/◦ hold, and the run is `tal` once she coins it
     else if (head==='?'||head==='lambda')                             // a lambda: its parameter IS an anonymous slot
-      inner = mark(head)+' '+slot(items[1])+' '+kids(items.slice(2));
+      inner = mark(head)+' '+params(items[1])+' '+kids(items.slice(2));
     else if (head==='define'||head==='@'||head==='make'||head==='assign')  // binds a NAME -> render it as a sign (scrawl/token), not a hollow slot
-      inner = mark(head)+' '+mark(items[1])+' '+kids(items.slice(2));
+      inner = mark(head)+' '+params(items[1])+' '+kids(items.slice(2));
     else inner = kids(items);
     if (wrap==='bare' || (selfBracketed && wrap==='cup')) return inner;   // its own bracket already spells the cup
     // before §232 an empty cup in front of the long run is not two marks to her, it is one word: `tally`.
@@ -224,15 +228,15 @@
     // the message in its OWN signs: render the parse with every sign forced to its figure — same source & renderer as
     // hand mode, so a sign draws identically in both (hand just swaps CRACKED signs for her marks). NOT the octo `spider`
     // (that's a byte-level transliteration whose figures disagreed with the per-sign ones).
-    glyph: function(el){ allFigures = true; resetSlots();
+    glyph: function(el){ allFigures = true;
       var h = form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), 'bare'); allFigures = false; return h; },
-    hand:  function(el){ resetSlots(); return form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), 'bare'); }
+    hand:  function(el){ return form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), 'bare'); }
   };
   function renderVal(v){                       // what a fragment YIELDS (from Evaluate), in her marks
     // through mark(), like every other sign in the arc: her coined word once she has one (holds/fails, §306),
     // the real scrawl before that. NEVER a shape of our own — the widget teaches the word one line above.
-    if (v===true)  { resetSlots(); return mark('true'); }
-    if (v===false) { resetSlots(); return mark('false'); }
+    if (v===true)  { return mark('true'); }
+    if (v===false) { return mark('false'); }
     // a yielded number is a number: she writes it the way she writes every other count. It was never
     // on the wire — she worked it out — which is all the more reason it goes down in her own marks.
     if (typeof v==='number') return numAtomValue(v);
@@ -257,7 +261,7 @@
     var p = el.getAttribute('data-parse');
     var parse = p ? JSON.parse(p) : (wireOf(el).parse || null);
     if (!parse) return;
-    allFigures = false; resetSlots();
+    allFigures = false;
     var fm = el.getAttribute('data-fold');
     foldMode = el.hasAttribute('data-fold');
     var rng = fm && fm.match(/^(\d+)-(\d+)$/);                       // "M-N": break only between depths M and N
@@ -282,7 +286,7 @@
       if (el.hasAttribute('data-numerals')) numeralsOn = true;   // §267: and can write a sign's number as one glyph
       if (el.classList.contains('coin')) { COINED[el.getAttribute('data-sign')] = (el.textContent||'').trim(); return; }
       if (el.classList.contains('msg')) { renderMsg(el); return; }
-      if (el.classList.contains('sg'))  { allFigures = false; resetSlots(); el.innerHTML = mark(el.getAttribute('data-s')); return; }
+      if (el.classList.contains('sg'))  { allFigures = false; el.innerHTML = mark(el.getAttribute('data-s')); return; }
       if (el.classList.contains('rk'))  { el.innerHTML = reckonNum(el.getAttribute('data-n'), !el.classList.contains('bare')); return; }
       if (el.classList.contains('num')) { el.innerHTML = reckonNum(el.getAttribute('data-n'), el.classList.contains('barred')); return; }
       if (el.hasAttribute('data-parse') || el.hasAttribute('data-code')) renderRow(el);
