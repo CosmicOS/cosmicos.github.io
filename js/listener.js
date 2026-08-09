@@ -93,13 +93,11 @@ function reckonNum(v, barred){
     if (numeralsOn) return numAtomValue(n);
     return '<span class="bit">▫</span><span class="cup o">⟅</span>' + bitsOf(n) + '<span class="cup c">⟆</span>';
   }
-  /* fold: break+indent nested makings (per data-fold). foldMax caps how DEEP breaking goes; foldMin sets a
-     FLOOR, so the shallow scaffolding of a big statement can stay inline while the interesting run deeper
-     down breaks one-per-line. Added 07-24: with a cap alone, a statement whose payload sits below its own
-     setup had only two useless renderings — payload crammed on one line (cap low), or setup exploded into
-     40 lines of scaffolding (cap high). data-fold="5-7" says: break only between those depths. */
-  var foldMode = false, foldMin = 0, foldMax = Infinity;
-  function indent(d){ var s=''; for(var i=0;i<d;i++) s+='   '; return s; }
+  /* `data-fold` — MAY THIS EXHIBIT BREAK ACROSS LINES AT ALL. Nothing more. It used to carry a depth
+     or a depth range ("5-7": break only between those depths), which was the wrong axis and became a
+     default nobody revisited: 52 of the 59 exhibits that had it carried the identical `"1"`. Where a
+     statement breaks is decided by width now, in `form` below, so there is no number to get wrong. */
+  var foldMode = false;
   /* SCRAWL IS THEIR NUMERALS, AND A KEEPER CANNOT USE IT UNTIL SHE CAN READ A CUP AS A NUMBER.
      A sign arrives as a lone bit and a cup holding its id in bits. Writing that id in one glyph is
      transcription, but it needs place value, and Ren does not crack place value until §267. So
@@ -199,8 +197,10 @@ function reckonNum(v, barred){
     for (var i=0;i<t.length;i++){ b += ('0000000'+t.charCodeAt(i).toString(2)).slice(-8); }
     return '<span class="cup o">⟅</span>'+b.split('').map(function(x){ return '<span class="bit">'+(x==='1'?'▪':'▫')+'</span>'; }).join('')+'<span class="cup c">⟆</span>';
   }
-  function hand(node, depth){                   // HAND: a parse node -> her marks
-    depth = depth || 0;
+  /* `col` — the column this node starts at; `seq` — the column its pipe-sequence lines up at.
+     Both are columns, not counters: the layout question is whether a LINE is too long. */
+  function hand(node, col, seq, cont){          // HAND: a parse node -> her marks
+    col = col || 0;
     if (!Array.isArray(node)){
       var s=String(node);
       if (/^-?\d+$/.test(s)) return numAtom(node);   // a whole atom, tag and cup and all
@@ -209,8 +209,8 @@ function reckonNum(v, barred){
     }
     if (node[0]===-2){ var rn=node[1];   // a NAME with nothing in its cup (▪⟅⟆) — reaches over exactly the ONE name behind it
       return NIL_NAME+' '+mark(rn); }
-    if (node[0]===-1) return form(node.slice(1), 'front', depth+1);   // front-standing cup -> goes down as it came, members bare behind it
-    return form(node, 'cup', depth+1);                                // round-shutting cup -> cupped, one level deeper
+    if (node[0]===-1) return form(node.slice(1), 'front', col, seq);   // front-standing cup -> goes down as it came, members bare behind it
+    return form(node, 'cup', col, seq);                               // round-shutting cup
   }
   /* THE EMPTIES. There is no third construct on the wire: an atom is a TYPE TAG and a cup, and these two are
      that same pair of atoms WITH NOTHING IN THE CUP. ▫⟅⟆ is a number with nothing in it; ▪⟅⟆ is a name with
@@ -226,43 +226,91 @@ function reckonNum(v, barred){
   // WRAP is the whole of the keepers' bracketing rule: `cup` = a cup that shuts round its members;
   // `front` = the empty number-cup above, whose members run on behind it unshut; `bare` = the statement
   // itself, which has no enclosure to mark. Nothing may swallow a group's boundary.
-  function form(items, wrap, depth){            // render a form; special heads, else a wrapped sequence
-    depth = depth || 0;
-    var kids = function(arr){ return arr.map(function(n){ return hand(n, depth); }).join(' '); };
-    var head = items[0], inner, selfBracketed = false;
-    /* These three bring a bracket of their own, and it stands for the wire's CUP one-for-one — the same bargain
-       as `tirrel`, undoable for the same reason. But a cup is the only thing it can stand for. A front-mark is
-       not a cup; it is an atom with an empty cup that reaches to the end of its enclosure, and no closing
-       bracket can spell that. So a self-bracketed form swallows a `cup` wrap and NEVER a `front` one — else
-       §400's list loses the very mark Vess spends the entry complaining about. */
-    if (head==='vector'){ selfBracketed = true;   // a list
-      inner = '<span class="cup lo">⟦</span>'+kids(items.slice(1))+'<span class="cup lc">⟧</span>'; }
-    else if (Array.isArray(head) && head[0]==='list'){ selfBracketed = true;  // (list N) e1 e2 … -> her strung list, an alien (ogham) feather-bracket, NOT human [a,b,c]
-      inner = '<span class="lst o">᚛</span>'+kids(items.slice(1))+'<span class="lst c">᚜</span>'; }
-    else if (head==='s' && items.length===2 && String(items[1]).charAt(0)==='"'
-             && STR[String(items[1]).replace(/^"|"$/g,'')]){                    // a string -> its glyph blob (substrate)
-      selfBracketed = true; inner = '<span class="scrawl">'+STR[String(items[1]).replace(/^"|"$/g,'')]+'</span>'; }
-    else if (head==='unary')
-      /* Maren's notation covers ONE shape: `tally ●…◦`, a count with the empty cup in front. `●` and `◦` were
-         cut inside that shape and have no life outside it — `◦` is defined as "the one at the END", of that
-         run. A CUPPED count has no empty cup, so `tally` cannot apply and neither can the marks she cut with
-         it. Until Ren takes the pair apart there is no way to write one at all, so it goes down as it came. */
-      inner = !talliedOn                  ? rawUnary(items)           // before §214: no ● and no ◦ yet, so as it came
-            : (wrap==='front' && !splitOn)    ? tally(unaryVal(items))    // `tally` swallows the long run: it IS the pair
-            : !splitOn                        ? rawUnary(items)           // no name for a cupped count at all yet
-            : mark('unary')+' '+tally(unaryVal(items));                   // split: ●/◦ hold, and the run is `tal` once she coins it
-    else if (head==='?'||head==='lambda')                             // a lambda: its parameter IS an anonymous slot
-      inner = mark(head)+' '+params(items[1])+' '+kids(items.slice(2));
-    else if (head==='define'||head==='@'||head==='make'||head==='assign')  // binds a NAME -> render it as a sign (scrawl/token), not a hollow slot
-      inner = mark(head)+' '+params(items[1])+' '+kids(items.slice(2));
-    else inner = kids(items);
-    if (wrap==='bare' || (selfBracketed && wrap==='cup')) return inner;   // its own bracket already spells the cup
-    // before §232 an empty cup in front of the long run is not two marks to her, it is one word: `tally`.
-    // after the split it is a thing with no name, written out as it came, until she cuts `◇` for it at §246.
-    var front = (talliedOn && !splitOn && head==='unary') ? MERGED : (nilOn ? NIL : NIL_RAW);
-    var out = wrap==='front' ? front+' '+inner
-            : '<span class="cup o">⟅</span>'+inner+'<span class="cup c">⟆</span>';
-    return (foldMode && depth>0 && depth>=foldMin && depth<=foldMax) ? '\n'+indent(depth)+out : out;   // fold: nested making onto its own indented line
+  /* ── LAYING A STATEMENT OUT ──────────────────────────────────────────────────────────────────
+     Two rules, and the first is why the old one failed.
+
+     THE LAST ARGUMENT IS A SEQUENCE STEP, NOT A LEVEL. The message is written with `|` precisely to
+     keep a run of clauses from becoming a stack of parentheses: `f a | g b | h c` is `f a (g b (h c))`.
+     In the parse that is a right spine — stanza 1164 is four author lines at two indents and SEVEN
+     levels of nesting — so indenting by structural depth marches the clauses rightward, which is the
+     opposite of what the pipe is for. A last argument keeps its parent's indent. Only real branching
+     costs a level.
+
+     BREAK ON WIDTH, NOT ON DEPTH. A form goes down flat if it fits the line and breaks if it does
+     not. Depth was always the wrong axis: what a reader cannot follow is a long line, and a deep
+     statement whose parts are short is perfectly readable. This also means the common case needs no
+     setting at all, which is the point — `data-fold` is now only an ON SWITCH, its old numbers
+     ignored. 335 exhibits carry no switch and render exactly as before.
+
+     THE BREAK IS DECIDED BY THE PARENT. A joint is a place BETWEEN two siblings; a child cannot see
+     whether anything precedes it, and the version that let it decide put a line-break straight after
+     an opening cup — `⟅` stranded at the end of a line with its contents on the next. ── */
+  var WIDTH = 56;                                // marks that fit one line of an exhibit at --sz-mark
+  var STEP  = 2;                                 // the author's own indent step (see msg.json `lines`)
+  function bare(html){ return html.replace(/<[^>]+>/g, '').replace(/\n[ ]*/g, ''); }
+  function pad(n){ var s=''; while (s.length < n) s += ' '; return s; }
+
+  /* `col` is the COLUMN THIS FORM STARTS AT, not a nesting counter, because what a reader cannot
+     follow is a long line and a counter does not know where a line begins. `seq` is the column the
+     current pipe-sequence lines up at: every clause of one spine goes there, so a run of clauses
+     reads as a column and not as a staircase. Only a BRANCH opens a new sequence, one step in. */
+  function form(items, wrap, col, seq){
+    col = col || 0; seq = seq || (col + STEP);
+    var head = items[0], selfBracketed = false;
+    function kids(arr, brk){
+      var n = arr.length;
+      return arr.map(function(node, i){
+        var last = (i === n - 1);
+        if (!brk || i === 0 || !Array.isArray(node)) return hand(node, col, seq, last);
+        /* a LAST child is the next clause of this spine: same column, same sequence.
+           anything else is a branch: one step in, and it starts a sequence of its own. */
+        var at = last ? seq : seq + STEP;
+        return '\n' + pad(at) + hand(node, at, last ? seq : at + STEP, last);
+      }).join(' ');
+    }
+    function build(brk){
+      var kd = function(a){ return kids(a, brk); }, inner;
+      selfBracketed = false;
+      /* These three bring a bracket of their own, and it stands for the wire's CUP one-for-one — the same bargain
+         as `tirrel`, undoable for the same reason. But a cup is the only thing it can stand for. A front-mark is
+         not a cup; it is an atom with an empty cup that reaches to the end of its enclosure, and no closing
+         bracket can spell that. So a self-bracketed form swallows a `cup` wrap and NEVER a `front` one — else
+         §400's list loses the very mark Vess spends the entry complaining about. */
+      if (head==='vector'){ selfBracketed = true;   // a list
+        inner = '<span class="cup lo">⟦</span>'+kd(items.slice(1))+'<span class="cup lc">⟧</span>'; }
+      else if (Array.isArray(head) && head[0]==='list'){ selfBracketed = true;  // (list N) e1 e2 … -> her strung list, an alien (ogham) feather-bracket, NOT human [a,b,c]
+        inner = '<span class="lst o">᚛</span>'+kd(items.slice(1))+'<span class="lst c">᚜</span>'; }
+      else if (head==='s' && items.length===2 && String(items[1]).charAt(0)==='"'
+               && STR[String(items[1]).replace(/^"|"$/g,'')]){                    // a string -> its glyph blob (substrate)
+        selfBracketed = true; inner = '<span class="scrawl">'+STR[String(items[1]).replace(/^"|"$/g,'')]+'</span>'; }
+      else if (head==='unary')
+        /* Maren's notation covers ONE shape: `tally ●…◦`, a count with the empty cup in front. `●` and `◦` were
+           cut inside that shape and have no life outside it — `◦` is defined as "the one at the END", of that
+           run. A CUPPED count has no empty cup, so `tally` cannot apply and neither can the marks she cut with
+           it. Until Ren takes the pair apart there is no way to write one at all, so it goes down as it came. */
+        inner = !talliedOn                  ? rawUnary(items)           // before §214: no ● and no ◦ yet, so as it came
+              : (wrap==='front' && !splitOn)    ? tally(unaryVal(items))    // `tally` swallows the long run: it IS the pair
+              : !splitOn                        ? rawUnary(items)           // no name for a cupped count at all yet
+              : mark('unary')+' '+tally(unaryVal(items));                   // split: ●/◦ hold, and the run is `tal` once she coins it
+      else if (head==='?'||head==='lambda')                             // a lambda: its parameter IS an anonymous slot
+        inner = mark(head)+' '+params(items[1])+' '+kd(items.slice(2));
+      else if (head==='define'||head==='@'||head==='make'||head==='assign')  // binds a NAME -> render it as a sign (scrawl/token), not a hollow slot
+        inner = mark(head)+' '+params(items[1])+' '+kd(items.slice(2));
+      else inner = kd(items);
+      return inner;
+    }
+    function dress(inner){
+      if (wrap==='bare' || (selfBracketed && wrap==='cup')) return inner;   // its own bracket already spells the cup
+      // before §232 an empty cup in front of the long run is not two marks to her, it is one word: `tally`.
+      // after the split it is a thing with no name, written out as it came, until she cuts `◇` for it at §246.
+      var front = (talliedOn && !splitOn && head==='unary') ? MERGED : (nilOn ? NIL : NIL_RAW);
+      return wrap==='front' ? front+' '+inner
+           : '<span class="cup o">⟅</span>'+inner+'<span class="cup c">⟆</span>';
+    }
+    var flat = dress(build(false));
+    if (!foldMode) return flat;
+    if (col + bare(flat).length <= WIDTH) return flat;   // it fits as it stands: leave it alone
+    return dress(build(true));                           // it does not: open it at the joints
   }
   var MODES = {
     raw:   function(el){ return tones(el.getAttribute('data-code') || el.getAttribute('data-tones')); },
@@ -327,11 +375,7 @@ function reckonNum(v, barred){
     var parse = p ? JSON.parse(p) : (wireOf(el).parse || null);
     if (!parse) return;
     allFigures = false;
-    var fm = el.getAttribute('data-fold');
-    foldMode = el.hasAttribute('data-fold');
-    var rng = fm && fm.match(/^(\d+)-(\d+)$/);                       // "M-N": break only between depths M and N
-    foldMin = rng ? +rng[1] : 0;
-    foldMax = rng ? +rng[2] : ((fm && /^\d+$/.test(fm)) ? +fm : Infinity);
+    foldMode = el.hasAttribute('data-fold');   // an ON SWITCH; layout decides where, by width (see `form`)
     /* KEEP AN EXHIBIT'S LABEL. The walk below replaces every child, so a `<span class="lbl">` written
        into the row would vanish — which is why labelled rows used to have to be hand-authored HTML,
        and hand HTML is the one kind of row nothing checks against the wire. Lift it out, redraw, put
