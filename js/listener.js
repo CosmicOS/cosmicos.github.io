@@ -911,7 +911,13 @@ function pinWidth(btn, labels) {
      about which rows came from the message. A hand row has no such attribute and is swept like any
      other writing: it is a keeper drawing a line of the wire in her own hand, figures and all. */
   var DRAWN   = '[data-code], [data-parse], .msg, .frag';
-  var NO_LINK = '.stamp, .tu-head';    // a heading must not become a link to its own entry
+  /* WHERE A FIGURE MUST NOT BECOME A LINK. A heading would link to its own entry; and every row of
+     the cheat sheet is ALREADY an anchor to the pass it names, so linking the figure inside it
+     produced `<a href="#p189"><b><a href="#p189">…</a></b> …</a>` — a nested anchor, which is
+     invalid, and which the browser resolves by breaking the line, so every entry in the index had
+     its number stranded on a line of its own. The figure still draws in her numerals and still says
+     its value on hover; it is the surrounding row that carries the link. */
+  var NO_LINK = '.stamp, .tu-head, .msg-index';
   var root = document.querySelector('.diary');
   if (!root) return;
 

@@ -16,13 +16,16 @@ title: "A listener's log"
 .diary { max-width: 660px; margin: 0 auto; padding: 0 6px; font-size: 118%; }
 
 /* the message index — an editor's key to what each pass decodes (collapsible) */
-.msg-index { max-width: 660px; margin: 0 auto 26px; border: 1px solid #24333f; border-radius: 10px; background: var(--ground); }
-.msg-index > summary { cursor: pointer; padding: 12px 18px; font-family: var(--voice-station); font-size: 80%; letter-spacing: 0.04em; color: #8fb0c0; list-style: none; }
+/* THE CHEAT SHEET LIVES INSIDE THE TITLE BLOCK, so it has no panel of its own: it is a note about
+   this book, not a second thing beside it. What marks it off is a rule and the space above it —
+   which is also what stops a closed disclosure reading as a stray line under the title. */
+.msg-index { margin: 18px -30px 0; padding: 0 30px; border-top: 1px solid #1d2a34; }
+.msg-index > summary { cursor: pointer; padding: 11px 0 0; font-family: var(--voice-station); font-size: 80%; letter-spacing: 0.04em; color: #8fb0c0; list-style: none; }
 .msg-index > summary::-webkit-details-marker { display: none; }
 .msg-index > summary::before { content: "\25B8\00a0"; color: #6f95a8; }
 .msg-index[open] > summary::before { content: "\25BE\00a0"; }
 .msg-index .idx-note { color: #5f7382; font-style: italic; letter-spacing: 0; }
-.msg-index .idx-body { padding: 2px 18px 16px; columns: 15em; column-gap: 28px; }
+.msg-index .idx-body { padding: 6px 0 4px; columns: 15em; column-gap: 28px; }
 .msg-index .idx-arc { break-inside: avoid; color: #c98b5a; font-family: var(--voice-station); font-size: 72%; text-transform: uppercase; letter-spacing: 0.12em; margin: 13px 0 4px; }
 .msg-index a { display: block; break-inside: avoid; color: #cdd6df; text-decoration: none; font-size: 87%; line-height: 1.42; padding: 1px 0; }
 .msg-index a:hover { color: #9fe0ff; }
@@ -803,9 +806,12 @@ title: "A listener's log"
    hidden behind a scrollbar the reader may never find.
    ────────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .diary, .entry, .taking-up, .register, .rows, .frag, .tally, .msg, .peel, .readback, .board, .letter, .cap,
-  .msg-index    /* bordered: without border-box it is 660 PLUS the border, and gave the whole page
-                   a horizontal scrollbar on a phone */
+  /* `.msg-index` WAS IN THIS LIST and is not any more. It was a bordered panel of its own, 660 PLUS
+     the border, which gave a phone a horizontal scrollbar. It is now a disclosure inside the title
+     block with no border and no width of its own, and it reaches to the block's edges with negative
+     margins — which `max-width: 100%` canceled on the right only, so the rule under the title
+     stopped 30px short of it. */
+  .diary, .entry, .taking-up, .register, .rows, .frag, .tally, .msg, .peel, .readback, .board, .letter, .cap
     { box-sizing: border-box; max-width: 100%; }
   /* the register keeps its columns and scrolls; shrink it rather than break a rule across a row */
   .register { font-size: 78%; }
@@ -872,12 +878,15 @@ title: "A listener's log"
 
 <div class="diary">
 
+  {% comment %} THE TITLE AND THE CHEAT SHEET ARE ONE BLOCK. They were two panels stacked, and the
+     first held nothing but three words — a box the width of the page to say the name of the book,
+     then a second box under it to offer a way out of reading it. The index is a note ABOUT this
+     book, so it belongs inside the thing it annotates, folded shut, under the title it belongs to.
+  {% endcomment %}
   <div class="preface" id="top">
     <h1>The Second Book</h1>
-  </div>
-
-  <details class="msg-index">
-    <summary>Human cheat sheet <span class="idx-note">(spoilers)</span></summary>
+    <details class="msg-index">
+      <summary>Human cheat sheet <span class="idx-note">(spoilers)</span></summary>
     <div class="idx-body">
       <div class="idx-arc">I · the founder: noise to number</div>
       <a href="#p189"><b>189</b> the signal is a made message, not nature: it loops, and resets to a simplest state</a>
@@ -953,8 +962,9 @@ title: "A listener's log"
       <a href="#p615"><b>615</b> the World with a two-phase synchronous tick (all decide, then all commit)</a>
       <a href="#p619"><b>619</b> an autonomous agent whose rule is to move to the least-recently-seen room</a>
       <a href="#p622"><b>622</b> a minimal two-room world; the keeper builds and runs it, and the agent crosses of its own rule</a>
-    </div>
-  </details>
+      </div>
+    </details>
+  </div>
 
 <section class="watch" data-keeper="Maren">{% include listener/k1-maren.html %}</section>
 <section class="watch" data-keeper="Ren">{% include listener/k2-ren.html %}</section>
