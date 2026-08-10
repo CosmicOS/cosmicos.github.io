@@ -1,70 +1,20 @@
 #!/usr/bin/env bash
-# LOOK AT ONE PART OF THE PAGE. Screenshot a named element, alone, at any width.
+# LOOK AT ONE PART OF THE PAGE. A thin wrapper on scripts/look.js, which is where the work and the
+# reasoning live. Kept as a shell entry point because it is the name in the habit and in the notes.
 #
-#   scripts/look.sh p207               an entry, by its anchor id, at desk width
-#   scripts/look.sh p193 390           the same at phone width
-#   scripts/look.sh '.sheets'          any CSS selector
-#   SCRAWL=numbers scripts/look.sh p207   draw every sign as the number the message sends for it
+#   scripts/look.sh p207                     an entry, by its anchor id, at desk width
+#   scripts/look.sh p193 390                 the same at phone width — a REAL 390 now
+#   scripts/look.sh '.sheets'                any CSS selector
+#   scripts/look.sh --page 390 --scroll=3000 the whole page, at a width, in a scrolled state
+#   scripts/look.sh --page --click='.tb-menu summary'   …after opening something
+#   SCRAWL=numbers scripts/look.sh p207      every sign as the number the message sends for it
 #
-# HOW IT WORKS, and why it was rebuilt 08-01. The first version rendered the WHOLE page tall enough
-# to hold the target, then cropped by measured offset. That dies on anything deep: §501 sits about
-# 35,000px down and Chrome cannot rasterize a canvas that tall, so the shot came back empty and
-# `convert` failed with "no images defined". Now the page is copied with every SIBLING of the
-# target (and of each of its ancestors) removed, so the element renders alone with all its CSS
-# intact, on a short page that needs no crop. Nothing is measured, nothing is guessed.
+# IT USED TO DRIVE CHROME DIRECTLY, and that harness lied about anything involving time or scroll:
+# `--virtual-time-budget` never delivers IntersectionObserver callbacks, and `--window-size` under
+# ~500px is silently clamped, so a phone check was really a 485px check and a picture of anything
+# scroll-driven showed a state no reader ever sees. See the note at the top of look.js.
 #
-# Reads the built _site, so run after a build if the source changed.
+# Reads the built _site, so run scripts/build.sh after changing the source.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-
-TARGET="${1:?usage: look.sh <anchor|selector> [width]}"
-WIDTH="${2:-760}"
-
-case "$TARGET" in .*|\#*|\[*) SEL="$TARGET" ;; *) SEL="#$TARGET" ;; esac
-SAFE="$(echo "$TARGET" | tr -c 'A-Za-z0-9_.-' '_')"
-OUT="/tmp/look-${SAFE}-${WIDTH}.png"
-
-CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-[ -n "$CHROME" ] || { echo "no chrome/chromium found" >&2; exit 2; }
-
-# A THROWAWAY PROFILE, ALWAYS — see the same note in render-dom.sh. Without --user-data-dir, Chrome
-# falls back to the default profile; if one is already running there, this invocation loses the
-# singleton lock and hands the URL to the RUNNING browser, popping a real window on the user's
-# desktop and returning no screenshot. --headless=new does not prevent it.
-PROFILE="$(mktemp -d -t look-XXXXXX)"
-# --ozone-platform=headless IS THE ONE THAT MATTERS HERE, AND IT MUST NOT BE REMOVED. This script asks
-# Chrome to actually DRAW (--screenshot, --run-all-compositor-stages-before-draw). `--headless=new` is
-# the real browser with its window suppressed, so when it draws and Ozone picks the session's platform
-# (wayland here), it can attach to the compositor and put a real window on the user's desktop. Forcing
-# the headless Ozone platform means it has no display server to attach to. render-dom.sh only dumps the
-# DOM and never draws, which is why it never did this. Seen on Chrome 144.
-ISOLATE=(--ozone-platform=headless --user-data-dir="$PROFILE" --no-first-run --no-default-browser-check)
-
-PORT="${PORT:-8399}"
-if ! curl -s -o /dev/null "http://127.0.0.1:$PORT/index.html" 2>/dev/null; then
-  python3 -m http.server "$PORT" --bind 127.0.0.1 --directory _site >/tmp/look-httpd.log 2>&1 &
-  SRV=$!; trap 'kill $SRV 2>/dev/null || true; rm -f _site/.look-iso.html; rm -rf "$PROFILE"' EXIT; sleep 1
-else
-  trap 'rm -f _site/.look-iso.html; rm -rf "$PROFILE"' EXIT
-fi
-
-NUMS=""; [ "${SCRAWL:-}" = "numbers" ] && NUMS="nums"
-node scripts/look-isolate.js _site/index.html _site/.look-iso.html "$SEL" $NUMS
-
-# one pass to learn the isolated element's height, one to shoot it at that height
-GEOM=$(timeout 60 "$CHROME" --headless=new --no-sandbox --disable-gpu "${ISOLATE[@]}" \
-  --window-size="$WIDTH",900 --virtual-time-budget=9000 \
-  --dump-dom "http://127.0.0.1:$PORT/.look-iso.html" 2>/dev/null \
-  | grep -o 'LOOK [0-9]* [0-9]*' | head -1 || true)
-[ -n "$GEOM" ] || { echo "could not find $SEL on the page" >&2; exit 1; }
-H=$(echo "$GEOM" | cut -d' ' -f2); VW=$(echo "$GEOM" | cut -d' ' -f3)
-
-# 160px of slack: H is the ELEMENT's height, but it still sits below its ancestors' padding.
-timeout 180 "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars "${ISOLATE[@]}" \
-  --window-size="$WIDTH",$(( H + 160 )) --virtual-time-budget=18000 \
-  --run-all-compositor-stages-before-draw \
-  --screenshot="$OUT" "http://127.0.0.1:$PORT/.look-iso.html" >/dev/null 2>&1
-
-# NOTE ON WIDTH. Headless reports a layout viewport that need not equal --window-size (485 for a
-# 390 request on this machine). The measured clientWidth is printed; trust it, not what you typed.
-echo "$OUT   (${SEL} alone, ${VW}px layout viewport, height ${H})"
+exec node scripts/look.js "$@"
