@@ -14,7 +14,7 @@
  * order of first appearance in this one.
  *
  * The property that mattered is kept for free — a braille cell carries no meaning to a reviewer.  It can
- * be told apart from its neighbours and tracked across a read; it does not hand over the sender's name for
+ * be told apart from its neighbors and tracked across a read; it does not hand over the sender's name for
  * the thing, which would leak what the keeper is still in the middle of working out.
  *
  * DO NOT substitute `data-s` values.  `unary`, `is:int`, `is:square` are the sender's names; putting them in

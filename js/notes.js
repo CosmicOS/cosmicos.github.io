@@ -243,7 +243,7 @@
 
   /* DID THE BOOK MOVE?  A reply that changed the text and a reply that only explained it read the
      same otherwise, and which one you are looking at is the first thing worth knowing. Green and a
-     pen when something was edited, with the change named; flat grey when nothing was. */
+     pen when something was edited, with the change named; flat gray when nothing was. */
   function verdict(n) {
     if (n.changed) return '<div class="nt-edited">&#9998; changed &middot; ' +
       String(n.changed).replace(/[<&]/g, '') + '</div>';

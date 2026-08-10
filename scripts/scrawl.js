@@ -31,7 +31,7 @@ const fs = require('fs'), path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 
 /* The two groups this site actually uses, and what each one IS. Corrected 08-07: the second was
-   labelled SPIDER here and is nothing of the kind — spider glyphs (0xf100–0xf143 as shipped) appear
+   labeled SPIDER here and is nothing of the kind — spider glyphs (0xf100–0xf143 as shipped) appear
    nowhere on the page. Both groups are OCTO. The difference is the bracket bits in the glyph name:
      bare   `octo_00NNNNNN`  a sign, drawn with no brackets       -> id is the six-bit value
      cupped `octo_11NNNNNN`  the same value with BOTH brackets    -> what the string glyphs use

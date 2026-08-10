@@ -143,7 +143,7 @@ function buildFile(file) {
   // ★ AND THE SAME BUG A SECOND TIME, 08-08: this insisted the row be EMPTY (`></div>`). Once a
   // generated row could carry a `<span class="lbl">` it stopped matching, its code never reached
   // wire_quotes.json, and it rendered blank — invisible unless that code was used nowhere else in
-  // the book, which is why it survived four labelled exhibits before showing. Match the row's
+  // the book, which is why it survived four labeled exhibits before showing. Match the row's
   // CONTENT, not its emptiness. The registration check below is the real guard.
   html = html.replace(/<div class="row[^"]*"([^>]*\bdata-code="[^"]*"[^>]*)>(?:(?!<\/div>)[\s\S])*<\/div>/g, (m, attrs) => {
     const code = attr(attrs, 'data-code');

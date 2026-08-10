@@ -59,7 +59,7 @@
       ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (e) {
         window.addEventListener(e, giveUp, { once: true, passive: true });
       });
-      var land = function () { if (!moved) landing.scrollIntoView(); };   // honours scroll-margin-top
+      var land = function () { if (!moved) landing.scrollIntoView(); };   // honors scroll-margin-top
       requestAnimationFrame(function () { requestAnimationFrame(land); });
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(land);
       window.addEventListener('load', land);

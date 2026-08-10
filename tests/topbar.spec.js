@@ -204,8 +204,8 @@ test('the bar sits above the page, and the story is not scrolled under a transpa
     await page.goto(STORY);
     /* THE BACKGROUND-COLOR, specifically — not "does it look opaque". A gradient is a background
        IMAGE and the shorthand resets the color to transparent underneath it, which is how this bar
-       spent a build relying on one gradient painting to keep the prose behind it hidden. The colour
-       is the floor, so the colour is what is asserted. */
+       spent a build relying on one gradient painting to keep the prose behind it hidden. The color
+       is the floor, so the color is what is asserted. */
     const bg = await page.locator('#topbar').evaluate(e => getComputedStyle(e).backgroundColor);
     expect(bg).not.toBe('rgba(0, 0, 0, 0)');     // opaque: a photograph sits behind every page here
     expect(bg).not.toMatch(/rgba\([^)]*,\s*0?\.\d+\)$/);   // and not merely nearly-opaque

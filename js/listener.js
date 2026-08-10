@@ -525,9 +525,9 @@ function reckonNum(v, barred){
       foldMode = el.hasAttribute('data-fold');   // an ON SWITCH; layout decides where, by width (see `form`)
     }
     /* KEEP AN EXHIBIT'S LABEL. Redrawing replaces every child, so a `<span class="lbl">` written into
-       the row would vanish — which is why labelled rows used to have to be hand-authored too. Lift it
+       the row would vanish — which is why labeled rows used to have to be hand-authored too. Lift it
        out, redraw, put it back.
-       A LABELLED ROW MUST BE EXACTLY TWO CHILDREN. `.rows.labeled` is a two-column grid and sets
+       A LABELED ROW MUST BE EXACTLY TWO CHILDREN. `.rows.labeled` is a two-column grid and sets
        `display: contents` on the row, so every child of the row becomes a grid cell — a hand row was
        always `.lbl` + `.fig`, two cells. Dropping the drawn spans in loose gives N cells and the line
        stacks vertically down the two columns. Wrap them in the same `.fig` the hand rows used. */

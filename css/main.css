@@ -29,9 +29,9 @@
   --gap-para: 18px; --gap-block: 30px;
 }
 
-/* THE COLOUR BEHIND EVERYTHING, which is only ever seen in one place: the strip a phone shows when
+/* THE COLOR BEHIND EVERYTHING, which is only ever seen in one place: the strip a phone shows when
    you drag past the top of the page. That was black, against a bar that is not, so the rubber-band
-   opened onto a hole. It takes the bar's own top colour, so pulling down just shows more bar.
+   opened onto a hole. It takes the bar's own top color, so pulling down just shows more bar.
    It has to live on `html` and not on `body`: body's background is the photograph, and what a
    browser paints outside the document is the ROOT's background — body's only propagates to the
    canvas while the root has none of its own. */
@@ -172,14 +172,14 @@ a:visited {
    computed style said they were fine. Navigation is the last thing to build on a trick browsers keep
    re-implementing. Used as intended it needs no JavaScript and takes the keyboard for free. */
 /* ALIGNED TO THE NAME, not to the middle of the block. `align-items: baseline` cannot place this —
-   the button has no text and so no baseline — and centring it in a masthead row three lines tall
+   the button has no text and so no baseline — and centering it in a masthead row three lines tall
    left it floating opposite the standfirst, belonging to neither line. Pin it to the top and drop it
-   to the wordmark's optical centre; when the bar condenses the row is one line and the offset goes
+   to the wordmark's optical center; when the bar condenses the row is one line and the offset goes
    to almost nothing. */
-/* MASTHEAD: pinned to the top and dropped to the wordmark's optical centre, because the row is three
+/* MASTHEAD: pinned to the top and dropped to the wordmark's optical center, because the row is three
    lines tall and `align-items: baseline` cannot place a button that has no text and so no baseline —
-   centring it there left it floating opposite the standfirst, belonging to neither line.
-   CONDENSED: the row IS one line, so it simply centres on it. Keeping the masthead's flex-start
+   centering it there left it floating opposite the standfirst, belonging to neither line.
+   CONDENSED: the row IS one line, so it simply centers on it. Keeping the masthead's flex-start
    there put the button 4px above the middle of "MAREN ⣂⣽" sitting right beside it. */
 .tb-menu { position: relative; order: 3; align-self: flex-start; margin-top: 10px;
   transition: margin-top .25s ease; }
@@ -201,7 +201,7 @@ a:visited {
    collapses the middle bar's HEIGHT — `opacity: 0` was tried first and hid the whole button,
    pseudo-elements and all, so the menu opened onto no close mark at all. */
 /* ONE NUMBER, AND THE REST IS DERIVED. `--bh` is the button's height; the top stroke sits at 0, the
-   bottom at `--bh - 2`, and the middle is the background, centred. It was three hand-set values in
+   bottom at `--bh - 2`, and the middle is the background, centered. It was three hand-set values in
    three rules, so when the touch rules raised the height to 12px the bottom stroke stayed pinned at
    the 8px meant for a 10px box: strokes at 0, 5 and 8, a 3px gap above a 1px one, and 2px of dead
    space under the last — the button looked squashed on exactly the screens where it is biggest. */
@@ -301,7 +301,7 @@ a:visited {
 .tb-seg::after { content: ""; position: absolute; inset: 0; border-radius: 2px;
   background: #3c5464; transform-origin: left; transform: scaleX(0);
   transition: background-color .25s ease, box-shadow .25s ease; }
-/* A TRAVELLED WATCH — filled, and keeping a little of the warmth of the one being read, so the bar
+/* A TRAVELED WATCH — filled, and keeping a little of the warmth of the one being read, so the bar
    reads left to right as a journey rather than as an on/off row. */
 .tb-seg.done::after { transform: scaleX(1); background: linear-gradient(90deg, #46606f, #3c5464); }
 /* THE WATCH BEING READ — the notation's own ink and a breath of it around the mark, so the eye finds

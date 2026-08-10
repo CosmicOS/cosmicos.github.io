@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* "gives"-row audit.  A `.msg` widget carrying `data-value` renders an extra last row, labelled *gives*,
+/* "gives"-row audit.  A `.msg` widget carrying `data-value` renders an extra last row, labeled *gives*,
    showing what the fragment YIELDS.  That value comes from sender-side evaluation — so the row can quietly
    hand the keeper an answer she has no way to reach from the wire.  That is a leak with a friendly label on it.
 

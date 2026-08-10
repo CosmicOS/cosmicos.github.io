@@ -90,8 +90,8 @@ try {
   cp.execSync('bash scripts/render-dom.sh /tmp/handdiff.html', { cwd: ROOT, stdio: 'pipe' });
   const dom = fs.readFileSync('/tmp/handdiff.html', 'utf8');
   /* Strip the row's own furniture before comparing: a `.lbl` ("as I wrote it") and a `.say` gloss are
-     the EXHIBIT's labelling, not the drawing, and a twin row never has them. Leaving them in made every
-     labelled row look like a divergence. */
+     the EXHIBIT's labeling, not the drawing, and a twin row never has them. Leaving them in made every
+     labeled row look like a divergence. */
   const text = strip;
   const grab = (attr, id) => {
     const m = dom.match(new RegExp(`<div[^>]*${attr}="${id}"[^>]*>([\\s\\S]*?)</div>\\s*(?=<div|</)`));

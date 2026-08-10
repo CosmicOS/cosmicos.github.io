@@ -59,9 +59,9 @@ test('every moving exhibit is present', async ({ page }) => {
 
 /* ---------- the controls hold still ---------------------------------------------- */
 
-// A reader drives these by pressing the same button over and over. Every bar is a centred row, and
+// A reader drives these by pressing the same button over and over. Every bar is a centered row, and
 // the text in it changes as the thing runs — play/pause, let-it-run/rest, and a say-line that is a
-// different length at every step — so before this was pinned down, pressing `step` re-centred the
+// different length at every step — so before this was pinned down, pressing `step` re-centered the
 // row and slid the button out from under the finger that was pressing it. Measure the buttons,
 // drive the exhibit, measure again: nothing may have moved by so much as a pixel.
 const boxes = bar => bar.locator('button').evaluateAll(

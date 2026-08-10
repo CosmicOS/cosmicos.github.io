@@ -67,7 +67,7 @@ const html = fs.readFileSync(domFile, 'utf8')
 // ---- the figure registry, and it should now never fire.  Since 08-07 a sign IS a braille codepoint
 //      (scripts/braille-codepoints.js), so it survives into plain text as itself and falls straight
 //      through decodeEntities below.  This stays as a net: anything still in the private-use area is a
-//      file that missed the conversion, and a tofu box in a review is worse than a labelled stand-in. ----
+//      file that missed the conversion, and a tofu box in a review is worse than a labeled stand-in. ----
 const glyphReg = new Map();
 function glyphToken(cp) {
   if (!glyphReg.has(cp)) {
