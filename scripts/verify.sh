@@ -22,6 +22,13 @@
 #  10. audit-assets   — every image (inline or referenced) decodes and validates; no broken material ships
 #  11. build         — build-frags verifies every data-code is a real transmitted statement, then jekyll build
 #  12. render-check   — renders the story (/) through real headless Chrome; fails on JS errors / unrendered signs
+#  13. browser suite  — Playwright drives the built site the way a reader does: the live exhibits, and the
+#                       top bar's behavior, which NOTHING else here can see. Every other check reads a
+#                       static DOM; these are the only ones that scroll, tap, follow a link and look at
+#                       what happened. What they have already caught: an anchored entry landing UNDER the
+#                       sticky bar, a bar whose background-color was transparent over a photograph, and a
+#                       link to a deep pass landing wrong one load in eight. It is the slowest step by
+#                       far (~50s) — run it before calling something done, not between nudges.
 #
 #  (plus STEP 0, added 07-24: build-frags runs FIRST too, so the audits at 2-3 resolve data-codes against a
 #   fresh table rather than a stale one — see the comment at that step.)
@@ -102,6 +109,15 @@ scripts/build.sh
 
 step "14/15  render-check (real post-JS DOM through headless Chrome)"
 scripts/render-check.sh
+
+step "15/15  browser suite (Playwright drives the built site the way a reader does)"
+if [ -x node_modules/.bin/playwright ]; then
+  npx playwright test
+else
+  echo "  playwright not installed (npm ci) — SKIPPED, and this is the step that catches what a"
+  echo "  static DOM cannot: anchors landing under the bar, an invisible background, a menu that"
+  echo "  will not open. Install it before release."
+fi
 
 printf '\n\033[1;32m✓ all gates passed\033[0m\n'
 
