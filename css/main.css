@@ -1,3 +1,23 @@
+/* ══ THE DESIGN TOKENS — three voices, five sizes ════════════════════════════════════════════════
+   Lifted out of the story page on 08-09 so the whole site can reach them: the top bar is site
+   furniture and takes the same station voice as the log's ruled lines, and a second copy of this
+   list in a page's own <style> is a drift waiting to happen.
+   The full account of what each one is FOR is in index.html, above the stylesheet that uses them
+   hardest; this is the declaration, not the argument. */
+:root{
+  --voice-hers:    Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  --voice-station: "inconsolataregular", "Courier New", monospace;
+  --voice-marks:   'listenermarks', "inconsolataregular", "DejaVu Sans Mono", "Courier New", monospace;
+  --sz-mark: 12px; --sz-tone: 15px; --sz-word: 11px; --sz-cap: 10px; --sz-side: 13px;
+
+  /* --ground   every panel that holds running text; opaque, so the background photograph is never
+                behind words. --gap-para between paragraphs, --gap-block around an exhibit.
+     KEEP gap-block > gap-para, or an exhibit reads as just another paragraph. Both are px because
+     the prose size is set in one place (`.diary`, below); if that goes reader-relative, so do these. */
+  --ground: #0d1117;
+  --gap-para: 18px; --gap-block: 30px;
+}
+
 html { 
   background-color: black;
   margin: 0;
@@ -27,69 +47,300 @@ a:hover {
 a:visited {
 }
 
-.top {
-  width: 100%;
-  margin: 0;
-  padding: 0;
+
+/* ══ THE TOP BAR ═════════════════════════════════════════════════════════════════════════════════
+   The site's one piece of navigation, on every page. It replaced a centered row of pill buttons
+   that scrolled away — fine on a short page, useless on the story, which is one document with
+   fifty-five entries in it.
+
+   TWO STATES, AND THE SWITCH IS A THRESHOLD. It arrives as a masthead: the name set large with its
+   standfirst under it, because a reader who has just landed is owed a plain statement of what this
+   is. Once they have scrolled past the first screen they have committed, the name has stopped being
+   news, and the bar condenses to one line and hands the space back to the reading column.
+   NOT a continuous shrink tied to scroll position. `animation-timeline: scroll()` would do that in
+   pure CSS and is tempting, but a bar whose height tracks the wheel reflows the text under the eye
+   that is reading it, and the property it must animate to change height is a layout property. One
+   threshold, one transition, and the page under it moves exactly once.
+
+   The station voice, because that is what this is: ruled-and-filled-in furniture, not anybody's
+   prose. OPAQUE, not translucent — there is a photograph behind every page on this site, and text
+   scrolling under a blurred bar reads as a smear of the paragraph it just left. */
+
+/* the FIRST state is a state, not an animation: on a page opened at a deep anchor the bar is
+   condensed from the start, and it must not be seen unfolding to a masthead and collapsing again.
+   js/topbar.js removes this after the first paint. */
+.topbar.tb-still, .topbar.tb-still * { transition: none !important; animation: none !important; }
+
+.topbar { position: sticky; top: 0; z-index: 40;
+  /* A LIT TOP EDGE AND A LITTLE DEPTH. Still fully opaque — there is a photograph behind every page
+     here and prose must never be readable through this — but a flat rectangle of one color reads as
+     a gap in the page rather than as a thing laid on top of it. A 1px inset highlight along the top
+     and a gradient a few values apart is the whole effect; anything stronger starts competing with
+     the page for attention, which is the opposite of what furniture is for. */
+  /* THE COLOR AND THE GRADIENT, in that order, and both are load-bearing. `background:` shorthand
+     with a gradient sets background-IMAGE and resets background-COLOR to transparent, so the whole
+     opacity of this bar rested on one gradient painting — and prose scrolling under a transparent
+     strip is the exact failure the note above says must not happen. The flat color is the floor. */
+  background-color: var(--ground);
+  background-image: linear-gradient(#111820, #0d1117 62%);
+  border-bottom: 1px solid #24333f;
+  box-shadow: inset 0 1px 0 rgba(190, 215, 235, .07);
+  transition: box-shadow .25s ease, border-color .25s ease; }
+.topbar.condensed { border-bottom-color: #1d2a34;
+  box-shadow: inset 0 1px 0 rgba(190, 215, 235, .06), 0 10px 22px -16px #000; }
+
+.tb-inner { max-width: 660px; margin: 0 auto; padding: 26px 10px 20px;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 1.1em;
+  font-family: var(--voice-station);
+  transition: padding .25s ease; }
+.topbar.condensed .tb-inner { padding: 7px 10px 6px; }
+
+/* THE WORDMARK. Mixed case and open tracking when it is a masthead; small uppercase when it is a
+   label in a rule. Same element, so there is one name in the markup and no duplicate to fall out of
+   step. `font-size` and `letter-spacing` are layout properties and this transition therefore costs a
+   reflow — of one short line, once, at a threshold the reader crossed deliberately. */
+/* NOTHING ON THE BAR IS UNDERLINED, hovered or not. The site-wide `a:hover { text-decoration:
+   underline }` reaches in here and `text-decoration: none` on the resting state does not undo it —
+   specificity is per-property, and no rule here was setting it for the hover state at all. One
+   blanket, on the bar, rather than a `:hover` clause on each of the four kinds of link in it. */
+.topbar a, .topbar a:hover, .topbar a:focus, .topbar a:active { text-decoration: none; }
+.tb-home { margin-right: auto; display: block; }
+/* TRACKING TIGHTENS AS THE SIZE GROWS, which is the ordinary rule of type and the whole reason this
+   reads as a masthead rather than as a large link: letterspacing is what makes small caps legible
+   and what makes a big word look hesitant. Mixed case at 31px with almost no tracking; small,
+   uppercase and open when it condenses to a label. */
+.tb-word { display: block; color: #eef4f8; font-size: 31px; letter-spacing: 0.02em;
+  line-height: 1.05; white-space: nowrap;
+  /* the faintest lift off the dark ground — a shadow you would not notice if it were removed, only
+     a word that sat slightly flatter. */
+  text-shadow: 0 1px 0 rgba(0,0,0,.5);
+  transition: font-size .25s ease, letter-spacing .25s ease, color .25s ease; }
+/* the standfirst — uppercase and widely tracked, so it sits UNDER the name as a kicker instead of
+   competing with it as a second line of reading. */
+.tb-tag { display: block; color: #7e91a0; font-size: 11px; letter-spacing: 0.19em;
+  text-transform: uppercase; margin-top: 9px; white-space: nowrap; overflow: hidden;
+  max-height: 2em; opacity: 1;
+  transition: max-height .25s ease, opacity .18s ease, margin-top .25s ease; }
+.tb-home:hover .tb-word { color: #fff; }
+.tb-home:hover .tb-tag { color: #93a9b6; }
+
+.topbar.condensed .tb-word { font-size: var(--sz-cap); letter-spacing: 0.14em;
+  text-transform: uppercase; color: #8fb0c0; }
+.topbar.condensed .tb-tag { max-height: 0; opacity: 0; margin-top: 0; }
+.topbar.condensed .tb-home:hover .tb-word { color: #9fe0ff; }
+
+/* NOTHING HERE IS WORTH MAKING SOMEBODY ILL. Every movement on the bar is decoration over a state
+   change that is already carried by color and size, so with reduced motion asked for they simply
+   snap — nothing is lost but the travel. */
+@media (prefers-reduced-motion: reduce) {
+  .topbar, .tb-inner, .tb-word, .tb-tag, .tb-where, .tb-arc, .tb-seg::after,
+  .tb-burger, .tb-burger::before, .tb-burger::after, .tb-nav a { transition: none !important; }
+  .tb-menu[open] > .tb-nav { animation: none; }
 }
 
-.top a.logo {
-  display: inline-block;
-  padding: 5px;
-  margin: 5px;
-  border-radius: 5px;
-}
+/* ── THE MENU ─────────────────────────────────────────────────────────────────────────────────
+   A DISCLOSURE AT EVERY WIDTH, not links-at-desk-and-a-button-on-a-phone. Two reasons, and the
+   second is the one that settled it:
 
-.logo img {
-  height: 60px;
-}
+   1. The bar must stay ONE LINE when condensed. On the story it already spends a second line on the
+      arc of watches, and the row holds the site name, four links, the keeper and the pass —
+      measured, that overflows below ~350px, where small.css's overflow guard CLIPS rather than
+      scrolls, so the loss would be silent.
 
-.top .menu-holder {
-  display: inline-block;
-}
+   2. Showing the links at desk width means overriding the UA's own hiding of a closed `<details>`,
+      and that mechanism is not stable: `display` used to do it, Chrome now hides
+      `::details-content` with `content-visibility`, and both dodges failed here — the links laid
+      out at zero width while every computed style said they were fine. Navigation is the last
+      thing to build on a trick browsers keep re-implementing. Used as intended, `<details>` needs no
+      JavaScript, takes focus and the keyboard for free, and cannot reach a state where a reader has
+      no navigation because a script failed to load. */
+/* ALIGNED TO THE NAME, not to the middle of the block. `align-items: baseline` cannot place this —
+   the button has no text and so no baseline — and centring it in a masthead row three lines tall
+   left it floating opposite the standfirst, belonging to neither line. Pin it to the top and drop it
+   to the wordmark's optical centre; when the bar condenses the row is one line and the offset goes
+   to almost nothing. */
+.tb-menu { position: relative; order: 3; align-self: flex-start; margin-top: 10px;
+  transition: margin-top .25s ease; }
+.topbar.condensed .tb-menu { margin-top: 1px; }
+.tb-menu > summary { display: block; cursor: pointer; list-style: none;
+  padding: 6px; margin: -6px; color: #8fb0c0; }
+.tb-menu > summary::-webkit-details-marker { display: none; }
+.tb-menu > summary:hover, .tb-menu[open] > summary { color: #cbb794; }
+/* THE BUTTON IS DRAWN, not typed: it needs no glyph from any font and cannot arrive as tofu on a
+   device that lacks the character. Three real bars rather than one bar and two box-shadows, because
+   a shadow cannot be moved independently and these have somewhere to go — when the menu is open the
+   outer two swing onto the middle one and it becomes a close mark. That is the whole animation, and
+   it is worth having: it says the same button also shuts the thing, which a static ☰ never does. */
+.tb-burger { display: block; position: relative; width: 17px; height: 12px; }
+.tb-burger::before, .tb-burger::after { content: ""; position: absolute; left: 0; right: 0;
+  height: 2px; background: currentColor; border-radius: 1px;
+  transition: transform .2s ease, top .2s ease; }
+.tb-burger::before { top: 0; }
+.tb-burger::after  { top: 10px; }
+/* The middle bar is the element's own background, so there is one box to collapse rather than a
+   third pseudo-element nobody can reach. COLLAPSE ITS HEIGHT — `opacity: 0` was tried first and hid
+   the whole button, pseudo-elements and all, so the menu opened onto no close mark at all. */
+.tb-burger { background: linear-gradient(currentColor, currentColor) center/100% 2px no-repeat;
+  transition: background-size .14s ease, width .25s ease, height .25s ease; }
+.tb-menu[open] .tb-burger { background-size: 100% 0; }
+.tb-menu[open] .tb-burger::before { top: 5px; transform: rotate(45deg); }
+.tb-menu[open] .tb-burger::after  { top: 5px; transform: rotate(-45deg); }
+.topbar.condensed .tb-burger { width: 15px; height: 10px; }
+.topbar.condensed .tb-burger::after { top: 8px; }
+.topbar.condensed .tb-menu[open] .tb-burger::before,
+.topbar.condensed .tb-menu[open] .tb-burger::after { top: 4px; }
+/* SCOPED TO `[open]`. Setting `display` on the panel unconditionally overrides the UA's own hiding
+   of a closed disclosure, so the menu hung open under the bar from page load — visible in the
+   measurement as a panel 97px wide while the element was shut. Style the OPEN state and leave the
+   closed one to the browser, which is the whole reason for using a real disclosure. */
+/* THE GAP BETWEEN THE BUTTON AND THE PANEL IS PART OF THE MENU. Without this, moving the pointer
+   from one to the other crosses 12px of nothing, which is a `mouseleave` on the menu and starts it
+   closing under the hand that is reaching for it. A pseudo-element bridges the gap so the pointer
+   never actually leaves; the grace timer in js/topbar.js is then a second line of defense rather
+   than the only one. */
+.tb-menu[open] > .tb-nav::before { content: ""; position: absolute; left: 0; right: 0;
+  top: -14px; height: 14px; }
+/* WHAT THE PANEL LOOKS LIKE is on the panel; only WHERE IT SITS and whether it shows is on `[open]`.
+   Splitting it that way is not tidiness — appearance declared inside `[open]` means a closed panel
+   has no background at all, and "is this thing opaque" then cannot be asked of it without opening
+   it first. Nothing here affects visibility, so the UA still owns the closed state. */
+.tb-nav { min-width: 10.5em; padding: 5px 0;
+  background-color: #10171f;                       /* the floor — see the note on .topbar */
+  background-image: linear-gradient(#141c25, #0f1620);
+  border: 1px solid #26353f; border-radius: 9px;
+  box-shadow: 0 16px 34px -12px #000, inset 0 1px 0 rgba(190, 215, 235, .07); }
+.tb-menu[open] > .tb-nav { position: absolute; right: -6px; top: calc(100% + 12px);
+  z-index: 41; display: block;
+  /* it ARRIVES — a short rise and fade, so the panel reads as having come from the button rather
+     than as having been there all along and only just revealed. */
+  animation: tb-drop .14s ease-out both; }
+@keyframes tb-drop { from { opacity: 0; transform: translateY(-5px); } }
+.tb-nav a { display: block; padding: 9px 16px; color: #8fa2ad; text-decoration: none;
+  white-space: nowrap; font-size: var(--sz-cap); letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* the accent rule is always there and usually invisible, so a link does not CHANGE WIDTH when it
+     lights up — a menu whose items shift sideways under the pointer is the cheapest tell there is. */
+  border-left: 2px solid transparent;
+  transition: color .12s ease, background-color .12s ease, border-color .12s ease; }
+.tb-nav a:hover { color: #9fe0ff; background: rgba(159, 224, 255, .05); border-left-color: #3c5464; }
+.tb-nav a.here { color: #cbb794; border-left-color: #cbb794; }
+.tb-nav a.tb-out::after { content: "\2197"; margin-left: 0.3em; opacity: .5; }
 
-.top ul {
-  list-style: none;
-  padding: 0px;
-  margin: 0px;
-}
+/* WHERE YOU ARE — added by js/topbar.js, and only on a page that has an arc in it. */
+/* AT THE TOP OF THE PAGE THERE IS NO WHERE. A reader on the preface has not entered anybody's
+   watch, so the masthead does not claim they have; the keeper and the pass fade in with the
+   condensed bar, which is exactly when they start being true and start being useful. */
+/* ITS OWN TYPE, not the bar's. `.tb-inner` used to carry the small-caps scale for everything in the
+   row; the masthead needs that row to be big, so the scale moved onto the pieces that are labels.
+   Dropping it here left the keeper's name inheriting body prose — 16px serif in a monospace rule. */
+.tb-where { order: 2; display: flex; align-items: baseline; gap: 0.6em; white-space: nowrap;
+  font-size: var(--sz-cap); letter-spacing: 0.14em; text-transform: uppercase;
+  opacity: 0; transition: opacity .2s ease; }
+.topbar.condensed .tb-where { opacity: 1; }
+.tb-keeper { color: #8fb0c0; }
+/* the pass in her numerals, at notation size — the one place on the bar the book's own hand shows.
+   It takes the notation's ink from the one `!important` rule that governs every mark on the page,
+   and the trailing-advance cancel from the global `.scrawl`; both are deliberately not restated. */
+.tb-pass { font-family: var(--voice-marks); font-size: var(--sz-mark); letter-spacing: 0;
+  text-transform: none; }
 
-.top li {
-  display: inline-block;
-}
+/* THE ARC. Eleven segments, each as wide as that watch is tall on the page, so the bar is the book's
+   real shape and the lit segment is really where the reader is. `flex-grow` carries the proportion —
+   no widths are computed into pixels, so it survives any window and any font. */
+/* NO RULE ABOVE THIS. A hairline was tried between the standfirst and the arc, to say they were
+   separate things — and it read as an underline running the width of the bar under a line of small
+   caps, which is what it looked like more than what it meant. The space does the job. */
+.tb-arc { max-width: 660px; margin: 0 auto; padding: 16px 10px 12px; display: flex; gap: 3px;
+  transition: padding .25s ease, gap .25s ease; }
+.topbar.condensed .tb-arc { padding: 0 10px 6px; gap: 2px; }
+/* THE TRACK IS A GROOVE, not a gray bar: an inset shadow and a ground darker than the bar's own,
+   so the filled part reads as something laid IN it rather than beside it. */
+.tb-seg { flex-grow: 1; flex-basis: 0; height: 4px; border-radius: 2px; background: #1a242c;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.45);
+  position: relative; cursor: pointer; display: block;
+  /* the hit area is the finger's, not the rule's — 4px is unpressable and the gap is the point of
+     the shape, so the padding hangs OUTSIDE the drawn bar rather than fattening it. */
+  border-top: 9px solid transparent; border-bottom: 9px solid transparent;
+  background-clip: padding-box; margin: -9px 0; }
+.tb-seg::after { content: ""; position: absolute; inset: 0; border-radius: 2px;
+  background: #3c5464; transform-origin: left; transform: scaleX(0);
+  transition: background-color .25s ease, box-shadow .25s ease; }
+.tb-seg.done::after { transform: scaleX(1); }
+/* the watch being read carries the notation's own ink and a breath of it around the mark, so the
+   eye finds where it is on the bar without having to compare eleven grays. */
+.tb-seg.here::after { box-shadow: 0 0 6px -1px rgba(203, 183, 148, .55); }
+/* a travelled watch keeps a little of the warmth of the one being read, so the bar reads left to
+   right as a journey rather than as an on/off row */
+.tb-seg.done::after { background: linear-gradient(90deg, #46606f, #3c5464); }
+/* the watch a reader is IN fills as they cross it, so the bar answers "how far through this one"
+   as well as "which one". `--f` is set by js/topbar.js on scroll; scaleX on a pseudo-element is the
+   cheap way to animate a fill without touching layout. */
+.tb-seg.here::after { background: #cbb794; transform: scaleX(var(--f, 0)); }
+.tb-seg:hover::after { background: #9fe0ff; transform: scaleX(1); }
 
-.top a {
-  display: inline-block;
-}
+/* AN ANCHOR JUMP MUST NOT LAND UNDER THE BAR. The listener cross-references constantly and by the
+   late watches sends a reader four hundred passes back, so this is not a detail — without it every
+   one of those jumps arrives with its stamp hidden.
+   THE NUMBER TO CLEAR IS THE **CONDENSED** BAR, because that is the state a page loaded at an anchor
+   starts in. Measured in a real browser: 61px on the story (one line plus the arc), 39px on a page
+   with no arc. 68 clears the taller case. A scroll-margin cannot be read back out of the layout, so
+   this is maintained by measuring — and `tests/topbar.spec.js` fails if the entry ever lands under
+   the bar again, which is how the 48px left here after the masthead redesign was caught. */
+:target, .entry, .tu, .preface, .msg-index { scroll-margin-top: 68px; }
 
-.top { 
-  text-align: center;
-}
+@media (max-width: 560px) { .tb-inner { gap: 0.8em; } }
 
-.top a, .top .no-a {
-  color: white;
-  display: inline-block;
-  padding: 0.5em;
-  margin: 5px;
-  border-radius: 1em;
-  background: rgba(0,0,0,0.75);
-  font-family: "inconsolataregular", "Courier New", Courier, monospace;
-}
+/* the site foot — quiet, and not a second copy of the nav (see _includes/footer.html). Small caps
+   like every other label on the site, so it reads as the end of the page rather than as a last
+   sentence somebody still has to take in. */
+.siteftr { max-width: 660px; margin: 40px auto 0; padding: 16px 10px 26px;
+  border-top: 1px solid #1d2a34; background-color: var(--ground);
+  font-family: var(--voice-station); font-size: var(--sz-cap); letter-spacing: 0.14em;
+  text-transform: uppercase; color: #5f7382; }
+.siteftr a { color: #8fb0c0; text-decoration: none; }
+.siteftr a:hover { color: #9fe0ff; }
 
-.top li.menu-source a {
-}
+/* ══ AN EPIGRAPH — the slideshow's caption ═══════════════════════════════════════════════════════
+   One quotation, standing on its own above the message. No panel of explanation and no heading: the
+   page IS the untranslated signal, and a box of prose over it was arguing with the evidence directly
+   below. It keeps a dark ground only because a photograph runs behind this page, and a quotation is
+   no use if it cannot be read.
 
-.menu-logo {
-  font-size: 200%;
-}
+   `figure`/`figcaption` and not a `cite` inside the blockquote: these are a real person's words, the
+   attribution is not part of what he said, and a screen reader should not read the name as though it
+   were. The quotation marks are the STYLESHEET's, so the text stays exactly what he wrote.
 
-.top a:hover {
-  background: #333;
-  text-decoration: none;
-}
+   ONE RULE, AND IT SIZES ITSELF THE WAY THE PAGE DOES. There were two — a generic `.epigraph` left
+   over from a heading block that no longer exists, and this — and the generic one came LATER in the
+   file, so it silently won the margin and the left padding. The box came out 700px wide inside a
+   760px column, flush left, with 24px of padding on one side and 14px on the other, and `margin:
+   auto` never applied at all. Hence: no `max-width` (the column already has one), `border-box` so a
+   width means the width, and symmetric padding. */
+.epigraph { box-sizing: border-box; margin: 0 0 34px; padding: 22px 26px;
+  background-color: rgba(13, 17, 23, .9); border-radius: 10px;
+  border-left: 3px solid #cbb794; }
+/* the reading voice, not the site's default sans — a quotation is somebody talking, and this is the
+   one thing on the page that is prose rather than apparatus. */
+.epigraph blockquote { margin: 0; font-family: var(--voice-hers); font-style: italic;
+  font-size: 132%; line-height: 1.42; color: #e2eaf1; }
+.epigraph blockquote::before { content: "\201C"; }
+.epigraph blockquote::after  { content: "\201D"; }
+.epigraph figcaption { margin-top: 9px; font-family: var(--voice-station); font-size: var(--sz-side);
+  letter-spacing: 0.08em; color: #7e91a0; }
+.epigraph figcaption::before { content: "\2014\00a0"; }
 
+
+
+/* CLEARANCE UNDER THE BAR, for every page. Nothing had any: the story's title sat jammed against
+   the masthead, and the slideshow's quotation had to carry its own top margin — which then COLLAPSED
+   straight through this box and moved the whole column down instead of making a gap inside it.
+   One padding here fixes both and stops the next page needing its own.
+   `box-sizing` with it, or the padding is added to the `100vh` and every page gains a scrollbar it
+   does not need. */
 div.content {
+  box-sizing: border-box;
   min-height: 100vh;
+  padding-top: 34px;
 }
 
 div.content-index {
@@ -260,8 +511,6 @@ img.float {
   margin-left:            10px;
   margin-bottom:          10px;
 }
-
-
 
 
 .alert
@@ -470,7 +719,7 @@ a.sim-button:hover {
      this face from subpixel to grayscale antialiasing on every page that uses it, which is a
      visible change to how the scrawl is drawn everywhere, and it wants deciding rather than
      slipping in. (Found while wrongly blaming subpixel fringing for something that turned out to
-     be the ONE INK rule in listener.html.) */
+     be the ONE INK rule in index.html.) */
   moz-osx-font-smoothing: grayscale;
   webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;

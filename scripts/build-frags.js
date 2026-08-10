@@ -77,7 +77,7 @@ const setAttr = (s, name, val, quote) => {
 };
 const dropAttr = (s, name) => s.replace(new RegExp('\\s*' + name + '=(["\']).*?\\1'), '');
 
-// --- literal wire quotes: a `<div class="frag" data-code="…" data-view="tones|cups">` is a copy-pasteable
+// --- literal wire quotes: a `<div class="frag" data-code="…" data-at="tones|cups">` is a copy-pasteable
 //     quote of the wire, RENDERED CLIENT-SIDE by listener.js. build-frags only VERIFIES the code occurs in the
 //     transmitted wire (so a typo/stale quote errors loudly) and keeps the source clean (label only). ---
 const WIRE = msg.filter(s => (s.role === 'code' || s.role === 'gate') && s.code).map(s => s.code).join('');
@@ -126,10 +126,10 @@ function buildFile(file) {
   // literal-wire display exhibits: VERIFY the code is in the wire, strip any baked content, keep source clean
   // (the .flood div has no data-code and is skipped; listener.js renders the real characters at load).
   html = html.replace(/<div class="frag"([^>]*\bdata-code="[^"]*"[^>]*)>([\s\S]*?)<\/div>/g, (m, attrs, inner) => {
-    const code = attr(attrs, 'data-code'), view = attr(attrs, 'data-view');
+    const code = attr(attrs, 'data-code'), view = attr(attrs, 'data-at');
     if (!code || !view) return m;
     if (!WIRE.includes(code)) { errs.push('frag data-code NOT found in the transmitted wire: ' + code); return m; }
-    if (view !== 'tones' && view !== 'cups') { errs.push('frag data-view must be tones|cups, got: ' + view); return m; }
+    if (view !== 'tones' && view !== 'cups') { errs.push('frag data-at must be tones|cups, got: ' + view); return m; }
     const lbl = (inner.match(/<span class="lbl">[\s\S]*?<\/span>/) || [''])[0];
     quote++;
     return '<div class="frag"' + attrs + '>' + lbl + '</div>';   // clean: label only, no baked spans

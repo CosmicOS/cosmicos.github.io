@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The SINGLE source of the real post-JS DOM: build, serve _site, and render listener.html
+# The SINGLE source of the real post-JS DOM: build, serve _site, and render the story at /
 # through headless Chrome (running the real js/listener.js), then write the post-JS DOM.
 #
 # Both consumers read what THIS produces, so there is exactly one renderer (js/listener.js)
@@ -31,7 +31,7 @@ python3 -m http.server "$PORT" --bind 127.0.0.1 --directory _site >/tmp/rc-httpd
 SRV=$!; trap 'kill $SRV 2>/dev/null || true; rm -rf "$PROFILE"' EXIT
 sleep 1
 
-echo "rendering http://127.0.0.1:$PORT/listener.html through $(basename "$CHROME")…" >&2
+echo "rendering http://127.0.0.1:$PORT/index.html through $(basename "$CHROME")…" >&2
 
 # Chrome fans out into a process tree and will happily eat several GB on a workstation, which
 # has made this laptop stutter mid-run. Two belts:
@@ -44,7 +44,7 @@ CHROME_ARGS=(--headless=new --no-sandbox --disable-gpu --enable-logging=stderr -
   --ozone-platform=headless --user-data-dir="$PROFILE" --no-first-run --no-default-browser-check
   --renderer-process-limit=1 --js-flags=--max-old-space-size=512 --disable-dev-shm-usage
   --disable-extensions --disable-background-networking --disable-software-rasterizer
-  --virtual-time-budget=8000 --dump-dom "http://127.0.0.1:$PORT/listener.html")
+  --virtual-time-budget=8000 --dump-dom "http://127.0.0.1:$PORT/index.html")
 
 if command -v systemd-run >/dev/null && systemctl --user is-system-running >/dev/null 2>&1; then
   SCOPE="render-dom-$$"

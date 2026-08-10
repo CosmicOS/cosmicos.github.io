@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* read.js — mechanically generate a flat REVIEWER READ of listener.html.
+/* read.js — mechanically generate a flat REVIEWER READ of the story at /.
  *
  * This FORMATS the real post-JS DOM; it does NOT render anything itself. The page is drawn
  * by exactly one renderer — js/listener.js, in a real browser — and scripts/render-dom.sh

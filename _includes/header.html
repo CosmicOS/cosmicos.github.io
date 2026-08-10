@@ -7,19 +7,30 @@
         <link rel="alternate" type="application/rss+xml" title="CosmicOS RSS" href="/feed.xml" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- versioned: main.css carries the @font-face, so a browser holding a cached copy of THIS file
-             keeps asking for the old font URL and never sees the new one — which is what stranded a
-             phone on the pre-braille font after the font itself had already been versioned. The JS
-             tags below have always done this; the stylesheet was the one that did not. -->
+        <!-- VERSIONED, ALL OF THEM. main.css carries the @font-face, so a browser holding a cached
+             copy of it keeps asking for the old font URL and never sees the new one — which is what
+             stranded a phone on the pre-braille font after the font itself had already been
+             versioned. That was fixed here for main.css alone, and the other three were left, which
+             stranded a phone AGAIN (08-09): a sticky bar could not pin on mobile because the cached
+             small.css still made <html> a scroll container, and the desk machine — which never loads
+             small.css — showed the fix working. A media-query stylesheet is the WORST one to leave
+             unversioned: it only applies on the screens you are least likely to be testing on, so a
+             stale copy is invisible from the machine doing the work. -->
         <link rel="stylesheet" href="{{site.baseurl}}/css/main.css?v={{ site.time | date: '%s' }}">
-        <link rel="stylesheet" href="{{site.baseurl}}/css/dark_syntax.css">
-        <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/small.css" media="screen and (max-width: 512px)" />
-        <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/big.css" media="screen and (min-width: 800px)" />
+        <link rel="stylesheet" href="{{site.baseurl}}/css/dark_syntax.css?v={{ site.time | date: '%s' }}">
+        <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/small.css?v={{ site.time | date: '%s' }}" media="screen and (max-width: 512px)" />
+        <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/big.css?v={{ site.time | date: '%s' }}" media="screen and (min-width: 800px)" />
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//www.youtube.com/player_api"></script>
         <script src="{{site.baseurl}}/js/lib_cosmicos.js"></script>
         <script src="{{site.baseurl}}/js/cosmicos.js"></script>
         <script src="{{site.baseurl}}/js/site.js"></script>
+        <!-- DEFER, and that is load-bearing. The bar is on every page, so this cannot live at the
+             foot of one of them. Deferred scripts run after the document is parsed and after the
+             ordinary scripts at the end of the body have already executed — which is how this still
+             finds `reckonNum` from js/listener.js on the story page, and works without it
+             everywhere else. -->
+        <script defer src="{{site.baseurl}}/js/topbar.js?v={{ site.time | date: '%s' }}"></script>
 {% for js in page.extra_js %}
         <script src="{{site.baseurl}}/{{ js }}"></script>
 {% endfor %}
@@ -47,6 +58,67 @@
     </head>
     <body>
 
-<div class="top">
-  {% include menu.html %}
+<!-- ══ THE TOP BAR — one piece of furniture for the whole site ═════════════════════════════════════
+     It was a centered row of pill buttons that scrolled away (`div.top` + `_includes/menu.html`,
+     both now gone). Sticky, and site-wide rather than listener-only, because the listener is a very
+     long single page and a reader four hundred passes down had no way back to anything.
+
+     IT ARRIVES AS A MASTHEAD AND SETTLES INTO A RULE. At the top of a page the site's name is set
+     large with its standfirst under it, because a reader who has just arrived is owed a plain
+     statement of what this is. Once they have scrolled past it they have committed to the page, the
+     name is no longer news, and every pixel the bar keeps is one the reading column does not get —
+     so it condenses to a single line and hands the space back. The switch is a THRESHOLD, not a
+     continuous shrink: a bar that resizes with every wheel notch reflows the text under the eye that
+     is reading it. Two thresholds, in fact — see the note in js/topbar.js for why one can never be
+     stable when the bar's own height change moves the page past the line it just crossed.
+
+     IT KNOWS NOTHING ABOUT THE LISTENER. `js/topbar.js` adds the where-you-are and the arc of
+     watches ONLY on a page that actually has watches in it, so this include stays the site's nav and
+     the story's instrument is built from the story. -->
+<div class="topbar" id="topbar">
+  <div class="tb-inner">
+    {% comment %} ON THE FRONT PAGE THE HOME LINK IS BACK-TO-TOP, not a reload. The story is at `/`
+       and is one very long document, so sending a reader to `/` from inside it would rebuild fifty-
+       five entries to do what an anchor does instantly. Elsewhere it is the ordinary way home.
+    {% endcomment %}
+    {% if page.url == '/' %}
+    <a class="tb-home here" href="#top" aria-current="page">
+      <span class="tb-word">CosmicOS</span>
+      <span class="tb-tag">an open source contact message</span>
+    </a>
+    {% else %}
+    <a class="tb-home" href="{{site.baseurl}}/">
+      <span class="tb-word">CosmicOS</span>
+      <span class="tb-tag">an open source contact message</span>
+    </a>
+    {% endif %}
+    {% comment %} ORDERED THE WAY THE SITE READS: the log, then the raw message it is about, then the
+       plain explanation, then the thing that runs it, then the source. `slideshow` is in here
+       because its only other inbound link is the story's coda — the foot of a fifty-five entry page,
+       which is no link at all.
+
+       AND THE LOG IS IN THE LIST. It was not, and this comment described an order beginning with it
+       — a menu is a statement of everything there is, so leaving out the front page said the site
+       had four parts and one of them was wherever you happened to be. The wordmark does link home,
+       but a reader who opens a menu is asking to be shown the whole thing, and "it is also up there"
+       is not an answer. On the log itself it is the way back to the top, exactly like the wordmark.
+
+       `<details>` AND NOT A SCRIPT — see the note over `.tb-menu` in css/main.css for why it is a
+       disclosure at every width rather than links-at-desk-and-a-button-on-a-phone.
+    {% endcomment %}
+    <details class="tb-menu">
+      <summary aria-label="Menu"><span class="tb-burger" aria-hidden="true"></span></summary>
+      <nav class="tb-nav">
+        {% if page.url == '/' %}
+        <a href="#top" class="here" aria-current="page">listener&rsquo;s log</a>
+        {% else %}
+        <a href="{{site.baseurl}}/">listener&rsquo;s log</a>
+        {% endif %}
+        <a href="{{site.baseurl}}/slideshow.html"{% if page.url contains '/slideshow' %} class="here" aria-current="page"{% endif %}>slideshow</a>
+        <a href="{{site.baseurl}}/about.html"{% if page.url contains '/about' %} class="here" aria-current="page"{% endif %}>message</a>
+        <a href="{{site.baseurl}}/evaluate.html"{% if page.url contains '/evaluate' %} class="here" aria-current="page"{% endif %}>console</a>
+        <a href="https://github.com/paulfitz/cosmicos" class="tb-out">github</a>
+      </nav>
+    </details>
+  </div>
 </div>

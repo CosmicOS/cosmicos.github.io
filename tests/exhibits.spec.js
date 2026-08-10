@@ -12,7 +12,7 @@
 
 const { test, expect } = require('@playwright/test');
 
-const PAGE = '/listener.html';
+const PAGE = '/index.html';
 
 /* ---------- helpers ------------------------------------------------------------- */
 

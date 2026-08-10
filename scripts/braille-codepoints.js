@@ -48,7 +48,7 @@ const FILES = [
 ];
 
 /* GENERATED files are checked and never rewritten. `_includes/listener/*` comes from `_prose` via
-   prose.js, and `_site/listener.html` from jekyll — sweeping them would hide the real fault and it
+   prose.js, and `_site/index.html` from jekyll — sweeping them would hide the real fault and it
    would come back on the next build. This is not hypothetical: the first version of this script
    scanned only the hand-copied sources and passed green while `data-glyphs` on 5 snippet rows was
    still private-use, because build-frags.js computes those with the generator's own encoder
@@ -56,7 +56,7 @@ const FILES = [
 const GENERATED = [
   ...(fs.existsSync(path.join(ROOT, '_includes/listener'))
       ? fs.readdirSync(path.join(ROOT, '_includes/listener')).map(f => '_includes/listener/' + f) : []),
-  '_site/listener.html',
+  '_site/index.html',
 ];
 
 let touched = 0, remaining = 0;

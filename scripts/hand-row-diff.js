@@ -14,12 +14,21 @@
  * statement, in the notation standing here" is a hand-maintained copy of the renderer's own output.
  *
  * THIS MEASURES THAT, rather than assuming it. For every hand row that CLAIMS a statement
- * (notation | undecoded | abridged — `hers` claims none and is left alone), it drops a twin
- * `.row[data-code]` in beside it, renders the real page once, and compares the two drawings.
+ * (notation | undecoded | abridged — `hers` claims none and is left alone), it drops TWINS in beside
+ * it, renders the real page once, and compares the drawings.
  *
- *   same      the hand row is a copy of what the renderer produces -> convert it, delete the HTML
- *   differs   the drawing is NOT what the renderer would draw. Either the hand row is wrong, or the
- *             difference is the point (she wrote it her own way and the entry says so). Read it.
+ * IT SEARCHES THE WHOLE LADDER, NOT ONE RUNG. It used to try `data-at="hand"` alone and report
+ * everything else as a divergence — so a row that was exactly the pitches, or exactly the front eight
+ * marks in cups, came back "differs" and got read by a human who then found nothing wrong with it.
+ * Now it tries all six rungs, and on the three CODE rungs every span of the wire as well. One code
+ * place draws exactly one mark at those rungs, so the span's length is fixed by the number of marks
+ * the hand row draws and only the offset has to be searched: n candidates a rung, not n².
+ *
+ *   same      a rung (and span) draws this exactly -> convert it to that, delete the HTML
+ *   spacing   a rung draws the same MARKS in a different arrangement. Not a defect and not a
+ *             conversion: the arrangement is usually the exhibit's whole point (§193 lays one mark
+ *             under one tone, which is a correspondence, not a notation).
+ *   differs   no rung draws this. Either the hand row is wrong, or the difference is the point.
  *
  * It perturbs only `_includes/listener/*.html`, which are GENERATED, and restores them with
  * `prose.js build` before it exits.
@@ -32,6 +41,13 @@ const fs = require('fs'), path = require('path'), cp = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const DIR = path.join(ROOT, '_includes/listener');
 const CLAIMS = new Set(['notation', 'undecoded', 'abridged']);
+const PARSE_RUNGS = ['hand', 'figures', 'unworded'];   // need the parse: the whole statement or nothing
+const CODE_RUNGS  = ['tones', 'cups', 'atoms'];        // work off the wire: any span of it
+/* the same strip the comparison uses (see `text` below), hoisted so the mark COUNT that picks the
+   candidate spans is taken the same way as the comparison that judges them. */
+const strip = h => h
+  .replace(/<span class="(?:lbl|say|peel-say|step)"[\s\S]*?<\/span>/g, '')
+  .replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 const ROW = /<div class="row hand"([^>]*)>([\s\S]*?)<\/div>/g;
 
 function eachRow(src, fn) {
@@ -53,9 +69,18 @@ for (const f of files) {
   const out = eachRow(src, (whole, attrs, inner, kind, of) => {
     if (!CLAIMS.has(kind) || !of || /\s/.test(of.trim())) return whole;   // multi-code: not a 1:1 twin
     const id = 'probe' + (n++);
-    index.push({ id, file: f, kind, of, html: whole });
+    /* HOW MANY MARKS DOES THE HAND ROW DRAW? That fixes the span's length on the code rungs, so only
+       its offset is unknown. Count from the row's own text with the furniture stripped — the same
+       strip the comparison uses, or the count and the comparison would disagree. */
+    const len = strip(inner).replace(/\s/g, '').length;
+    const cands = [];
+    for (const at of PARSE_RUNGS) cands.push({ at });
+    for (const at of CODE_RUNGS)
+      for (let a = 0; len && a + len <= of.length; a++) cands.push({ at, span: `${a}-${a + len}` });
+    index.push({ id, file: f, kind, of, html: whole, cands });
     return whole.replace('<div class="row hand"', `<div class="row hand" data-probe="${id}"`)
-         + `<div class="row" data-code="${of}" data-twin="${id}"></div>`;
+         + cands.map((c, i) => `<div class="row" data-code="${of}" data-at="${c.at}"`
+             + (c.span ? ` data-span="${c.span}"` : '') + ` data-twin="${id}.${i}"></div>`).join('');
   });
   fs.writeFileSync(p, out);
 }
@@ -67,30 +92,47 @@ try {
   /* Strip the row's own furniture before comparing: a `.lbl` ("as I wrote it") and a `.say` gloss are
      the EXHIBIT's labelling, not the drawing, and a twin row never has them. Leaving them in made every
      labelled row look like a divergence. */
-  const text = h => h
-    .replace(/<span class="(?:lbl|say|peel-say|step)"[\s\S]*?<\/span>/g, '')
-    .replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const text = strip;
   const grab = (attr, id) => {
     const m = dom.match(new RegExp(`<div[^>]*${attr}="${id}"[^>]*>([\\s\\S]*?)</div>\\s*(?=<div|</)`));
     return m ? text(m[1]) : null;
   };
-  const same = [], differs = [], missing = [];
+  const same = [], spacing = [], differs = [], missing = [];
+  const naked = t => t.replace(/\s/g, '');
   for (const r of index) {
-    const a = grab('data-probe', r.id), b = grab('data-twin', r.id);
-    if (a == null || b == null) { missing.push(r); continue; }
-    (a === b ? same : differs).push({ ...r, hand: a, gen: b });
+    const a = grab('data-probe', r.id);
+    if (a == null) { missing.push(r); continue; }
+    let hit = null, near = null;
+    r.cands.forEach((c, i) => {
+      const b = grab('data-twin', `${r.id}.${i}`);
+      if (b == null || !b) return;
+      if (!hit  && b === a)               hit  = { ...c, gen: b };
+      if (!near && naked(b) === naked(a)) near = { ...c, gen: b };
+    });
+    if (hit)       same.push({ ...r, hand: a, at: hit, gen: hit.gen });
+    else if (near) spacing.push({ ...r, hand: a, at: near, gen: near.gen });
+    else           differs.push({ ...r, hand: a, gen: grab('data-twin', `${r.id}.0`) || '' });
   }
   if (process.argv[2] === '--list') {
-    console.log(JSON.stringify((process.argv[3] === 'differs' ? differs : same)
-      .map(r => ({ file: r.file, kind: r.kind, of: r.of, html: r.html })), null, 1));
+    console.log(JSON.stringify((process.argv[3] === 'differs' ? differs : process.argv[3] === 'spacing' ? spacing : same)
+      .map(r => ({ file: r.file, kind: r.kind, of: r.of, at: r.at && r.at.at, span: r.at && r.at.span, html: r.html })), null, 1));
   } else {
-    console.log(`\n  SAME    ${same.length}  — the renderer already draws these; convert and delete the HTML`);
-    console.log(`  DIFFERS ${differs.length}  — read each one`);
+    console.log(`\n  SAME    ${same.length}  — a rung draws these exactly; convert and delete the HTML`);
+    console.log(`  SPACING ${spacing.length}  — same marks, different arrangement; the arrangement is usually the point`);
+    console.log(`  DIFFERS ${differs.length}  — no rung draws these; read each one`);
     if (missing.length) console.log(`  ?       ${missing.length}  — probe not found in DOM`);
-    const by = {};
-    for (const r of same) by[r.file] = (by[r.file] || 0) + 1;
-    console.log('\n  same, by keeper:');
-    Object.entries(by).forEach(([f, c]) => console.log(`    ${f.padEnd(16)} ${c}`));
+    if (same.length) {
+      console.log('\n  convert these — file, and the attributes that reproduce the row:');
+      for (const r of same)
+        console.log(`    ${r.file.padEnd(16)} data-at="${r.at.at}"${r.at.span ? ` data-span="${r.at.span}"` : ''}`
+                  + `   ${r.hand.slice(0, 46)}`);
+    }
+    if (spacing.length) {
+      console.log('\n  same marks, spaced differently (READ, do not convert blind):');
+      for (const r of spacing)
+        console.log(`    ${r.file.padEnd(16)} data-at="${r.at.at}"${r.at.span ? ` data-span="${r.at.span}"` : ''}`
+                  + `   ${r.hand.slice(0, 46)}`);
+    }
     /* WHY it differs, because the answer changes the fix. `tones` and `fragment` are both things the
        renderer could do from msg.json if asked; only `other` needs a human. */
     const cls = r => {

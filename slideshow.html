@@ -1,0 +1,30 @@
+---
+layout: default
+title: "The message, as it comes"
+---
+
+{% comment %} NICK'S LINE, AND NOTHING ELSE. It was pasted in as two bare lines of text at the top of
+   the old index.html on 2026-07-24, and Jekyll does not run markdown over an `.html` file, so it
+   rendered as a loose text node before any container — unstyled, dark on the background photograph.
+   Nobody reading the site could have read it.
+   It is QUOTED VERBATIM, lowercase "socrates" and all; the wording is his and not ours to tidy. The
+   `~` was his signature mark rather than part of the sentence, so it becomes ordinary attribution:
+   `<figcaption>` outside the `<blockquote>`, which is what the spec asks and what a screen reader
+   needs to tell the words from the name.
+   IT STANDS ALONE. A heading, a sentence explaining that nothing here is translated, and a pair of
+   onward links all stood here first and were all guff: the wall of untranslated signs below says
+   every one of those things by being there, and saying them again in words made the page argue with
+   its own evidence. What a caption is for is telling you how to look, and his line does that.
+{% endcomment %}
+<figure class="epigraph">
+  <blockquote>tantalizingly obscure. like a mix of socrates and The Cyberiad</blockquote>
+  <figcaption>Nick</figcaption>
+</figure>
+
+<div id="msg-choice"></div>
+
+<div id="show-message-container">
+  <div class="show-message">
+    {% include part_spider.html %}
+  </div>
+</div>

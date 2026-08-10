@@ -157,7 +157,7 @@ for (const f of files) {
 {
   const targets = files.map(f => [f, fs.readFileSync(path.join(DIR, f), 'utf8')]);
   targets.push(['js/listener.js', fs.readFileSync(RENDERER, 'utf8')]);
-  targets.push(['listener.html', fs.readFileSync(path.resolve(__dirname, '../listener.html'), 'utf8')]);
+  targets.push(['index.html', fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8')]);
   for (const [name, src] of targets) {
     const lineOf = i => src.slice(0, i).split('\n').length;
     for (const [ch, why] of Object.entries(REAL_WORLD)) {

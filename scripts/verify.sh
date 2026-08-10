@@ -21,7 +21,7 @@
 #                         yet quoted at the wrong time; caught §511 and §591, both real yet upstream)
 #  10. audit-assets   — every image (inline or referenced) decodes and validates; no broken material ships
 #  11. build         — build-frags verifies every data-code is a real transmitted statement, then jekyll build
-#  12. render-check   — renders listener.html through real headless Chrome; fails on JS errors / unrendered signs
+#  12. render-check   — renders the story (/) through real headless Chrome; fails on JS errors / unrendered signs
 #
 #  (plus STEP 0, added 07-24: build-frags runs FIRST too, so the audits at 2-3 resolve data-codes against a
 #   fresh table rather than a stale one — see the comment at that step.)

@@ -8,7 +8,7 @@
  *
  * That was safe almost everywhere: from §214 on, exhibits are `.row[data-code]`, and the renderer
  * draws each sign in the SAME scrawl the prose uses, so the reader matches glyph to glyph for
- * free. It is NOT safe while the exhibits are `.frag data-view="cups|tones"` — raw wire, not yet
+ * free. It is NOT safe while the exhibits are `.frag data-at="cups|tones"` — raw wire, not yet
  * segmented into signs. There the prose points in one alphabet at an exhibit drawn in another, and
  * nothing on the page connects them. §207 was found that way, by a reader, not by a gate.
  *
@@ -17,7 +17,7 @@
  * POINTS AT  = an `.sg[data-s]` inside a `<p>` — running prose.
  * SHOWS      = the same sign drawn in a figure: an `.sg[data-s]` outside any `<p>`, or a
  *              `data-code`/`data-parse`/`data-src` exhibit whose parse contains it.
- * A bare `data-view="cups|tones"` frag shows NEITHER. It is undivided wire, in a different
+ * A bare `data-at="cups|tones"` frag shows NEITHER. It is undivided wire, in a different
  * alphabet from the scrawl, and a reader has nothing to match against it.
  *
  * Usage: node scripts/audit-signs.js [--list]      exit 1 on any violation
@@ -48,7 +48,7 @@ function shows(figures) {
   for (const m of figures.matchAll(/<div [^>]*>/g)) {
     const attrs = m[0];
     const code = (attrs.match(/data-code="(\d+)"/) || [])[1];
-    const view = (attrs.match(/data-view="(\w+)"/) || [])[1];
+    const view = (attrs.match(/data-at="(\w+)"/) || [])[1];
     if (code && w[code] && view !== 'cups' && view !== 'tones') {  // raw wire shows no signs
       // a COMPOUND draws its parts: `tape:make` renders tape's glyphs then a join dot then make's,
       // so a figure carrying the compound is showing the stem. Register every prefix.

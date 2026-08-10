@@ -17,7 +17,7 @@ module.exports = {
   use: { baseURL: 'http://127.0.0.1:8393', headless: true },
   webServer: {
     command: 'python3 -m http.server 8393 --bind 127.0.0.1 --directory _site',
-    url: 'http://127.0.0.1:8393/listener.html',
+    url: 'http://127.0.0.1:8393/index.html',
     reuseExistingServer: true,
     timeout: 30000,
   },

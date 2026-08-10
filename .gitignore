@@ -1,7 +1,7 @@
 _site
 plans/
 *.bak
-# dead, comment-only includes (superseded by the diary; see listener.html:334)
+# dead, comment-only includes (superseded by the diary; see index.html:334)
 _includes/listener_sections.html
 _includes/listener_s0_rows.html
 

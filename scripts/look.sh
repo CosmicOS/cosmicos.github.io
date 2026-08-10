@@ -41,7 +41,7 @@ PROFILE="$(mktemp -d -t look-XXXXXX)"
 ISOLATE=(--ozone-platform=headless --user-data-dir="$PROFILE" --no-first-run --no-default-browser-check)
 
 PORT="${PORT:-8399}"
-if ! curl -s -o /dev/null "http://127.0.0.1:$PORT/listener.html" 2>/dev/null; then
+if ! curl -s -o /dev/null "http://127.0.0.1:$PORT/index.html" 2>/dev/null; then
   python3 -m http.server "$PORT" --bind 127.0.0.1 --directory _site >/tmp/look-httpd.log 2>&1 &
   SRV=$!; trap 'kill $SRV 2>/dev/null || true; rm -f _site/.look-iso.html; rm -rf "$PROFILE"' EXIT; sleep 1
 else
@@ -49,7 +49,7 @@ else
 fi
 
 NUMS=""; [ "${SCRAWL:-}" = "numbers" ] && NUMS="nums"
-node scripts/look-isolate.js _site/listener.html _site/.look-iso.html "$SEL" $NUMS
+node scripts/look-isolate.js _site/index.html _site/.look-iso.html "$SEL" $NUMS
 
 # one pass to learn the isolated element's height, one to shoot it at that height
 GEOM=$(timeout 60 "$CHROME" --headless=new --no-sandbox --disable-gpu "${ISOLATE[@]}" \

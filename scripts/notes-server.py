@@ -21,6 +21,13 @@ API (same origin, no CORS needed):
   POST /api/notes/close            -> {"ok": true}   body: {id, reply?}
   POST /api/notes/reopen           -> {"ok": true}   body: {id}
 Anything else is served from _site/, so the page and the queue live on one port.
+
+THE CLIENT COMES FROM HERE TOO.  `js/notes.js` is served out of the REPO, not out of _site, and its
+script tag is injected into every page this server hands over.  So the widget exists exactly when
+this server is running and at no other time: the built site carries no reference to it, `_config.yml`
+keeps the file itself out of _site, and nothing has to be remembered or stripped before publishing.
+It used to be a tag in index.html that "did nothing in production" — which still meant shipping the
+script and firing a 404 at /api/notes on every visitor's page load.
 """
 import http.server, json, os, sqlite3, sys, urllib.parse
 from datetime import datetime, timezone
@@ -28,6 +35,7 @@ from datetime import datetime, timezone
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(ROOT, '_site')
 DB   = os.path.join(ROOT, 'notes.db')
+NOTES_TAG = b'<script src="/js/notes.js"></script>\n'
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS issues (
@@ -35,7 +43,7 @@ CREATE TABLE IF NOT EXISTS issues (
   created_at TEXT NOT NULL,
   author     TEXT NOT NULL DEFAULT 'paul',
   status     TEXT NOT NULL DEFAULT 'open',   -- open | done
-  page       TEXT,                           -- /listener.html
+  page       TEXT,                           -- /index.html
   section    TEXT,                           -- p193, station-book, …
   anchor     TEXT,                           -- the word that was tapped
   context    TEXT,                           -- ~160 chars around it, so it can be found again
@@ -96,7 +104,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             # mtime of the built page, so a reader can be told the prose under them has changed
             # rather than having to scroll to the top and pull down on the off-chance.
             try:
-                p = os.path.join(SITE, (urllib.parse.parse_qs(u.query).get('page') or ['/listener.html'])[0].lstrip('/'))
+                p = os.path.join(SITE, (urllib.parse.parse_qs(u.query).get('page') or ['/index.html'])[0].lstrip('/'))
                 return self._json({'v': int(os.path.getmtime(p))})
             except Exception:
                 return self._json({'v': 0})
@@ -116,7 +124,44 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             with db() as c:
                 rows = [dict(r) for r in c.execute(sql, args)]
             return self._json({'notes': rows})
+
+        # the note-taking client, out of the repo — it is deliberately not in the built site
+        if u.path == '/js/notes.js':
+            return self._file(os.path.join(ROOT, 'js', 'notes.js'), 'application/javascript')
+
+        # every page gets the client injected on the way out
+        page = self._local_html(u.path)
+        if page:
+            return self._file(page, 'text/html; charset=utf-8', inject=NOTES_TAG)
+
         return super().do_GET()
+
+    # --- static, with the widget spliced in ---------------------------------
+    def _local_html(self, path):
+        """the file _site would serve for this URL, if it is an HTML page."""
+        p = os.path.join(SITE, urllib.parse.unquote(path).lstrip('/'))
+        if os.path.isdir(p):
+            p = os.path.join(p, 'index.html')
+        return p if p.endswith('.html') and os.path.isfile(p) else None
+
+    def _file(self, path, ctype, inject=None):
+        try:
+            with open(path, 'rb') as f:
+                body = f.read()
+        except OSError:
+            return self.send_error(404)
+        if inject:
+            body = (body.replace(b'</body>', inject + b'</body>', 1)
+                    if b'</body>' in body else body + inject)
+        self.send_response(200)
+        self.send_header('Content-Type', ctype)
+        self.send_header('Content-Length', str(len(body)))
+        # NO CACHING, for the same reason this server exists: the page under the reader is being
+        # edited while they look at it, and a phone holding yesterday's copy has cost hours before.
+        self.send_header('Cache-Control', 'no-store, must-revalidate')
+        self.end_headers()
+        if self.command != 'HEAD':
+            self.wfile.write(body)
 
     def do_POST(self):
         u = urllib.parse.urlparse(self.path)
@@ -176,9 +221,9 @@ if __name__ == '__main__':
         sys.exit('no _site/ — run scripts/build.sh (or jekyll build) first')
     srv = http.server.ThreadingHTTPServer(('0.0.0.0', port), Handler)
     ip = lan_ip()
-    print('  here    http://127.0.0.1:%d/listener.html' % port)
+    print('  here    http://127.0.0.1:%d/index.html' % port)
     if ip:
-        print('  phone   http://%s:%d/listener.html' % (ip, port))
+        print('  phone   http://%s:%d/index.html' % (ip, port))
     print('  db      %s' % DB)
     print('double-tap any word to leave a note.  Ctrl-C to stop.')
     try:

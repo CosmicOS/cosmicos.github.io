@@ -1,30 +1,25 @@
-.top li a {
-  margin-left: 0px;
-  margin-right: 0px;
-  margin-bottom: 2px;
-  margin-top: 0px;
-}
-
 div.content {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────────
-   NARROW SCREENS, 08-01. The header row — logo plus message/console/github —
-   is a line of inline-blocks that cannot wrap, so its min-content width (~500px)
-   became a floor for the WHOLE SITE. Below that the body simply overflowed and
-   every page was clipped: on a phone the listener's prose ran off the right edge
-   mid-word and the exhibits could only be seen by dragging sideways. Nothing was
-   wrong with the pages; they were being asked to live in a 500px box on a 390px
-   screen. Let the header wrap and the floor goes away.
+   NARROW SCREENS, 08-01, and what is left of it 08-09. The old header row — logo
+   plus message/console/github, a line of inline-blocks that could not wrap — had
+   a min-content width of ~500px, and that became a floor for the WHOLE SITE:
+   below it the body simply overflowed and every page was clipped, so on a phone
+   the listener's prose ran off the right edge mid-word. The rules that taught
+   that row to wrap are gone with the row itself; the top bar is a flex line that
+   wraps by construction. The overflow guard below stays — it is what stops the
+   NEXT wide thing setting a floor, and it earned its keep once already.
    ────────────────────────────────────────────────────────────────────────────── */
-.top { padding: 4px 0 2px; }
-.top a.logo { margin: 2px; padding: 3px 6px; font-size: 86%; }
-.logo img { height: 40px; }
-.top .menu-holder { display: block; }        /* the links drop below the logo */
-.top ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
-.top li { display: inline-block; }
-.top li a { padding: 3px 9px; font-size: 92%; }
-
-/* nothing on a page may set a floor wider than the screen */
-html, body { max-width: 100%; overflow-x: hidden; }
+/* nothing on a page may set a floor wider than the screen.
+   CLIP, NOT HIDDEN — and the two lines are a pair, not a leftover. `overflow-x: hidden` makes the
+   element a SCROLL CONTAINER, and `position: sticky` inside a scroll container sticks to that
+   container rather than to the viewport. On `html`/`body` that means nothing on any page can ever
+   stick on a phone: the listener's top bar rendered, scrolled up with the prose, and never pinned,
+   while the same page was fine at desk width where this file does not load. `clip` does the same
+   containment and creates no scroll container, which is exactly what was wanted here — the intent
+   was always "do not let a wide child stretch the page", never "make the page scrollable sideways".
+   Both declarations stay: a browser too old for `clip` drops that line and keeps the old behavior,
+   which is worse than sticky but better than the sideways-dragging this rule was written to fix. */
+html, body { max-width: 100%; overflow-x: hidden; overflow-x: clip; }
 img, svg, table, pre { max-width: 100%; }

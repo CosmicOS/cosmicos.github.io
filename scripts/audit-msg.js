@@ -16,7 +16,7 @@
  *   data-msg="wire"      the tones ARE a transmitted statement. Checked against _data/msg.json.
  *   data-msg="fragment"  the tones are a sub-expression of one. Checked as a substring of some code.
  *   data-msg="hers"      a keeper's own constructed example — a line she wrote and ran herself. Then it
- *                        must be shown ONLY in her hand: `data-modes="hand"`.
+ *                        must be shown ONLY in her hand: `data-at="hand"`.
  *
  * On that last rule, because the obvious version of it is wrong. The first draft said a `hers` block
  * must carry no `data-tones` — but `prose.js build` derives tones from the parse and stamps them into
@@ -63,8 +63,8 @@ for (const file of fs.readdirSync(path.join(ROOT, '_includes/listener')).filter(
         console.log(`  ${where}  data-msg="wire" but these tones are not a statement`); bad++;
       } else if (kind === 'fragment' && !(tones && blob.includes(tones))) {
         console.log(`  ${where}  data-msg="fragment" but these tones are in no statement`); bad++;
-      } else if (kind === 'hers' && (tag.match(/data-modes="([^"]*)"/) || [])[1] !== 'hand') {
-        console.log(`  ${where}  data-msg="hers" must be data-modes="hand" — raw and glyph are the wire's views`); bad++;
+      } else if (kind === 'hers' && (tag.match(/data-at="([^"]*)"/) || [])[1] !== 'hand') {
+        console.log(`  ${where}  data-msg="hers" must be data-at="hand" — figures and tones are the wire's rungs`); bad++;
       } else if (!['wire', 'fragment', 'hers'].includes(kind)) {
         console.log(`  ${where}  data-msg="${kind}" is not a kind`); bad++;
       }

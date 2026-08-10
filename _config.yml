@@ -10,4 +10,7 @@ kramdown:
   syntax_highlighter_opts:
     default_lang: haskell
 
-exclude: [scripts, plans, Gemfile, Gemfile.lock]
+# js/notes.js is the LOCAL note-taking widget and is deliberately not published: scripts/notes-server.py
+# serves it from the repo and injects its script tag into the pages it hands over, so the built site
+# has no reference to it and no 404 to fire.
+exclude: [scripts, plans, Gemfile, Gemfile.lock, js/notes.js]

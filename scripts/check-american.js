@@ -13,7 +13,7 @@ const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){
   const p=path.join(d,e.name);
   if(e.isDirectory())walk(p); else if(/\.(md|html)$/.test(e.name))files.push(p);}};
 ['plans','_includes/listener'].forEach(d=>{if(fs.existsSync(d))walk(d)});
-if(fs.existsSync('listener.html'))files.push('listener.html');
+if(fs.existsSync('index.html'))files.push('index.html');
 let bad=0;
 const re=new RegExp('\\b('+BR.join('|')+')\\b','gi');
 for(const f of files){

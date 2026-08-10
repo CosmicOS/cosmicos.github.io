@@ -18,7 +18,7 @@
 'use strict';
 const fs = require('fs'), path = require('path');
 const dir = path.resolve(__dirname, '..', '_includes/listener');
-// document order = the {% include %} order in listener.html
+// document order = the {% include %} order in index.html
 const ORDER = require('./arc-order');
 
 // structural glyphs legitimately hand-typed in prose (notation, not sign-references)

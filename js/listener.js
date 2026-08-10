@@ -56,6 +56,50 @@ function reckonNum(v, barred){
     var s = ''; for (var i = 0; i < code.length; i++) s += TONE[code.charAt(i)] || '?';
     return s;
   }
+  function cupsOf(code) {                    // 1-before-2 = a lone marker outside the cup; 2/3 = cups; else bits
+    var out = [], bits = '';
+    function flush() { if (bits) { var b = ''; for (var j = 0; j < bits.length; j++) b += bits.charAt(j) === '1' ? '▪' : '▫';
+      out.push('<span class="bit">' + b + '</span>'); bits = ''; } }
+    for (var i = 0; i < code.length; i++) { var d = code.charAt(i);
+      if (d === '1' && code.charAt(i + 1) === '2') { flush(); out.push('<span class="bit">▪</span>'); }
+      else if (d === '2') { flush(); out.push('<span class="cup">⟅</span>'); }
+      else if (d === '3') { flush(); out.push('<span class="cup">⟆</span>'); }
+      else bits += d;
+    }
+    flush(); return out.join(' ');
+  }
+  /* ATOMS: the same marks as `cups`, but held in the groups they are actually in. `cups` puts one
+     space between EVERY token, so `▫⟅▪⟆` — one atom, the number one — reads as four loose marks, and
+     a row of unary units becomes a field of floating cups with nothing to tell a tagged one from a
+     bare one. That is right for the founder's first pages, where she has cut the tones into cups and
+     bits and has NOT yet found that a mark and the cup behind it go together. It is wrong from §207
+     on, and it is wrong wherever the point of the exhibit is which cups wear a mark. So: a tag sticks
+     to its cup and its contents; a space falls only between siblings; a BARE cup keeps its space on
+     both sides, which is what makes it visible. Matches how the hand rows have always been written. */
+  function atomsOf(code) {
+    var out = '', tagged = [], i = 0;
+    function put(sep, s) { out += (out && sep ? ' ' : '') + s; }
+    while (i < code.length) {
+      if (code.slice(i) === '2233') { put(true, '<span class="cup">⟅⟅⟆⟆</span>'); break; }
+      var d = code.charAt(i);
+      if ((d === '0' || d === '1') && code.charAt(i + 1) === '2') {         // type tag, then its cup
+        put(true, '<span class="bit">' + (d === '1' ? '▪' : '▫') + '</span>' +
+                  '<span class="cup">⟅</span>');
+        tagged.push(true); i += 2;
+      } else if (d === '2') {                                              // a cup wearing nothing
+        put(true, '<span class="cup">⟅</span>'); tagged.push(false); i++;
+      } else if (d === '3') {
+        put(!tagged.pop(), '<span class="cup">⟆</span>'); i++;
+      } else {                                                            // the numeral in a cup
+        var bits = '';
+        while (i < code.length && (code.charAt(i) === '0' || code.charAt(i) === '1') &&
+               code.charAt(i + 1) !== '2') { bits += code.charAt(i) === '1' ? '▪' : '▫'; i++; }
+        if (!bits) { i++; continue; }                                     // guard: never spin
+        put(false, '<span class="bit">' + bits + '</span>');
+      }
+    }
+    return out;
+  }
   function num(bits){                          // a number -> packed bits (place-value)
     return bits.map(function(b){ return '<span class="bit">'+(b==='1'?'▪':'▫')+'</span>'; }).join('');
   }
@@ -107,7 +151,7 @@ function reckonNum(v, barred){
      transcription, but it needs place value, and Ren does not crack place value until §267. So
      before that a sign is written the only way it can be: as its run. After it the glyphs are
      available for every sign, meaning known or not, and the runs stop.
-     POSITIONAL, keyed to `[data-numerals]`, like every other era switch in this file — NOT a pass
+     POSITIONAL, keyed to `data-cut="numerals"`, like every other cut in this file — NOT a pass
      number. It was `NUMERALS_FROM = 267`, which turned the glyphs on at the TOP of §267, four
      exhibits before she works out that she can write one: the reader met `⠉` on a row while the
      entry was still spelling out why a mark has a number at all. Same defect the founder's merged
@@ -132,9 +176,30 @@ function reckonNum(v, barred){
      the cups out as they came. The renderer used to start already holding her shorthand, so a generated
      row placed anywhere in §189-§207 came out in a notation she had not invented yet, and the only way
      to draw those pages was hand-authored HTML — which is the one kind of row nothing checks against the
-     wire. `[data-tallied]` on her §214 sentence turns it on where she cuts it. */
+     wire. `data-cut="tally"` on her §214 sentence turns it on where she cuts it. */
   var talliedOn = false;
   var splitOn = false, nilOn = false, MERGED = '<span class="nil w">tally</span>';
+  /* ══ THE CUTS — `data-cut` ═══════════════════════════════════════════════════════════════════════
+     `data-at` above asks WHICH RUNG OF THE LADDER a row is drawn at, and the answer is editorial.
+     This asks the other question, and the answer is not editorial at all: WHAT HAS BEEN CUT BY HERE?
+     A keeper cuts a shorthand on a particular night, and from that point the page has it and before
+     it the page does not. So a cut is POSITIONAL — the attribute rides on the very span where she
+     says the words, never on a pass number — and it is one-way. `data-at` may reach back down the
+     ladder freely; nothing may reach forward past a cut.
+     Five attributes, one use each, all this shape, until 08-09. Listed in the order they happen. */
+  var CUTS = {
+    tally:    function(){ talliedOn  = true; },   // §214 Maren cuts ●/◦ and the word `tally`
+    join:     function(){ joinOn     = true; },   // §221 and the join standing for a name-cup's wrapper
+    split:    function(){ splitOn    = true; },   // §232 Ren takes the founder's merged pair apart
+    nil:      function(){ nilOn      = true; },   // §246 and cuts a mark for the half that stayed away
+    numerals: function(){ numeralsOn = true; }    // §267 and can write a sign's number as one glyph
+  };
+  /* THE JOIN IS A NOTATION LIKE ANY OTHER, SO IT STARTS OFF. Until Maren cuts it at §221 a
+     compound goes down the way the wire sends it, a name-cup shut round its parts. The mark that
+     replaces that wrapper does not exist before she says so, and a page that draws it earlier is
+     showing the reader a mark nobody introduced. POSITIONAL, `data-cut="join"`, on the rung where
+     she first writes the short form — the same placement as `numerals` and for the same reason. */
+  var joinOn = false;
   // a sign's id, off its braille codepoint. The map is in scripts/scrawl.js.
   function idOf(name){
     var g = SCRAWL[name]; if (!g) return null;
@@ -170,15 +235,41 @@ function reckonNum(v, barred){
     if (!SCRAWL[name]) return '<span class="gl" style="opacity:.4">▩</span>';
     var g = '<span class="scrawl sign-fb">'+SCRAWL[name]+'</span>', say = signGloss(name);
     return say ? gloss(g, say) : g; }
+  /* `data-unworded` on a row — DRAW THIS ONE WITHOUT HER WORDS. Same distinction `.msg` already
+     draws between `hand` and `glyph` (her marks vs the message's own signs), narrowed to a single
+     row and stopping short of `allFigures`, which forces scrawl and so says nothing before §267.
+     A keeper can write any form she has met, so which form a row takes is an EDITORIAL choice about
+     what that row is for — not an event in her night. §228 lays three lists side by side to compare
+     them: `tirrel` on the first line and the runs on the other two makes three kin look like two
+     kin and a stranger, and no sentence can repair a row that draws the comparison wrong. */
+  var unworded = false;
   function mark(name){                             // her token once introduced; else the sign in spider scrawl
     if (allFigures) return scrawlSpan(name);                                         // plain-scrawl view: every sign as its scrawl
-    if (COINED[name] !== undefined) { var t=COINED[name];                                 // she has coined it (a `.coin` span above, in reading order) -> her token
+    if (!unworded && COINED[name] !== undefined) { var t=COINED[name];                    // she has coined it (a `.coin` span above, in reading order) -> her token
       /* her word carries the sign's NUMBER too, so a reader can tie the word she reads back to the
          figure she met before it was named — the join the book is otherwise asking them to hold. */
       var tok = '<span class="gl'+(/[a-z]/i.test(t)?' w':'')+'">'+t+'</span>', say = signGloss(name);
       return say ? gloss(tok, say) : tok; }
-    if (name.indexOf(':')>0)                                                             // an uncoined COMPOUND — operation OR name — render its parts as a pill w/ · joins,
-      return '<span class="fam">'+name.split(':').map(function(p){ return /^-?\d+$/.test(p)?bitsOf(p):mark(p); }).join('<span class="fj">·</span>')+'</span>';  //   so the part-count is legible (no opaque glyph-run)
+    /* AN UNCOINED COMPOUND. On the wire it is a name-cup shut round its parts — `▪⟅ ▪⟅a⟆ ▪⟅b⟆ ⟆`,
+       flat, however many parts there are. One mark between the parts stands for the whole of that
+       wrapper: the tag in front and both halves of the cup, three marks for one.
+       It reads unambiguously at any number of parts because the SPACING already carries the
+       distinction — separate signs are set apart by a real word-space, a compound's parts are tight
+       against their join — and because nothing in the message ever nests a compound inside a
+       compound (checked: zero statements open an atom three deep).
+       The mark was `·` until 08-09, which was wrong: the station uses `·` as an ordinary field
+       separator in Ren's ledger and every taking-up head, so it was not this notation's at all.
+       `‿` is used nowhere else in the book. Cut on the page at §221, before and after — and until
+       that cut (`joinOn`) the wrapper is written out in full, because that is what she has. */
+    if (name.indexOf(':')>0) {
+      var parts = name.split(':').map(function(p){ return /^-?\d+$/.test(p)?bitsOf(p):mark(p); });
+      if (!joinOn)
+        return '<span class="fam">'
+             + '<span class="bit">▪</span><span class="cup o">⟅</span> '
+             + parts.join(' ')
+             + ' <span class="cup c">⟆</span></span>';
+      return '<span class="fam">' + parts.join('<span class="fj">‿</span>') + '</span>';
+    }
     return scrawlSpan(name);                                                             // else: the sign in real spider scrawl (the base)
   }
   /* A maker's slot is one name (`? x`) or a cup of them (`lambda (x y)`, and typed as `(x number)`),
@@ -316,15 +407,81 @@ function reckonNum(v, barred){
     if (col + bare(flat).length <= WIDTH) return flat;   // it fits as it stands: leave it alone
     return dress(build(true));                           // it does not: open it at the joints
   }
-  var MODES = {
-    raw:   function(el){ return tones(el.getAttribute('data-code') || el.getAttribute('data-tones')); },
-    // the message in its OWN signs: render the parse with every sign forced to its figure — same source & renderer as
-    // hand mode, so a sign draws identically in both (hand just swaps CRACKED signs for her marks). NOT the octo `spider`
-    // (that's a byte-level transliteration whose figures disagreed with the per-sign ones).
-    glyph: function(el){ allFigures = true;
-      var h = form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), 'bare'); allFigures = false; return h; },
-    hand:  function(el){ return form(wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')), 'bare'); }
+  /* ══ THE LADDER OF REPRESENTATIONS — `data-at` ══════════════════════════════════════════════════
+     One question, asked of every exhibit: AT WHAT LEVEL is this statement drawn? It used to be asked
+     in three vocabularies that could not be compared — `data-modes="hand,glyph,raw"` on a `.msg`,
+     `data-view="tones|cups|atoms"` on a `.frag` (a separate renderer at the foot of this file, with
+     its own copy of the tone map), and `data-as="tones"` plus a flag on a `.row`. Three names for
+     the pitches alone. One attribute now, one ordered set of rungs, one implementation; a `.row` and
+     a `.frag` take one rung, a `.msg` takes a comma list and stacks them labeled.
+
+         tones     the four pitches, and nothing else — all the founder has on her first nights
+         cups      the pitches read as cups and bits, every token stood apart (§193's state)
+         atoms     the same marks, a tag stuck to its cup (§207 on)
+         figures   the parse, every sign forced to its own figure — the message in its OWN signs
+         unworded  the parse in the page's notation, figures where she has words
+         hand      the parse in the page's notation, her words and all
+
+     THE BREAK IS BETWEEN `atoms` AND `figures`, and it is not a matter of degree: the first three
+     rungs need only the code, and the last three need the PARSE. A statement can be drawn in cups
+     before anybody has worked out what its parts are; it cannot be drawn in figures until they have.
+     That is the founder's whole first season, and it is why `.frag` could ever have been a separate
+     renderer in the first place.
+
+     WHICH RUNG IS AN EDITORIAL CHOICE, NEVER AN EVENT IN A KEEPER'S NIGHT. She can write any form
+     she has met, so the question a rung answers is what this exhibit is FOR — and no sentence can
+     repair a row that draws the comparison wrong. (§228 lays three lists side by side to compare
+     them; `hand` drew her word on the first line and the runs on the other two, so three kin read as
+     two kin and a stranger. `unworded` on that one row is the whole fix.)
+     What a rung may NOT do is draw a mark ahead of its cutting — that is the era switches' job, and
+     they stay positional. A rung reaches back down the ladder, never up it. */
+  function parseOf(el){ return wireOf(el).parse || JSON.parse(el.getAttribute('data-parse')); }
+  /* `data-span="a-b"` — DRAW ONLY PART OF THE STATEMENT, the part between those two places in the
+     wire. Only the three code rungs take it, and that is not a limitation to work around: a keeper
+     holding up the front eight marks of a line is pointing at a stretch of the STREAM, which is a
+     thing that exists before anybody has worked out where the parts of it begin and end. There is no
+     such thing as half a parse.
+     The offsets are into the CODE, which is the wire itself, so they cannot drift the way a count of
+     drawn marks would. And one code place draws exactly one mark at all three rungs, so the length of
+     a span is the number of marks it puts on the page — which is what makes it checkable.
+     This is the last thing that kept a row hand-authored for showing a FRAGMENT, and hand HTML is
+     the one kind of row nothing checks against the wire (§549's fabricated `▮` lived in one for
+     months). `scripts/hand-row-diff.js` searches rung × span and names the attribute to use. */
+  function codeOf(el){
+    var c = el.getAttribute('data-code') || el.getAttribute('data-tones') || '';
+    var m = /^(\d+)-(\d+)$/.exec(el.getAttribute('data-span') || '');
+    return m ? c.slice(+m[1], +m[2]) : c;
+  }
+  var LEVELS = {
+    /* `.tn` is the founder writing pitches down in a ROW; `.tones` is the generated wire-quote look
+       a `.frag`/`.msg` wears. Same characters, one implementation, and which furniture it takes is
+       the caller's business, not the rung's. */
+    tones: function(el){
+      var code = codeOf(el);
+      var cls  = el.classList.contains('row') ? 'tn' : 'tones';
+      /* `data-echo` — mark every place a given run of tones stands inside this one. The run is a
+         CODE, not typed marks, so the band is derived and cannot claim a recurrence that isn't
+         there: §622 shows the message's first line standing whole at the end of a line sent four
+         hundred passes later, and asking a reader to count sixty-seven tones is not showing it. */
+      var echo = el.getAttribute('data-echo');
+      if (echo && code.indexOf(echo) >= 0)
+        return '<span class="' + cls + '">'
+             + code.split(echo).map(TONE_RUN).join('<span class="echo">' + TONE_RUN(echo) + '</span>')
+             + '</span>';
+      return tones(code, cls);
+    },
+    cups:  function(el){ return cupsOf(codeOf(el)); },
+    atoms: function(el){ return atomsOf(codeOf(el)); },
+    // NOT the octo `spider` (a byte-level transliteration whose figures disagreed with the per-sign
+    // ones) — the same source and renderer as `hand`, so a sign draws identically in both.
+    figures:  function(el){ allFigures = true;  var h = form(parseOf(el), 'bare', 0); allFigures = false; return h; },
+    unworded: function(el){ unworded   = true;  var h = form(parseOf(el), 'bare', 0); unworded   = false; return h; },
+    hand:     function(el){ return form(parseOf(el), 'bare', 0); }
   };
+  function drawAt(el, dflt){
+    var at = el.getAttribute('data-at') || dflt;
+    return LEVELS[at] ? LEVELS[at](el) : '';
+  }
   function renderVal(v){                       // what a fragment YIELDS (from Evaluate), in her marks
     // through mark(), like every other sign in the arc: her coined word once she has one (holds/fails, §306),
     // the real scrawl before that. NEVER a shape of our own — the widget teaches the word one line above.
@@ -335,12 +492,13 @@ function reckonNum(v, barred){
     if (typeof v==='number') return numAtomValue(v);
     return '';
   }
-  var LABEL = { raw:'as it comes', glyph:'in plain figures', hand:'as I set it down' };
-  function renderMsg(el){                       // a .msg widget: lay every way-of-showing out at once, labeled
-    var modes = (el.getAttribute('data-modes')||'hand,glyph,raw').split(',');
-    modes.forEach(function(mode){
+  var LEVEL_LABEL = { tones:'as it comes', cups:'in cups', atoms:'in atoms',
+                      figures:'in plain figures', unworded:'in its own signs', hand:'as I set it down' };
+  function renderMsg(el){                       // a .msg widget: several rungs of the ladder at once, labeled
+    (el.getAttribute('data-at')||'hand,figures,tones').split(',').forEach(function(at){
       var row = document.createElement('div'); row.className = 'msg-line';
-      row.innerHTML = '<span class="lbl">'+(LABEL[mode]||mode)+'</span><span class="msg-view">'+MODES[mode](el)+'</span>';
+      row.innerHTML = '<span class="lbl">'+(LEVEL_LABEL[at]||at)+'</span>'
+                    + '<span class="msg-view">'+(LEVELS[at] ? LEVELS[at](el) : '')+'</span>';
       el.appendChild(row);
     });
     var val = el.getAttribute('data-value');
@@ -350,47 +508,27 @@ function reckonNum(v, barred){
       el.appendChild(vs);
     }
   }
-  function renderRow(el){                        // a generated <div class="row" data-parse|data-code> -> her hand, one line
-    /* `data-as="tones"` — the statement as the four pitches and nothing else, which is all the founder
-       has on her first nights: she can hear it and write it down and cannot parse a mark of it. It was
-       the only way left that a row still had to be hand-authored HTML, and the tone string is exactly
-       what `MODES.raw` already draws for a `.msg`. Now it comes out of msg.json like every other row,
-       so it cannot drift from the statement it claims. */
-    if (el.getAttribute('data-as') === 'tones') {
-      var lb = el.querySelector(':scope > .lbl');
-      var code = el.getAttribute('data-code');
-      /* `data-echo` — mark every place a given run of tones stands inside this one. The run is a
-         CODE, not typed marks, so the band is derived and cannot claim a recurrence that isn't
-         there: §595 shows the message's first line standing whole at the end of a line sent four
-         hundred passes later, and asking a reader to count sixty-seven tones is not showing it. */
-      var echo = el.getAttribute('data-echo'), body;
-      if (echo && code.indexOf(echo) >= 0) {
-        body = code.split(echo).map(function(part){ return TONE_RUN(part); })
-                   .join('<span class="echo">' + TONE_RUN(echo) + '</span>');
-        body = '<span class="tn">' + body + '</span>';
-      } else {
-        body = tones(code, 'tn');
-      }
-      el.innerHTML = (lb ? '<span class="fig">' : '') + body + (lb ? '</span>' : '');
-      if (lb) el.insertBefore(lb, el.firstChild);
-      return;
+  function renderRow(el){                        // a generated <div class="row" data-parse|data-code> -> one line, at one rung
+    /* The parse rungs need a parse and the code rungs do not — a row drawn in tones is the statement
+       as the founder has it on her first nights, heard and written down and not parsed at all. That
+       used to be the last reason a row still had to be hand-authored HTML, which is the one kind of
+       row nothing checks against the wire. */
+    var at = el.getAttribute('data-at') || 'hand';
+    if (!LEVELS[at]) return;
+    if (at === 'hand' || at === 'figures' || at === 'unworded') {
+      if (!el.getAttribute('data-parse') && !wireOf(el).parse) return;
+      allFigures = false;
+      foldMode = el.hasAttribute('data-fold');   // an ON SWITCH; layout decides where, by width (see `form`)
     }
-    var p = el.getAttribute('data-parse');
-    var parse = p ? JSON.parse(p) : (wireOf(el).parse || null);
-    if (!parse) return;
-    allFigures = false;
-    foldMode = el.hasAttribute('data-fold');   // an ON SWITCH; layout decides where, by width (see `form`)
-    /* KEEP AN EXHIBIT'S LABEL. The walk below replaces every child, so a `<span class="lbl">` written
-       into the row would vanish — which is why labelled rows used to have to be hand-authored HTML,
-       and hand HTML is the one kind of row nothing checks against the wire. Lift it out, redraw, put
-       it back. Now a labelled row can be a generated `data-code` row like any other. */
-    var lbl = el.querySelector(':scope > .lbl');
-    /* A LABELLED ROW MUST BE EXACTLY TWO CHILDREN. `.rows.labeled` is a two-column grid and sets
+    /* KEEP AN EXHIBIT'S LABEL. Redrawing replaces every child, so a `<span class="lbl">` written into
+       the row would vanish — which is why labelled rows used to have to be hand-authored too. Lift it
+       out, redraw, put it back.
+       A LABELLED ROW MUST BE EXACTLY TWO CHILDREN. `.rows.labeled` is a two-column grid and sets
        `display: contents` on the row, so every child of the row becomes a grid cell — a hand row was
        always `.lbl` + `.fig`, two cells. Dropping the drawn spans in loose gives N cells and the line
        stacks vertically down the two columns. Wrap them in the same `.fig` the hand rows used. */
-    el.innerHTML = lbl ? '<span class="fig">' + form(parse, 'bare', 0) + '</span>'
-                       : form(parse, 'bare', 0);
+    var lbl = el.querySelector(':scope > .lbl'), body = LEVELS[at](el);
+    el.innerHTML = lbl ? '<span class="fig">' + body + '</span>' : body;
     if (lbl) el.insertBefore(lbl, el.firstChild);
     foldMode = false;
   }
@@ -401,14 +539,11 @@ function reckonNum(v, barred){
      raw scrawl. The token itself is the span's own visible glyph — no duplication, no pass numbers.
      `.sg` prose marks (is/int) and `.msg`/`.row` exhibits all render through the same COINED map. */
   Array.prototype.forEach.call(
-    document.querySelectorAll('.coin[data-sign], [data-tallied], [data-split], [data-nil], [data-numerals], .msg, .row[data-parse], .row[data-code], .sg[data-s], .num[data-n], .rk[data-n]'),
+    document.querySelectorAll('.coin[data-sign], [data-cut], .msg, .row[data-parse], .row[data-code], .frag[data-code], .sg[data-s], .num[data-n], .rk[data-n]'),
     function(el){
-      // era flags do NOT return: a marker rides on the very span that does the thing — §232's on the
+      // A CUT does NOT return: the marker rides on the very span that does the thing — §232's on the
       // span that coins `tal`, §267's on the rung that first shows a sign written as one glyph.
-      if (el.hasAttribute('data-tallied'))  talliedOn  = true;   // §214: Maren cuts ●/◦ and the word `tally`, here
-      if (el.hasAttribute('data-split'))    splitOn    = true;   // §232: Ren takes the founder's pair apart, here
-      if (el.hasAttribute('data-nil'))      nilOn      = true;   // §246: and cuts a mark for the half that stayed away
-      if (el.hasAttribute('data-numerals')) numeralsOn = true;   // §267: and can write a sign's number as one glyph
+      var cut = el.getAttribute('data-cut'); if (cut && CUTS[cut]) CUTS[cut]();
       if (el.classList.contains('coin')) { COINED[el.getAttribute('data-sign')] = (el.textContent||'').trim(); return; }
       if (el.classList.contains('msg')) { renderMsg(el); return; }
       if (el.classList.contains('sg'))  { allFigures = false; el.innerHTML = mark(el.getAttribute('data-s')); return; }
@@ -416,6 +551,12 @@ function reckonNum(v, barred){
          says without the page telling them anything the wire did not. */
       if (el.classList.contains('rk'))  { el.innerHTML = reckonNum(el.getAttribute('data-n'), !el.classList.contains('bare')); glossify(el, el.getAttribute('data-n')); return; }
       if (el.classList.contains('num')) { el.innerHTML = reckonNum(el.getAttribute('data-n'), el.classList.contains('barred')); glossify(el, el.getAttribute('data-n')); return; }
+      /* A `.frag` is a wire quote a keeper is holding up to be READ OFF, so it keeps whatever the
+         prose put in it (a `.lbl`, a caption) and the marks are APPENDED. That is the only thing
+         separating it from a `.row`, which is redrawn whole. It joins this walk now rather than
+         running in a pass of its own, so a frag can take a parse rung like anything else — and so
+         there is one tone map in this file instead of two. */
+      if (el.classList.contains('frag')) { var h = drawAt(el, null); if (h) el.insertAdjacentHTML('beforeend', h); return; }
       if (el.hasAttribute('data-parse') || el.hasAttribute('data-code')) renderRow(el);
     }
   );
@@ -659,7 +800,7 @@ function pinWidth(btn, labels) {
     var el = current(), id = el ? el.id : null;
     if (id === at) return;
     /* NOTHING ABOVE THE LINE YET. Clear the anchor only when the reader is genuinely at the top of
-       the page — never merely because no entry qualifies. Someone arriving on `…/listener.html#p595`
+       the page — never merely because no entry qualifies. Someone arriving on `…/#p595`
        is at the top for the instant before the browser jumps, and clearing there would throw away
        the very link they followed. */
     if (id === null && window.pageYOffset > 4) return;
@@ -730,147 +871,90 @@ function pinWidth(btn, labels) {
   playing = false; toggle.textContent = 'play';   // start paused: step-driven (reading/tracing), not auto-running
 })();
 
-/* wire quotes (§193 etc.): render <div class="frag" data-code="…" data-view="tones|cups"> to
-   REAL characters at load — copy-pasteable, source stays clean. data-code is the literal wire. */
-(function () {
-  var TONE = { '0': '˩', '1': '˨', '2': '˦', '3': '˥' };
-  function tones(code) {
-    var s = ''; for (var i = 0; i < code.length; i++) s += TONE[code.charAt(i)] || '?';
-    return '<span class="tones">' + s + '</span>';
+/* THE BOOK HAS NO ARABIC NUMERALS — the sweep that draws every figure in the keepers' own.
+   (The wire-quote renderer that used to wrap this lived here with its own copy of the tone map and
+   its own names for the pitches; it is folded into the one ladder above, `data-at`.) */
+/* THE BOOK HAS NO ARABIC NUMERALS. Every figure in it — a pass in a stamp, a pass cited in a
+   sentence, a count in one of Ren's tally rows — goes down in the keepers' own numerals, which are
+   older than the post and are simply how these people write a number. Arabic digits in the source
+   are an editing convenience (they grep, they sort, they match the `#pNNN` anchors); this pass is
+   where they stop being the reader's problem.
+
+   WHY HERE AND NOT IN `_prose`: a scrawl numeral typed into the prose is a fact to keep true by
+   hand, it cannot be searched, and it puts the anchor and its text out of step the day an entry
+   moves. The source stays plain, so adding an entry stays one line.
+
+   Two jobs, because the same sweep may as well do both:
+     - a three-figure number WITH an entry on the page becomes a quiet link to it. The book cross-
+       references constantly ("at 297", "since 239") and by the late watches sends a reader four
+       hundred passes back. The anchor is CHECKED first, so a reference to a pass that has no entry
+       of its own (a dispatch, a margin note) stays plain rather than becoming a dead jump.
+     - everything else becomes a plain numeral.
+   Linking is confined to prose hosts. A stamp must not link, or every entry heading becomes a
+   link to itself.
+
+   READING IT BACK. Both kinds carry the figure as a `title`, so hovering says it in the reader's
+   own numerals. Touch has no hover, so a plain numeral also toggles `.showing` on tap; a link
+   doesn't need it, since following it is the better answer to "which pass is this".
+
+   TEXT NODES ONLY, collected before any are replaced — never an attribute, and never inside a
+   rendered exhibit, where a digit would belong to the message rather than to a keeper. */
+(function keeperNumerals(){
+  /* THE RULE IS STATED AS AN EXCLUSION, ON PURPOSE. Listing the places a number may appear means
+     every new page-form — a letter, a board, a ledger somebody rules in a later watch — quietly
+     keeps its arabic until somebody notices. (That is how §621's margin note kept four.) So:
+     everything in the diary, EXCEPT what the message renderer drew, where a digit would belong to
+     the wire and not to a keeper. A `.lbl` is authored prose even though it sits inside a drawn
+     exhibit, so it comes back in. */
+  /* DRAWN = carries wire data. Keyed on the attribute rather than on `.row`, because that is what
+     makes a row the wire's — it is what build-frags checks too, so the gate and the renderer agree
+     about which rows came from the message. A hand row has no such attribute and is swept like any
+     other writing: it is a keeper drawing a line of the wire in her own hand, figures and all. */
+  var DRAWN   = '[data-code], [data-parse], .msg, .frag';
+  var NO_LINK = '.stamp, .tu-head';    // a heading must not become a link to its own entry
+  var root = document.querySelector('.diary');
+  if (!root) return;
+
+  var ids = {};
+  Array.prototype.forEach.call(document.querySelectorAll('[id]'), function(el){
+    var m = /^p(\d+)$/.exec(el.id); if (m) ids[m[1]] = true;
+  });
+
+  var seen = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
+  while ((n = w.nextNode())) {
+    if (!/\d/.test(n.nodeValue)) continue;
+    var host = n.parentElement; if (!host) continue;
+    if (host.closest(DRAWN) && !host.closest('.lbl')) continue;
+    seen.push([n, !host.closest(NO_LINK)]);
   }
-  function cups(code) {                      // 1-before-2 = a lone marker outside the cup; 2/3 = cups; else bits
-    var out = [], bits = '';
-    function flush() { if (bits) { var b = ''; for (var j = 0; j < bits.length; j++) b += bits.charAt(j) === '1' ? '▪' : '▫';
-      out.push('<span class="bit">' + b + '</span>'); bits = ''; } }
-    for (var i = 0; i < code.length; i++) { var d = code.charAt(i);
-      if (d === '1' && code.charAt(i + 1) === '2') { flush(); out.push('<span class="bit">▪</span>'); }
-      else if (d === '2') { flush(); out.push('<span class="cup">⟅</span>'); }
-      else if (d === '3') { flush(); out.push('<span class="cup">⟆</span>'); }
-      else bits += d;
-    }
-    flush(); return out.join(' ');
-  }
-  /* ATOMS: the same marks as `cups`, but held in the groups they are actually in. `cups` puts one
-     space between EVERY token, so `▫⟅▪⟆` — one atom, the number one — reads as four loose marks, and
-     a row of unary units becomes a field of floating cups with nothing to tell a tagged one from a
-     bare one. That is right for the founder's first pages, where she has cut the tones into cups and
-     bits and has NOT yet found that a mark and the cup behind it go together. It is wrong from §207
-     on, and it is wrong wherever the point of the exhibit is which cups wear a mark. So: a tag sticks
-     to its cup and its contents; a space falls only between siblings; a BARE cup keeps its space on
-     both sides, which is what makes it visible. Matches how the hand rows have always been written. */
-  function atoms(code) {
-    var out = '', tagged = [], i = 0;
-    function put(sep, s) { out += (out && sep ? ' ' : '') + s; }
-    while (i < code.length) {
-      if (code.slice(i) === '2233') { put(true, '<span class="cup">⟅⟅⟆⟆</span>'); break; }
-      var d = code.charAt(i);
-      if ((d === '0' || d === '1') && code.charAt(i + 1) === '2') {         // type tag, then its cup
-        put(true, '<span class="bit">' + (d === '1' ? '▪' : '▫') + '</span>' +
-                  '<span class="cup">⟅</span>');
-        tagged.push(true); i += 2;
-      } else if (d === '2') {                                              // a cup wearing nothing
-        put(true, '<span class="cup">⟅</span>'); tagged.push(false); i++;
-      } else if (d === '3') {
-        put(!tagged.pop(), '<span class="cup">⟆</span>'); i++;
-      } else {                                                            // the numeral in a cup
-        var bits = '';
-        while (i < code.length && (code.charAt(i) === '0' || code.charAt(i) === '1') &&
-               code.charAt(i + 1) !== '2') { bits += code.charAt(i) === '1' ? '▪' : '▫'; i++; }
-        if (!bits) { i++; continue; }                                     // guard: never spin
-        put(false, '<span class="bit">' + bits + '</span>');
+
+  seen.forEach(function(pair){
+    var node = pair[0], mayLink = pair[1], txt = node.nodeValue;
+    var frag = document.createDocumentFragment(), last = 0, re = /\b(\d+)\b/g, m;
+    while ((m = re.exec(txt))) {
+      frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+      var v = m[1], el;
+      if (mayLink && v.length === 3 && ids[v]) {
+        el = document.createElement('a');
+        el.className = 'passref'; el.href = '#p' + v; el.title = 'pass ' + v;
+      } else {
+        el = document.createElement('span');
+        el.className = 'rknum gloss'; el.title = v; el.setAttribute('data-v', v);
       }
+      el.innerHTML = reckonNum(v, true);                // barred: a figure a keeper writes is a count
+      frag.appendChild(el); last = m.index + m[0].length;
     }
-    return out;
-  }
-  /* THE BOOK HAS NO ARABIC NUMERALS. Every figure in it — a pass in a stamp, a pass cited in a
-     sentence, a count in one of Ren's tally rows — goes down in the keepers' own numerals, which are
-     older than the post and are simply how these people write a number. Arabic digits in the source
-     are an editing convenience (they grep, they sort, they match the `#pNNN` anchors); this pass is
-     where they stop being the reader's problem.
+    if (!last) return;
+    frag.appendChild(document.createTextNode(txt.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  });
 
-     WHY HERE AND NOT IN `_prose`: a scrawl numeral typed into the prose is a fact to keep true by
-     hand, it cannot be searched, and it puts the anchor and its text out of step the day an entry
-     moves. The source stays plain, so adding an entry stays one line.
-
-     Two jobs, because the same sweep may as well do both:
-       - a three-figure number WITH an entry on the page becomes a quiet link to it. The book cross-
-         references constantly ("at 297", "since 239") and by the late watches sends a reader four
-         hundred passes back. The anchor is CHECKED first, so a reference to a pass that has no entry
-         of its own (a dispatch, a margin note) stays plain rather than becoming a dead jump.
-       - everything else becomes a plain numeral.
-     Linking is confined to prose hosts. A stamp must not link, or every entry heading becomes a
-     link to itself.
-
-     READING IT BACK. Both kinds carry the figure as a `title`, so hovering says it in the reader's
-     own numerals. Touch has no hover, so a plain numeral also toggles `.showing` on tap; a link
-     doesn't need it, since following it is the better answer to "which pass is this".
-
-     TEXT NODES ONLY, collected before any are replaced — never an attribute, and never inside a
-     rendered exhibit, where a digit would belong to the message rather than to a keeper. */
-  (function keeperNumerals(){
-    /* THE RULE IS STATED AS AN EXCLUSION, ON PURPOSE. Listing the places a number may appear means
-       every new page-form — a letter, a board, a ledger somebody rules in a later watch — quietly
-       keeps its arabic until somebody notices. (That is how §621's margin note kept four.) So:
-       everything in the diary, EXCEPT what the message renderer drew, where a digit would belong to
-       the wire and not to a keeper. A `.lbl` is authored prose even though it sits inside a drawn
-       exhibit, so it comes back in. */
-    /* DRAWN = carries wire data. Keyed on the attribute rather than on `.row`, because that is what
-       makes a row the wire's — it is what build-frags checks too, so the gate and the renderer agree
-       about which rows came from the message. A hand row has no such attribute and is swept like any
-       other writing: it is a keeper drawing a line of the wire in her own hand, figures and all. */
-    var DRAWN   = '[data-code], [data-parse], .msg, .frag';
-    var NO_LINK = '.stamp, .tu-head';    // a heading must not become a link to its own entry
-    var root = document.querySelector('.diary');
-    if (!root) return;
-
-    var ids = {};
-    Array.prototype.forEach.call(document.querySelectorAll('[id]'), function(el){
-      var m = /^p(\d+)$/.exec(el.id); if (m) ids[m[1]] = true;
+  document.addEventListener('click', function(e){
+    var t = e.target.closest && e.target.closest('.gloss');
+    Array.prototype.forEach.call(document.querySelectorAll('.gloss.showing'), function(el){
+      if (el !== t) el.classList.remove('showing');     // one at a time, so taps don't litter the page
     });
-
-    var seen = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
-    while ((n = w.nextNode())) {
-      if (!/\d/.test(n.nodeValue)) continue;
-      var host = n.parentElement; if (!host) continue;
-      if (host.closest(DRAWN) && !host.closest('.lbl')) continue;
-      seen.push([n, !host.closest(NO_LINK)]);
-    }
-
-    seen.forEach(function(pair){
-      var node = pair[0], mayLink = pair[1], txt = node.nodeValue;
-      var frag = document.createDocumentFragment(), last = 0, re = /\b(\d+)\b/g, m;
-      while ((m = re.exec(txt))) {
-        frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
-        var v = m[1], el;
-        if (mayLink && v.length === 3 && ids[v]) {
-          el = document.createElement('a');
-          el.className = 'passref'; el.href = '#p' + v; el.title = 'pass ' + v;
-        } else {
-          el = document.createElement('span');
-          el.className = 'rknum gloss'; el.title = v; el.setAttribute('data-v', v);
-        }
-        el.innerHTML = reckonNum(v, true);                // barred: a figure a keeper writes is a count
-        frag.appendChild(el); last = m.index + m[0].length;
-      }
-      if (!last) return;
-      frag.appendChild(document.createTextNode(txt.slice(last)));
-      node.parentNode.replaceChild(frag, node);
-    });
-
-    document.addEventListener('click', function(e){
-      var t = e.target.closest && e.target.closest('.gloss');
-      Array.prototype.forEach.call(document.querySelectorAll('.gloss.showing'), function(el){
-        if (el !== t) el.classList.remove('showing');     // one at a time, so taps don't litter the page
-      });
-      if (t) t.classList.toggle('showing');
-    });
-  })();
-
-  Array.prototype.forEach.call(document.querySelectorAll('.frag[data-code]'), function (el) {
-    var code = el.getAttribute('data-code'), view = el.getAttribute('data-view');
-    if (!code || !view) return;
-    var html = view === 'tones' ? tones(code) : view === 'cups' ? cups(code)
-             : view === 'atoms' ? atoms(code) : '';
-    if (html) el.insertAdjacentHTML('beforeend', html);   // appended after the <span class="lbl">
+    if (t) t.classList.toggle('showing');
   });
 })();
+
