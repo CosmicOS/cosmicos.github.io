@@ -1,7 +1,11 @@
 _site
 plans/
 *.bak
-# dead, comment-only includes (superseded by the diary; see index.html:334)
+# Dead, comment-only includes, superseded by the diary. Kept out rather than deleted so a session
+# that finds a reference to them does not go looking for a missing file. (This note used to cite a
+# LINE NUMBER — listener.html:334, then index.html:334 after the rename — and by the time anybody
+# read it, line 334 was a comment about paragraph spacing. A pointer to a position is wrong the
+# moment the file above it changes; the thing it points at is what to name.)
 _includes/listener_sections.html
 _includes/listener_s0_rows.html
 

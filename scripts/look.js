@@ -33,7 +33,10 @@
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
-const { chromium } = require(path.join(ROOT, 'node_modules', 'playwright'));
+/* `@playwright/test` and not `playwright`: the first is what package.json declares, the second is
+   only its transitive dependency, and requiring it by path was reaching past the manifest into
+   whatever npm happened to hoist. Same browser, one that is actually promised to be there. */
+const { chromium } = require(path.join(ROOT, 'node_modules', '@playwright', 'test'));
 
 const argv = process.argv.slice(2);
 const flag = (name) => {
@@ -42,7 +45,7 @@ const flag = (name) => {
 };
 const positional = argv.filter(a => !a.startsWith('--'));
 const wholePage = argv.includes('--page');
-const target = wholePage ? (positional[0] ? null : null) : positional[0];
+const target = wholePage ? null : positional[0];
 const width = Number((wholePage ? positional[0] : positional[1]) || 760);
 const scrollTo = Number(flag('scroll') || 0);
 const click = flag('click');

@@ -45,11 +45,17 @@
     condensed = want;
     bar.classList.toggle('condensed', want);
   }
-  var barTick = false;
-  function onBarScroll() {
-    if (barTick) return;
-    barTick = true;
-    requestAnimationFrame(function () { barTick = false; setBar(); });
+  /* ONE SCROLL LISTENER FOR THE WHOLE BAR. There were two, each with its own rAF gate — the
+     condensing and the where-you-are — which meant two handlers and two frames of work for one
+     scroll. Callbacks are collected here and the story pushes its own onto the same list. */
+  var onFrame = [setBar], frameTick = false;
+  function runFrame() {
+    if (frameTick) return;
+    frameTick = true;
+    requestAnimationFrame(function () {
+      frameTick = false;
+      for (var i = 0; i < onFrame.length; i++) onFrame[i]();
+    });
   }
   /* A PAGE OPENED AT A DEEP ANCHOR STARTS CONDENSED, and must not be seen unfolding into a masthead
      and collapsing again. The class goes on before the first paint the reader sees, and the
@@ -59,8 +65,10 @@
   requestAnimationFrame(function () {
     requestAnimationFrame(function () { bar.classList.remove('tb-still'); });
   });
-  window.addEventListener('scroll', onBarScroll, { passive: true });
-  window.addEventListener('resize', onBarScroll);
+  window.addEventListener('scroll', runFrame, { passive: true });
+  window.addEventListener('resize', function () { remeasure(); runFrame(); });
+  var onResize = [];                                  // things that must re-measure when the box moves
+  function remeasure() { for (var i = 0; i < onResize.length; i++) onResize[i](); }
 
   /* ── LETTING GO OF THE MENU ──
      It OPENS on click, which is the device-agnostic answer: touch has no hover, a first tap on a
@@ -138,12 +146,20 @@
   /* MEASURE ONCE PER LAYOUT, NOT ONCE PER SCROLL. Reading offsetTop/offsetHeight inside a scroll
      handler forces a synchronous layout on every frame of a very long document; the numbers only
      change when the window does. */
+  /* MEASURE ONCE PER LAYOUT — INCLUDING THE ENTRIES. The comment here always said that, and
+     `update()` then read a `getBoundingClientRect()` per entry on every scroll frame, AFTER writing
+     classes and a custom property to the segments in the same pass. Write-then-read in one frame
+     forces a synchronous layout, so the handler this note exists to keep cheap was thrashing layout
+     down a 21,000px document. Entry offsets move only when the box does, so they belong here. */
   function measure() {
     watches.forEach(function (w) {
       var r = w.el.getBoundingClientRect();
       w.top = r.top + window.pageYOffset;
       w.height = Math.max(1, r.height);
       w.seg.style.flexGrow = w.height;
+      w.tops = Array.prototype.map.call(w.entries, function (e) {
+        return e.getBoundingClientRect().top + window.pageYOffset;
+      });
     });
   }
 
@@ -167,8 +183,8 @@
     w.seg.style.setProperty('--f', Math.max(0, Math.min(1, f)));
 
     var pass = w.first;
-    for (var j = 0; j < w.entries.length; j++)
-      if (y >= w.entries[j].getBoundingClientRect().top + window.pageYOffset) pass = +w.entries[j].id.slice(1);
+    for (var j = 0; j < w.tops.length; j++)          // cached in measure(); no layout read in here
+      if (y >= w.tops[j]) pass = +w.entries[j].id.slice(1);
 
     if (w !== shownWatch) { keeperEl.textContent = w.name; shownWatch = w; }
     if (pass !== shownPass) {
@@ -180,15 +196,9 @@
     }
   }
 
-  var ticking = false;
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () { ticking = false; update(); });
-  }
   measure(); update();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', function () { measure(); update(); });
+  onFrame.push(update);                  // the one scroll listener registered above drives this too
+  onResize.push(measure);
   /* an exhibit that opens or a font that lands late changes every height below it */
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measure(); update(); });
 })();

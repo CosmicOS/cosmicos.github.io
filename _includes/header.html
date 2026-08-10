@@ -7,7 +7,7 @@
         <link rel="alternate" type="application/rss+xml" title="CosmicOS RSS" href="/feed.xml" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- VERSIONED, ALL OF THEM. main.css carries the @font-face, so a browser holding a cached
+        {% comment %} VERSIONED, ALL OF THEM. main.css carries the @font-face, so a browser holding a cached
              copy of it keeps asking for the old font URL and never sees the new one — which is what
              stranded a phone on the pre-braille font after the font itself had already been
              versioned. That was fixed here for main.css alone, and the other three were left, which
@@ -15,7 +15,7 @@
              small.css still made <html> a scroll container, and the desk machine — which never loads
              small.css — showed the fix working. A media-query stylesheet is the WORST one to leave
              unversioned: it only applies on the screens you are least likely to be testing on, so a
-             stale copy is invisible from the machine doing the work. -->
+             stale copy is invisible from the machine doing the work. {% endcomment %}
         <link rel="stylesheet" href="{{site.baseurl}}/css/main.css?v={{ site.time | date: '%s' }}">
         <link rel="stylesheet" href="{{site.baseurl}}/css/dark_syntax.css?v={{ site.time | date: '%s' }}">
         <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/small.css?v={{ site.time | date: '%s' }}" media="screen and (max-width: 512px)" />
@@ -25,11 +25,11 @@
         <script src="{{site.baseurl}}/js/lib_cosmicos.js"></script>
         <script src="{{site.baseurl}}/js/cosmicos.js"></script>
         <script src="{{site.baseurl}}/js/site.js"></script>
-        <!-- DEFER, and that is load-bearing. The bar is on every page, so this cannot live at the
+        {% comment %} DEFER, and that is load-bearing. The bar is on every page, so this cannot live at the
              foot of one of them. Deferred scripts run after the document is parsed and after the
              ordinary scripts at the end of the body have already executed — which is how this still
              finds `reckonNum` from js/listener.js on the story page, and works without it
-             everywhere else. -->
+             everywhere else. {% endcomment %}
         <script defer src="{{site.baseurl}}/js/topbar.js?v={{ site.time | date: '%s' }}"></script>
 {% for js in page.extra_js %}
         <script src="{{site.baseurl}}/{{ js }}"></script>
@@ -58,7 +58,7 @@
     </head>
     <body>
 
-<!-- ══ THE TOP BAR — one piece of furniture for the whole site ═════════════════════════════════════
+{% comment %} ══ THE TOP BAR — one piece of furniture for the whole site ═════════════════════════════════════
      It was a centered row of pill buttons that scrolled away (`div.top` + `_includes/menu.html`,
      both now gone). Sticky, and site-wide rather than listener-only, because the listener is a very
      long single page and a reader four hundred passes down had no way back to anything.
@@ -74,7 +74,7 @@
 
      IT KNOWS NOTHING ABOUT THE LISTENER. `js/topbar.js` adds the where-you-are and the arc of
      watches ONLY on a page that actually has watches in it, so this include stays the site's nav and
-     the story's instrument is built from the story. -->
+     the story's instrument is built from the story. {% endcomment %}
 <div class="topbar" id="topbar">
   <div class="tb-inner">
     {% comment %} ON THE FRONT PAGE THE HOME LINK IS BACK-TO-TOP, not a reload. The story is at `/`

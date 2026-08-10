@@ -785,15 +785,24 @@ function pinWidth(btn, labels) {
   if (!entries.length) return;
   var bare = location.pathname + location.search, at = null, queued = false;
 
+  var lastIdx = 0;
   function current() {
     /* the pass you are READING is the last one whose head has gone by, not the one filling the most
        screen: a long entry's exhibits would otherwise keep the previous pass in the bar for
-       screenfuls after you had left it. The line sits a third of the way down, where the eye is. */
-    var line = window.innerHeight * 0.33, found = null;
-    for (var i = 0; i < entries.length; i++) {
-      if (entries[i].getBoundingClientRect().top <= line) found = entries[i]; else break;
-    }
-    return found;
+       screenfuls after you had left it. The line sits a third of the way down, where the eye is.
+
+       WALK FROM WHERE THE ANSWER WAS, not from the top of the book. This used to scan from entry
+       zero every frame, so the cost grew with how far the reader had got: measured, 4 forced layout
+       reads per scroll frame in the founder's watch, 22 in the middle, 47 in Lio's — the page got
+       heavier the longer you read it, which is precisely backwards. Scrolling is incremental and the
+       answer moves by a step, so start from the last one and step. It still reads live layout, so
+       nothing goes stale when an exhibit opens or a font lands. */
+    var line = window.innerHeight * 0.33;
+    var i = Math.min(lastIdx, entries.length - 1);
+    while (i + 1 < entries.length && entries[i + 1].getBoundingClientRect().top <= line) i++;
+    while (i >= 0 && entries[i].getBoundingClientRect().top > line) i--;
+    lastIdx = i < 0 ? 0 : i;
+    return i < 0 ? null : entries[i];
   }
   function update() {
     queued = false;

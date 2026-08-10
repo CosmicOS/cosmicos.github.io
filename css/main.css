@@ -171,17 +171,18 @@ a:visited {
    a shadow cannot be moved independently and these have somewhere to go — when the menu is open the
    outer two swing onto the middle one and it becomes a close mark. That is the whole animation, and
    it is worth having: it says the same button also shuts the thing, which a static ☰ never does. */
-.tb-burger { display: block; position: relative; width: 17px; height: 12px; }
+/* The middle bar is the element's own BACKGROUND, so there is one box to collapse rather than a
+   third pseudo-element nobody can reach; the outer two are its pseudo-elements. Opening the menu
+   collapses the middle bar's HEIGHT — `opacity: 0` was tried first and hid the whole button,
+   pseudo-elements and all, so the menu opened onto no close mark at all. */
+.tb-burger { display: block; position: relative; width: 17px; height: 12px;
+  background: linear-gradient(currentColor, currentColor) center/100% 2px no-repeat;
+  transition: background-size .14s ease, width .25s ease, height .25s ease; }
 .tb-burger::before, .tb-burger::after { content: ""; position: absolute; left: 0; right: 0;
   height: 2px; background: currentColor; border-radius: 1px;
   transition: transform .2s ease, top .2s ease; }
 .tb-burger::before { top: 0; }
 .tb-burger::after  { top: 10px; }
-/* The middle bar is the element's own background, so there is one box to collapse rather than a
-   third pseudo-element nobody can reach. COLLAPSE ITS HEIGHT — `opacity: 0` was tried first and hid
-   the whole button, pseudo-elements and all, so the menu opened onto no close mark at all. */
-.tb-burger { background: linear-gradient(currentColor, currentColor) center/100% 2px no-repeat;
-  transition: background-size .14s ease, width .25s ease, height .25s ease; }
 .tb-menu[open] .tb-burger { background-size: 100% 0; }
 .tb-menu[open] .tb-burger::before { top: 5px; transform: rotate(45deg); }
 .tb-menu[open] .tb-burger::after  { top: 5px; transform: rotate(-45deg); }
@@ -265,17 +266,15 @@ a:visited {
 .tb-seg::after { content: ""; position: absolute; inset: 0; border-radius: 2px;
   background: #3c5464; transform-origin: left; transform: scaleX(0);
   transition: background-color .25s ease, box-shadow .25s ease; }
-.tb-seg.done::after { transform: scaleX(1); }
-/* the watch being read carries the notation's own ink and a breath of it around the mark, so the
-   eye finds where it is on the bar without having to compare eleven grays. */
-.tb-seg.here::after { box-shadow: 0 0 6px -1px rgba(203, 183, 148, .55); }
-/* a travelled watch keeps a little of the warmth of the one being read, so the bar reads left to
-   right as a journey rather than as an on/off row */
-.tb-seg.done::after { background: linear-gradient(90deg, #46606f, #3c5464); }
-/* the watch a reader is IN fills as they cross it, so the bar answers "how far through this one"
-   as well as "which one". `--f` is set by js/topbar.js on scroll; scaleX on a pseudo-element is the
-   cheap way to animate a fill without touching layout. */
-.tb-seg.here::after { background: #cbb794; transform: scaleX(var(--f, 0)); }
+/* A TRAVELLED WATCH — filled, and keeping a little of the warmth of the one being read, so the bar
+   reads left to right as a journey rather than as an on/off row. */
+.tb-seg.done::after { transform: scaleX(1); background: linear-gradient(90deg, #46606f, #3c5464); }
+/* THE WATCH BEING READ — the notation's own ink and a breath of it around the mark, so the eye finds
+   where it is without comparing eleven grays; and it FILLS as the reader crosses, so the bar answers
+   "how far through this one" as well as "which one". `--f` is set by js/topbar.js on scroll; scaleX
+   on a pseudo-element is the cheap way to animate a fill without touching layout. */
+.tb-seg.here::after { background: #cbb794; transform: scaleX(var(--f, 0));
+  box-shadow: 0 0 6px -1px rgba(203, 183, 148, .55); }
 .tb-seg:hover::after { background: #9fe0ff; transform: scaleX(1); }
 
 /* AN ANCHOR JUMP MUST NOT LAND UNDER THE BAR. The listener cross-references constantly and by the
