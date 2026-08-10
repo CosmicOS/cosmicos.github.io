@@ -36,7 +36,20 @@
    browser paints outside the document is the ROOT's background — body's only propagates to the
    canvas while the root has none of its own. */
 html {
+  /* THE COLOR BEHIND EVERYTHING. It is seen in two places and they want opposite things.
+     ONE: the strip a phone shows when you drag past the top. That was black against a bar that is
+     not, so the rubber-band opened onto a hole. It takes the bar's own top color, so pulling down
+     just shows more bar. Overscroll paints the background-COLOR, which is why that stays flat.
+     TWO: below the photograph. `party_planet.jpg` is 2.445:1, set `contain` and `fixed`, so it
+     occupies the top `100vw / 2.445` of the viewport and no more — 168px on a phone, 409px at desk.
+     Everything under that edge was the same blue, which read as a band of sky the photo had been cut
+     out of. So the color is a gradient that has reached black BEFORE the photo runs out: the fade
+     itself is hidden behind the image, and all that shows below is black, as it was.
+     0.38 rather than 0.409 so the two never meet on a rounding error. */
   background-color: #111820;
+  background-image: linear-gradient(#111820, #000 calc(100vw * 0.38));
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   margin: 0;
   padding: 0;
 }
