@@ -142,27 +142,40 @@ test('nothing on the bar overflows a phone', async ({ page }) => {
   expect(doc).toBe(true);
 });
 
-test('the wordmark tightens as it grows — masthead type, not a large link', async ({ page }) => {
+test('the wordmark shrinks but never becomes a caption', async ({ page }) => {
+  /* THE BUG THIS GUARDS. The bar's type was sized off `--sz-cap`, the exhibit-caption scale — 10px,
+     meant to sit beside 12px marks without towering over them — so the site's own name rendered at
+     10-11px and read as a label on a strip rather than a header. An earlier version of this test
+     asserted the condensed wordmark was UNDER 14px and uppercase, which encoded the mistake as a
+     requirement. A header has a floor. */
   await page.goto(STORY);
   const word = page.locator('.tb-word');
-  const big = await word.evaluate(e => {
+  const at = async () => word.evaluate(e => {
     const c = getComputedStyle(e);
-    return { size: parseFloat(c.fontSize), track: parseFloat(c.letterSpacing), caps: c.textTransform };
+    return { size: parseFloat(c.fontSize), caps: c.textTransform };
   });
+
+  const big = await at();
   expect(big.size).toBeGreaterThan(24);
-  expect(big.caps).toBe('none');                 // mixed case at masthead size
+  expect(big.caps).toBe('none');
 
   await page.evaluate(() => window.scrollTo(0, 3000));
   await expect(page.locator('#topbar')).toHaveClass(/condensed/);
-  await expect.poll(async () => (await word.evaluate(e => parseFloat(getComputedStyle(e).fontSize))))
-    .toBeLessThan(14);
-  const small = await word.evaluate(e => {
-    const c = getComputedStyle(e);
-    return { track: parseFloat(c.letterSpacing), caps: c.textTransform };
+  await expect.poll(async () => (await at()).size).toBeLessThan(big.size);   // it does shrink…
+  const small = await at();
+  expect(small.size).toBeGreaterThanOrEqual(16);                             // …but stays a header
+  expect(small.caps).toBe('none');                    // and stays the SAME wordmark, not a label
+});
+
+test('the bar is sized from its own scale, not the exhibit captions', async ({ page }) => {
+  await page.goto(STORY);
+  const v = await page.evaluate(() => {
+    const c = getComputedStyle(document.querySelector('.topbar'));
+    return ['--bar-title', '--bar-label', '--bar-num', '--bar-tag']
+      .map(n => parseFloat(c.getPropertyValue(n)));
   });
-  expect(small.caps).toBe('uppercase');
-  // the rule of type this is built on: tracking OPENS as the size drops
-  expect(small.track).toBeGreaterThan(big.track);
+  expect(v.every(n => n > 0)).toBe(true);            // all four defined
+  expect(Math.min(...v)).toBeGreaterThanOrEqual(12); // none of them caption-sized
 });
 
 test('the standfirst is only in the masthead', async ({ page }) => {
@@ -356,4 +369,19 @@ test('the first state is a state, not an animation', async ({ page }) => {
   await expect(page.locator('#topbar')).toHaveClass(/condensed/);
   // the no-transition guard is for the first paint only and must not stick
   await expect(page.locator('#topbar')).not.toHaveClass(/tb-still/);
+});
+
+test('a link to a deep pass lands clear of the bar, every time', async ({ page }) => {
+  /* THE PAGE WAS FLAKY, NOT THIS TEST. Following `…/#p595` put the entry at y=4 instead of y=78 on
+     roughly one load in eight: the browser jumps to the fragment, and only then does the bar take
+     its condensed state, removing ~73px from above the target and sliding it behind the bar. The
+     book cross-references constantly, so a reader meets this on any link they follow. */
+  for (let i = 0; i < 6; i++) {
+    await page.goto(STORY + '#p595');
+    const bar = page.locator('#topbar');
+    await expect(bar).toHaveClass(/condensed/);
+    const h = await settledHeight(bar);
+    await expect.poll(async () => (await page.locator('#p595').boundingBox()).y,
+                      { timeout: 4000 }).toBeGreaterThanOrEqual(h);
+  }
 });

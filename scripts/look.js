@@ -72,8 +72,12 @@ const ISO  = path.join(SITE, '.look-iso.html');
   }
 
   const browser = await chromium.launch();
+  /* 1x BY DEFAULT, and that is not a detail. At deviceScaleFactor 2 a 390px phone comes back as a
+     780px picture, and looking at it I judged the top bar's type twice the size it really was —
+     twice, out loud, against a user telling me it was tiny. `SCALE=2` is still there for reading
+     fine detail; it is the wrong instrument for deciding whether something is big enough. */
   const page = await browser.newPage({ viewport: { width, height: 900 },
-                                       deviceScaleFactor: Number(process.env.SCALE || 2) });
+                                       deviceScaleFactor: Number(process.env.SCALE || 1) });
   try {
     await page.goto(url, { waitUntil: 'load' });
     /* REAL TIME, not a budget. The renderer redraws every row on load and the marks font arrives

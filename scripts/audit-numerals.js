@@ -47,6 +47,32 @@ body = body.replace(/<script[\s\S]*?<\/script>/g, '');
  * and in practice there are none, since the wire is written in tones, cups and bits. */
 body = body.replace(/<(div|span)\b[^>]*\bdata-(?:code|parse)="[^"]*"[^>]*>[\s\S]*?<\/\1>/g, '');
 
+/* THE MESSAGE ITSELF, BEFORE ANYBODY HAS WRITTEN IT DOWN. `.raw-wire` is the four-symbol form —
+ * digits by definition, since the site labels the four symbols 0-3 — and it is the one thing on the
+ * page that is NOT a keeper's writing. The preface shows a stretch of it to say what the diary is a
+ * friendlier alternative to, and that sentence cannot be made without it. Everything this gate
+ * exists to catch is a figure a keeper drew; this is what she is looking at. */
+body = cutRawWire(body);
+/* BALANCED, because `.raw-wire` has spans inside it — the run is stepped through three tones so it
+ * trails off, and a non-greedy `…</span>` stopped at the first inner close and let the tail through
+ * to be reported as a numeral in the diary. Count the opens like `sliceDiary` does for divs. */
+function cutRawWire(s) {
+  const start = /<span\b[^>]*\bclass="[^"]*\braw-wire\b[^"]*"[^>]*>/g;
+  let m, out = s;
+  while ((m = start.exec(out))) {
+    const tag = /<\/?span\b/g; tag.lastIndex = m.index;
+    let depth = 0, t, end = -1;
+    while ((t = tag.exec(out))) {
+      depth += t[0] === '</span' ? -1 : 1;
+      if (depth === 0) { end = tag.lastIndex + out.slice(tag.lastIndex).indexOf('>') + 1; break; }
+    }
+    if (end < 0) break;
+    out = out.slice(0, m.index) + out.slice(end);
+    start.lastIndex = m.index;
+  }
+  return out;
+}
+
 /* attributes go with their tags: `title="207"` is the reader's way back, not ink on the page. */
 const text = body.replace(/<[^>]+>/g, ' ');
 

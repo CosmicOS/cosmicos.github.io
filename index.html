@@ -19,7 +19,40 @@ title: "A listener's log"
 /* THE CHEAT SHEET LIVES INSIDE THE TITLE BLOCK, so it has no panel of its own: it is a note about
    this book, not a second thing beside it. What marks it off is a rule and the space above it —
    which is also what stops a closed disclosure reading as a stray line under the title. */
-.msg-index { margin: 18px -30px 0; padding: 0 30px; border-top: 1px solid #1d2a34; }
+/* the intro under the title: her serif, because it is prose, and quiet enough that the title still
+   leads. The four-symbol run at the end runs on and FADES rather than stopping at a tidy edge — it
+   is standing in for a message 336,105 tones long, and an ellipsis would make it look finite. */
+.pf-intro { font-family: var(--voice-hers); font-size: 15.5px; line-height: 1.6; color: #93a7b4;
+  margin: 12px 0 0; max-width: 46em; }
+.pf-intro em { color: #b3c4cf; }
+/* IT MAY BREAK ANYWHERE. A run of digits has no word boundaries, so with `nowrap` the whole span
+   was one unbreakable box that could not fit on the rest of the sentence's line and dropped to the
+   next one entire, leaving a gap after "than". `break-all` lets it start where the sentence stops
+   and fill the measure like text.
+   THE FADE GOES DOWNWARD once it wraps: a sideways gradient on a multi-line box fades the right
+   edge of every line, which reads as damage rather than as continuing. */
+.raw-wire { font-family: var(--voice-station); letter-spacing: .4px;
+  word-break: break-all; overflow-wrap: anywhere;
+  /* INLINE, so it starts where the sentence stops. An inline-BLOCK sizes itself against the
+     containing block rather than the space left on the line, so it could never share one: it took a
+     line of its own and left a gap after "than". A digit run has no word boundaries either, so
+     `break-all` is what lets it fill the measure like ordinary text. */
+  display: inline;
+  /* AND IT FADES BY ITS OWN INK, not by a mask. `mask-image` does not apply to an inline box, and a
+     sideways gradient on a wrapped one would fade the right edge of every line, which reads as
+     damage rather than as going on. A gradient clipped to the TEXT is painted across the whole
+     inline box — every line fragment together — so the run simply gets fainter as it descends. */
+  color: #cbb794; }
+/* IT TRAILS OFF IN STEPS, NOT A GRADIENT. A gradient was tried twice and cannot work here: a mask
+   does not apply to an inline box at all, and a background clipped to text is painted PER LINE
+   FRAGMENT — measured, the ink went 139→101 down the first line and then jumped back to 128 at the
+   start of the second, so every line restarted bright and the run looked striped rather than
+   receding. Three flat tones do the same job and cannot be broken by where the lines happen to
+   fall, because each span has one color wherever it lands. */
+.raw-wire .w2 { color: #8e8069; }
+.raw-wire .w3 { color: #5c5548; }
+
+.msg-index { margin: 18px 0 0; }
 .msg-index > summary { cursor: pointer; padding: 11px 0 0; font-family: var(--voice-station); font-size: 80%; letter-spacing: 0.04em; color: #8fb0c0; list-style: none; }
 .msg-index > summary::-webkit-details-marker { display: none; }
 .msg-index > summary::before { content: "\25B8\00a0"; color: #6f95a8; }
@@ -281,11 +314,14 @@ title: "A listener's log"
    So: a semi-formal divider — a ruled line across the page, the pass, and her note beside it.
    Kin to the taking-up record and deliberately lighter: that one is a station form filled at a
    handoff, this one is a keeper's own hand at the top of a night. ── */
+/* THE RULE ITSELF IS GONE (08-10). The reasoning above is about a keeper HEADING her page, and that
+   is done by the stamp — the pass, in her numerals, in the station's hand. The line over it was
+   drawing a second divider between entries that are already separate panels with space between
+   them, so every entry opened on a horizontal stroke nobody had asked for. What the keepers do is
+   head the page; the ruling was mine. */
 .entry .stamp {
-  border-top: 1px solid #2f4a5a;
-  padding: 13px 26px 0; margin: 0 -26px 8px;      /* negative margin = the rule runs edge to edge */
+  padding: 2px 0 0; margin: 0 0 8px;
 }
-.entry.dispatch .stamp { border-top-color: #33513a; }
 /* the fields that make the head a form rather than a title, and both have to be things somebody
    actually wanted written down. WHO WAS ON WATCH, read off the text and never invented. And the
    CYCLE, the tablers' long reckoning, which is what a record is dated by — so §385 lands twice,
@@ -883,8 +919,20 @@ title: "A listener's log"
      then a second box under it to offer a way out of reading it. The index is a note ABOUT this
      book, so it belongs inside the thing it annotates, folded shut, under the title it belongs to.
   {% endcomment %}
+  {% capture wire %}{% include wrapped.txt %}{% endcapture %}
   <div class="preface" id="top">
     <h1>The Second Book</h1>
+    {% comment %} The first sentence is the site's own words for what CosmicOS is (about.html), not a
+       fresh description invented here. The second says what this page is FOR, and it ends in the
+       thing it is an alternative to — the real four-symbol message, included from the build so it
+       can never drift, trailing off under a mask. {% endcomment %}
+    <p class="pf-intro">CosmicOS is a way to create messages suitable for communication across large
+    gulfs of time and space, inspired by Hans Freudenthal&rsquo;s <em>Lincos</em>. &ldquo;The Second Book&rdquo; is a
+    story imagining someone receiving the message, as a friendlier way to present its content
+    than <span class="raw-wire"
+      >{{ wire | strip_newlines | slice: 0, 110 }}<span class="w2"
+      >{{ wire | strip_newlines | slice: 110, 50 }}</span><span class="w3"
+      >{{ wire | strip_newlines | slice: 160, 40 }}</span></span></p>
     <details class="msg-index">
       <summary>Human cheat sheet <span class="idx-note">(spoilers)</span></summary>
     <div class="idx-body">

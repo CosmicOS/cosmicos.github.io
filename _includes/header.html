@@ -6,6 +6,9 @@
         <title>{{ page.title }}</title>
         <link rel="alternate" type="application/rss+xml" title="CosmicOS RSS" href="/feed.xml" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% comment %} the phone's own chrome — address bar and status bar — takes the top bar's
+           colour, so the browser furniture and the page's do not sit at two different darks. {% endcomment %}
+        <meta name="theme-color" content="#111820">
 
         {% comment %} VERSIONED, ALL OF THEM. main.css carries the @font-face, so a browser holding a cached
              copy of it keeps asking for the old font URL and never sees the new one — which is what

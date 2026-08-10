@@ -27,7 +27,11 @@ function reckon(v, barred){
    showing a change before and after a rule — which is exactly how it read on the blind read. */
 function reckonNum(v, barred){
   v = Math.abs(Number(v));
-  if (!(v >= 0)) return '';
+  /* FINITE, OR NOTHING. `Number('1210010…')` on a long run of digits is Infinity, and the loop below
+     divides by 64 until it reaches zero — which Infinity never does, so the page hung with no request
+     outstanding and no error, just a main thread that never came back. A 400-digit span of the raw
+     four-symbol message in the preface found it. Nothing that size is a count a keeper wrote. */
+  if (!(v >= 0) || !isFinite(v)) return '';
   var d = []; do { d.unshift(v % 64); v = Math.floor(v / 64); } while (v > 0);
   return d.map(function(x){ return reckon(x, barred); }).join('');
 }
@@ -919,7 +923,9 @@ function pinWidth(btn, labels) {
      makes a row the wire's — it is what build-frags checks too, so the gate and the renderer agree
      about which rows came from the message. A hand row has no such attribute and is swept like any
      other writing: it is a keeper drawing a line of the wire in her own hand, figures and all. */
-  var DRAWN   = '[data-code], [data-parse], .msg, .frag';
+  /* `.raw-wire` is the message in its four-symbol form — digits by definition, and not a figure
+     anybody wrote down, so the sweep leaves it exactly as it came. */
+  var DRAWN   = '[data-code], [data-parse], .msg, .frag, .raw-wire';
   /* WHERE A FIGURE MUST NOT BECOME A LINK. A heading would link to its own entry; and every row of
      the cheat sheet is ALREADY an anchor to the pass it names, so linking the figure inside it
      produced `<a href="#p189"><b><a href="#p189">…</a></b> …</a>` — a nested anchor, which is

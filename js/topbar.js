@@ -44,6 +44,28 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', function () { measure(); setBar(); update(); });
 
+  /* ── LAND THE ANCHOR JUMP AGAIN ONCE THE PAGE HAS STOPPED MOVING ──
+     Following `…/#p595` lands the entry under the bar about one load in eight. The browser jumps to
+     the fragment, and only THEN does the bar take its condensed state and the renderer finish
+     drawing the rows — removing ~73px from above the target, which slides it up behind the bar with
+     nothing to correct it. Measured: the entry sits at y=4 instead of y=78.
+     So the jump is made again after the page settles. It is abandoned the moment the reader touches
+     the page, because re-scrolling somebody who has started reading is worse than the bug. */
+  if (location.hash.length > 1) {
+    var landing = document.getElementById(location.hash.slice(1));
+    if (landing) {
+      var moved = false;
+      var giveUp = function () { moved = true; };
+      ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (e) {
+        window.addEventListener(e, giveUp, { once: true, passive: true });
+      });
+      var land = function () { if (!moved) landing.scrollIntoView(); };   // honours scroll-margin-top
+      requestAnimationFrame(function () { requestAnimationFrame(land); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(land);
+      window.addEventListener('load', land);
+    }
+  }
+
   /* ── LETTING GO OF THE MENU. It opens on click (touch has no hover); this is only the other half,
      so that it stops being sticky once the reader has moved on. Everything here CLOSES — `<details>`
      does the opening and the keyboard, so with the script gone the menu still works. The grace timer
