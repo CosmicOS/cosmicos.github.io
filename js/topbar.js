@@ -1,61 +1,37 @@
-/* ---- listener: the top bar ----
-   WHERE AM I IN FOUR HUNDRED PASSES. The book is one page, eleven watches and fifty-five entries,
-   and a reader who scrolls into the middle of it has no way to answer "whose watch is this?" short
-   of scrolling back to the last taking-up. Nothing else on the page does this job.
+/* ---- the top bar: site nav everywhere, and on the story an arc of the eleven watches ----
+   Built from the DOM (`section.watch`), so there is no roster here to fall out of step with
+   `scripts/arc-order.js` — this file names no keeper and knows no pass.
 
-   IT IS BUILT FROM THE PAGE, NOT FROM A LIST. The watches come out of the DOM (`section.watch`),
-   their spans out of the entries inside them, their widths out of their measured heights. There is
-   no roster here to fall out of step with `scripts/arc-order.js` — this file names no keeper and
-   knows no pass.
+   WIDTH IS HEIGHT. A segment is as wide as its watch is TALL, not as long in passes: every watch is
+   about thirty-six passes, so a bar drawn from passes would be eleven equal blocks saying nothing.
 
-   WIDTH IS HEIGHT. A segment is as wide as its watch is TALL, not as wide as its watch is long in
-   passes. Every watch is about thirty-six passes — a working life — so a bar drawn from passes
-   would be eleven equal blocks saying nothing. Drawn from height it is the real shape of the book,
-   and the lit segment is really where the reader is rather than where a count says they ought to be.
-
-   It runs AFTER js/listener.js, and it has to: the renderer redraws every row on load, and a height
-   measured before that is the height of an empty page. It also borrows `reckonNum` from there, so
-   the pass on the bar goes down in the keepers' own numerals like every other figure in the book. */
+   Runs AFTER js/listener.js, and must: the renderer redraws every row on load, so a height measured
+   before that is the height of an empty page. It also borrows `reckonNum` from there. */
 (function () {
   var bar = document.getElementById('topbar');
   if (!bar) return;
 
-  /* ── MASTHEAD OR RULE. Site-wide; everything after it is the story's. ──
-     TWO THRESHOLDS, AND THE GAP BETWEEN THEM IS THE WHOLE FIX. Condensing takes ~90px of layout
-     height out of a bar that is IN FLOW, so everything below jumps up and the browser adjusts the
-     scroll to compensate. With one threshold that is a loop: measured, a single press of the down
-     arrow scrolled to 18px, crossed the line, condensed, got pulled back to 0 by the adjustment,
-     un-crossed the line, and expanded again — the reader taps down and the page bounces back to
-     where it started. Nothing about that is fixable by choosing a better single number, because the
-     scroll correction is the same size as the thing that triggers it.
-     So: condense on the way DOWN past `DOWN`, expand on the way UP past `UP`, and keep the gap
-     comfortably larger than the height the bar gives back. Then the correction can never carry the
-     page back across the line it just crossed.
-     (This replaced an IntersectionObserver on a sentinel at the top of the page. The observer was
-     the cheaper instrument and answered the wrong question — it can say whether one point is on
-     screen, and what this needs is two points and a memory of which way you were going.) */
+  /* ── MASTHEAD OR RULE ──
+     TWO THRESHOLDS, because condensing takes ~90px out of a bar that is IN FLOW: the page shifts and
+     the browser corrects the scroll by the same amount that triggered the change. With one line, a
+     single press of the down arrow crossed it at 18px, condensed, was pulled back to 0, and expanded
+     again. No single number can be stable. The gap must stay larger than the height given back. */
   var DOWN = 220, UP = 60;      // px. DOWN-UP must exceed the bar's masthead-to-condensed difference.
-  var condensed = null;
+  var condensed = false;
   function setBar() {
-    var y = window.pageYOffset || document.documentElement.scrollTop;
-    var want = condensed === null ? y > DOWN         // first call: whatever the page loaded at
-             : condensed ? !(y < UP)                 // condensed: stay until well back up
-             : y > DOWN;                             // masthead: stay until well down
+    var y = window.pageYOffset;
+    var want = condensed ? y >= UP : y > DOWN;   // stay until well past the OTHER line
     if (want === condensed) return;
     condensed = want;
     bar.classList.toggle('condensed', want);
   }
-  /* ONE SCROLL LISTENER FOR THE WHOLE BAR. There were two, each with its own rAF gate — the
-     condensing and the where-you-are — which meant two handlers and two frames of work for one
-     scroll. Callbacks are collected here and the story pushes its own onto the same list. */
-  var onFrame = [setBar], frameTick = false;
-  function runFrame() {
+  /* ONE SCROLL LISTENER FOR THE WHOLE BAR, and one rAF gate. There were two of each — the condensing
+     and the where-you-are — which is two handlers and two frames of work for one scroll. */
+  var frameTick = false;
+  function onScroll() {
     if (frameTick) return;
     frameTick = true;
-    requestAnimationFrame(function () {
-      frameTick = false;
-      for (var i = 0; i < onFrame.length; i++) onFrame[i]();
-    });
+    requestAnimationFrame(function () { frameTick = false; setBar(); update(); });
   }
   /* A PAGE OPENED AT A DEEP ANCHOR STARTS CONDENSED, and must not be seen unfolding into a masthead
      and collapsing again. The class goes on before the first paint the reader sees, and the
@@ -65,25 +41,13 @@
   requestAnimationFrame(function () {
     requestAnimationFrame(function () { bar.classList.remove('tb-still'); });
   });
-  window.addEventListener('scroll', runFrame, { passive: true });
-  window.addEventListener('resize', function () { remeasure(); runFrame(); });
-  var onResize = [];                                  // things that must re-measure when the box moves
-  function remeasure() { for (var i = 0; i < onResize.length; i++) onResize[i](); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', function () { measure(); setBar(); update(); });
 
-  /* ── LETTING GO OF THE MENU ──
-     It OPENS on click, which is the device-agnostic answer: touch has no hover, a first tap on a
-     hover-triggered menu gets eaten activating the hover state, and a menu that opens because the
-     pointer crossed it opens when nobody asked. What was actually wrong was the other half — it had
-     no way to close except pressing the button again, so it sat there after the reader had plainly
-     moved on. So: open deliberately, DISMISS easily, which is the pairing every one of these wants.
-
-     Three ways out, and the first is the one that makes it stop feeling sticky:
-       - the pointer leaves it (only where a pointer really hovers), after a short grace so that
-         crossing the gap between the button and the panel does not count as leaving;
-       - Escape, which also puts focus back on the button where the reader left it;
-       - a press anywhere else on the page.
-     None of them is the keyboard's business — `<details>` already handles that, and this only ever
-     CLOSES the element, so with the script gone the menu still opens and still works. */
+  /* ── LETTING GO OF THE MENU. It opens on click (touch has no hover); this is only the other half,
+     so that it stops being sticky once the reader has moved on. Everything here CLOSES — `<details>`
+     does the opening and the keyboard, so with the script gone the menu still works. The grace timer
+     is so that crossing the gap to the panel does not count as leaving. */
   var menu = bar.querySelector('.tb-menu');
   if (menu) {
     var summary = menu.querySelector('summary'), shutTimer = null;
@@ -115,42 +79,43 @@
       seg: null, top: 0, height: 1
     });
   });
-  /* NO WATCHES, NO INSTRUMENT. The bar itself is site furniture and every page has it; everything
-     below is the story's own and is built only where the story is. So this file adds its elements
-     rather than finding them, and `_includes/header.html` needs to know nothing about the listener. */
-  if (!watches.length) return;
+  /* NO WATCHES, NO INSTRUMENT — `measure` and `update` below simply do nothing, so the two listeners
+     above stay one pair for every page. The bar itself is site furniture and every page has it;
+     everything here is the story's own, which is why this file ADDS its elements rather than finding
+     them and `_includes/header.html` needs to know nothing about the listener. */
+  var keeperEl = null, passEl = null, arcEl = null;
+  if (watches.length) buildArc();
 
-  var where = document.createElement('span'); where.className = 'tb-where';
-  where.innerHTML = '<span class="tb-keeper"></span><span class="tb-pass"></span>';
-  bar.querySelector('.tb-inner').appendChild(where);
-  var arcEl = document.createElement('div');
-  arcEl.className = 'tb-arc';
-  arcEl.setAttribute('role', 'navigation');
-  arcEl.setAttribute('aria-label', 'the watches');
-  bar.appendChild(arcEl);
-  var keeperEl = where.querySelector('.tb-keeper'), passEl = where.querySelector('.tb-pass');
+  function buildArc() {
+    var where = document.createElement('span'); where.className = 'tb-where';
+    where.innerHTML = '<span class="tb-keeper"></span><span class="tb-pass"></span>';
+    bar.querySelector('.tb-inner').appendChild(where);
+    arcEl = document.createElement('div');
+    arcEl.className = 'tb-arc';
+    arcEl.setAttribute('role', 'navigation');
+    arcEl.setAttribute('aria-label', 'the watches');
+    bar.appendChild(arcEl);
+    keeperEl = where.querySelector('.tb-keeper'); passEl = where.querySelector('.tb-pass');
 
-  /* THE GLOSS SAYS WHAT IS THERE AND NOTHING MORE — the same rule the marks obey. A segment's title
-     is the keeper and her span, in the reader's own figures, because this is the instrument and not
-     the book. Nothing here interprets a watch. */
-  watches.forEach(function (w) {
-    var seg = document.createElement('a');
-    seg.className = 'tb-seg';
-    seg.href = '#p' + w.first;
-    seg.title = w.name + ' · ' + w.first + '–' + w.last;
-    seg.setAttribute('aria-label', seg.title);
-    arcEl.appendChild(seg);
-    w.seg = seg;
-  });
+    /* a segment's label says the keeper and her span in the READER's figures — this is the instrument,
+       not the book, and nothing on it interprets a watch. */
+    watches.forEach(function (w) {
+      var seg = document.createElement('a');
+      seg.className = 'tb-seg';
+      seg.href = '#p' + w.first;
+      seg.title = w.name + ' · ' + w.first + '–' + w.last;
+      seg.setAttribute('aria-label', seg.title);
+      arcEl.appendChild(seg);
+      w.seg = seg;
+    });
+  }
 
-  /* MEASURE ONCE PER LAYOUT, NOT ONCE PER SCROLL. Reading offsetTop/offsetHeight inside a scroll
-     handler forces a synchronous layout on every frame of a very long document; the numbers only
-     change when the window does. */
-  /* MEASURE ONCE PER LAYOUT — INCLUDING THE ENTRIES. The comment here always said that, and
-     `update()` then read a `getBoundingClientRect()` per entry on every scroll frame, AFTER writing
-     classes and a custom property to the segments in the same pass. Write-then-read in one frame
-     forces a synchronous layout, so the handler this note exists to keep cheap was thrashing layout
-     down a 21,000px document. Entry offsets move only when the box does, so they belong here. */
+
+  /* MEASURE ONCE PER LAYOUT — INCLUDING THE ENTRIES. A note here always said as much, and `update()`
+     then read a `getBoundingClientRect()` per entry on every scroll frame, AFTER writing classes and
+     a custom property to the segments in the same pass. Write-then-read in one frame forces a
+     synchronous layout, so the handler the note exists to keep cheap was thrashing layout down a
+     21,000px document. Entry offsets move only when the box does, so they belong here. */
   function measure() {
     watches.forEach(function (w) {
       var r = w.el.getBoundingClientRect();
@@ -165,6 +130,7 @@
 
   var shownPass = null, shownWatch = null;
   function update() {
+    if (!watches.length) return;
     /* THE READING LINE is a third of the way down the viewport, not the top edge: what a reader is
        reading is what sits under their eye, and an entry whose head has just scrolled off the top
        is still the entry they are in. */
@@ -197,8 +163,6 @@
   }
 
   measure(); update();
-  onFrame.push(update);                  // the one scroll listener registered above drives this too
-  onResize.push(measure);
   /* an exhibit that opens or a font that lands late changes every height below it */
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measure(); update(); });
 })();

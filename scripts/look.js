@@ -4,31 +4,19 @@
  *   node scripts/look.js p207              an entry, by anchor id, at desk width
  *   node scripts/look.js p193 390          the same at phone width — a REAL 390, see below
  *   node scripts/look.js '.sheets'         any CSS selector
- *   node scripts/look.js --page            the whole page, top of it
- *   node scripts/look.js --page 390 --scroll=3000     …at a width, scrolled
+ *   node scripts/look.js --page 390 --scroll=3000            the page, at a width, scrolled
  *   node scripts/look.js --page --click='.tb-menu summary'   …after opening something
  *   SCRAWL=numbers node scripts/look.js p207   every sign as the number the message sends for it
  *
- * WHY THIS IS NOT `chrome --headless --screenshot` ANY MORE.  It was, and that harness LIES about
- * anything that depends on time or on scrolling:
+ * IT DROVE CHROME DIRECTLY AND THAT HARNESS LIED, in three ways that all look like page bugs:
+ * `--virtual-time-budget` never delivers IntersectionObserver callbacks (measured: 0 firings on a
+ * visible element); `--window-size` under ~500px is silently clamped, so a "390px" check was 485px
+ * and the script printed a disclaimer saying not to trust the width you asked for; and scroll
+ * position could not be set at all.
  *
- *   - `--virtual-time-budget` never delivers IntersectionObserver callbacks.  Measured: an observer
- *     on a visible element fired 0 times.  So a picture of the top bar came back showing it stuck in
- *     its arrival state for ever, with the code perfectly correct, and there was no way to tell that
- *     from a real bug.
- *   - `--window-size` below ~500px is silently clamped, so "look at this at 390" returned a 485px
- *     layout and the old script had to print a disclaimer telling you not to trust the width you
- *     asked for.  Playwright sets the viewport exactly, so 390 means 390 and phone checks are real.
- *   - Scroll position could not be set at all, so nothing sticky, condensing, or scroll-driven could
- *     be photographed in the state a reader actually sees.
- *
- * The repo already carries Playwright for the exhibit suite.  Using it here means one browser
- * mechanism instead of two, real time, exact viewports, and states you can ask for.
- *
- * WHAT IS KEPT.  The isolation trick (scripts/look-isolate.js: keep every ancestor so all CSS still
- * applies, drop every sibling) — the old script's own best idea, and the reason a §501 exhibit
- * 35,000px down can be photographed at all.  The output path convention is unchanged, so
- * `scripts/look.sh` and everything that reads /tmp/look-*.png still work.
+ * The isolation trick is kept (scripts/look-isolate.js: keep every ancestor so all CSS applies, drop
+ * every sibling) — it is why an exhibit 35,000px down can be photographed at all. Output paths are
+ * unchanged.
  */
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process');

@@ -48,23 +48,13 @@ a:visited {
 }
 
 
-/* ══ THE TOP BAR ═════════════════════════════════════════════════════════════════════════════════
-   The site's one piece of navigation, on every page. It replaced a centered row of pill buttons
-   that scrolled away — fine on a short page, useless on the story, which is one document with
-   fifty-five entries in it.
-
-   TWO STATES, AND THE SWITCH IS A THRESHOLD. It arrives as a masthead: the name set large with its
-   standfirst under it, because a reader who has just landed is owed a plain statement of what this
-   is. Once they have scrolled past the first screen they have committed, the name has stopped being
-   news, and the bar condenses to one line and hands the space back to the reading column.
-   NOT a continuous shrink tied to scroll position. `animation-timeline: scroll()` would do that in
-   pure CSS and is tempting, but a bar whose height tracks the wheel reflows the text under the eye
-   that is reading it, and the property it must animate to change height is a layout property. One
-   threshold, one transition, and the page under it moves exactly once.
-
-   The station voice, because that is what this is: ruled-and-filled-in furniture, not anybody's
-   prose. OPAQUE, not translucent — there is a photograph behind every page on this site, and text
-   scrolling under a blurred bar reads as a smear of the paragraph it just left. */
+/* ══ THE TOP BAR — the site's one piece of navigation, on every page ══════════════════════════════
+   TWO STATES, SWITCHED AT A THRESHOLD (js/topbar.js): a masthead on arrival, condensing to one line
+   once the reader has committed, handing the space back to the reading column. NOT a continuous
+   shrink — `animation-timeline: scroll()` would do that in pure CSS, but a bar whose height tracks
+   the wheel reflows the text under the eye reading it.
+   OPAQUE, not translucent: there is a photograph behind every page here, and prose scrolling under a
+   blurred bar reads as a smear of the paragraph it just left. */
 
 /* the FIRST state is a state, not an animation: on a page opened at a deep anchor the bar is
    condensed from the start, and it must not be seen unfolding to a masthead and collapsing again.
@@ -89,11 +79,20 @@ a:visited {
 .topbar.condensed { border-bottom-color: #1d2a34;
   box-shadow: inset 0 1px 0 rgba(190, 215, 235, .06), 0 10px 22px -16px #000; }
 
+/* THE BAR HAS ITS OWN TYPE SIZE — `--sz-cap` was borrowed at first and that was a category error:
+   it is the size of a caption standing beside 12px marks INSIDE an exhibit, where it must not tower
+   over the notation. Nothing on this bar sits beside marks. At 10px against a phone's 19px body
+   prose the whole bar read as an afterthought, and it grows again on a narrow screen, where chrome
+   competes with bigger text and is worked by a thumb rather than a pointer. */
 .tb-inner { max-width: 660px; margin: 0 auto; padding: 26px 10px 20px;
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 1.1em;
-  font-family: var(--voice-station);
+  font-family: var(--voice-station); font-size: 11px;
   transition: padding .25s ease; }
-.topbar.condensed .tb-inner { padding: 7px 10px 6px; }
+/* VERTICAL ONLY. This was the `padding` shorthand, which also resets left and right — and being a
+   state rule it outranks the media query that widens the side padding on a phone, so the mobile
+   padding silently never applied while condensed and the menu button's hit area hung 4px off the
+   screen. A state rule should own only the axis it is changing. */
+.topbar.condensed .tb-inner { padding-top: 7px; padding-bottom: 6px; }
 
 /* THE WORDMARK. Mixed case and open tracking when it is a masthead; small uppercase when it is a
    label in a rule. Same element, so there is one name in the markup and no duplicate to fall out of
@@ -104,7 +103,7 @@ a:visited {
    specificity is per-property, and no rule here was setting it for the hover state at all. One
    blanket, on the bar, rather than a `:hover` clause on each of the four kinds of link in it. */
 .topbar a, .topbar a:hover, .topbar a:focus, .topbar a:active { text-decoration: none; }
-.tb-home { margin-right: auto; display: block; }
+.tb-home { margin-right: auto; display: block; position: relative; }
 /* TRACKING TIGHTENS AS THE SIZE GROWS, which is the ordinary rule of type and the whole reason this
    reads as a masthead rather than as a large link: letterspacing is what makes small caps legible
    and what makes a big word look hesitant. Mixed case at 31px with almost no tracking; small,
@@ -124,9 +123,15 @@ a:visited {
 .tb-home:hover .tb-word { color: #fff; }
 .tb-home:hover .tb-tag { color: #93a9b6; }
 
-.topbar.condensed .tb-word { font-size: var(--sz-cap); letter-spacing: 0.14em;
+.topbar.condensed .tb-word { font-size: 11px; letter-spacing: 0.14em;
   text-transform: uppercase; color: #8fb0c0; }
-.topbar.condensed .tb-tag { max-height: 0; opacity: 0; margin-top: 0; }
+/* OUT OF FLOW WHEN CONDENSED, and that is not tidiness. `max-height: 0` collapses a box's HEIGHT
+   and not its WIDTH, and this one is `white-space: nowrap`, so the hidden standfirst went on
+   reserving the width of "AN OPEN SOURCE CONTACT MESSAGE" — 281px of a phone's 370 — inside a bar
+   that had condensed and no longer showed it. The menu had nowhere to go and wrapped to a second
+   line, and the condensed bar was 63px tall on a phone instead of 39. Taking it out of flow costs
+   the height transition, which nothing can see at zero opacity anyway. */
+.topbar.condensed .tb-tag { position: absolute; opacity: 0; max-height: 0; margin-top: 0; }
 .topbar.condensed .tb-home:hover .tb-word { color: #9fe0ff; }
 
 /* NOTHING HERE IS WORTH MAKING SOMEBODY ILL. Every movement on the bar is decoration over a state
@@ -138,22 +143,12 @@ a:visited {
   .tb-menu[open] > .tb-nav { animation: none; }
 }
 
-/* ── THE MENU ─────────────────────────────────────────────────────────────────────────────────
-   A DISCLOSURE AT EVERY WIDTH, not links-at-desk-and-a-button-on-a-phone. Two reasons, and the
-   second is the one that settled it:
-
-   1. The bar must stay ONE LINE when condensed. On the story it already spends a second line on the
-      arc of watches, and the row holds the site name, four links, the keeper and the pass —
-      measured, that overflows below ~350px, where small.css's overflow guard CLIPS rather than
-      scrolls, so the loss would be silent.
-
-   2. Showing the links at desk width means overriding the UA's own hiding of a closed `<details>`,
-      and that mechanism is not stable: `display` used to do it, Chrome now hides
-      `::details-content` with `content-visibility`, and both dodges failed here — the links laid
-      out at zero width while every computed style said they were fine. Navigation is the last
-      thing to build on a trick browsers keep re-implementing. Used as intended, `<details>` needs no
-      JavaScript, takes focus and the keyboard for free, and cannot reach a state where a reader has
-      no navigation because a script failed to load. */
+/* ── THE MENU: a disclosure at EVERY width, not links-at-desk-and-a-button-on-a-phone.
+   Showing the links at desk width means overriding the UA's own hiding of a closed `<details>`, and
+   that mechanism is not stable — `display` used to do it, Chrome now hides `::details-content` with
+   `content-visibility`, and both dodges failed here, laying the links out at zero width while every
+   computed style said they were fine. Navigation is the last thing to build on a trick browsers keep
+   re-implementing. Used as intended it needs no JavaScript and takes the keyboard for free. */
 /* ALIGNED TO THE NAME, not to the middle of the block. `align-items: baseline` cannot place this —
    the button has no text and so no baseline — and centring it in a masthead row three lines tall
    left it floating opposite the standfirst, belonging to neither line. Pin it to the top and drop it
@@ -217,7 +212,7 @@ a:visited {
   animation: tb-drop .14s ease-out both; }
 @keyframes tb-drop { from { opacity: 0; transform: translateY(-5px); } }
 .tb-nav a { display: block; padding: 9px 16px; color: #8fa2ad; text-decoration: none;
-  white-space: nowrap; font-size: var(--sz-cap); letter-spacing: 0.14em;
+  white-space: nowrap; font-size: 11px; letter-spacing: 0.14em;
   text-transform: uppercase;
   /* the accent rule is always there and usually invisible, so a link does not CHANGE WIDTH when it
      lights up — a menu whose items shift sideways under the pointer is the cheapest tell there is. */
@@ -235,14 +230,18 @@ a:visited {
    row; the masthead needs that row to be big, so the scale moved onto the pieces that are labels.
    Dropping it here left the keeper's name inheriting body prose — 16px serif in a monospace rule. */
 .tb-where { order: 2; display: flex; align-items: baseline; gap: 0.6em; white-space: nowrap;
-  font-size: var(--sz-cap); letter-spacing: 0.14em; text-transform: uppercase;
-  opacity: 0; transition: opacity .2s ease; }
-.topbar.condensed .tb-where { opacity: 1; }
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  /* OUT OF FLOW WHILE HIDDEN — the same trap as the standfirst above, and I walked into it twice.
+     `opacity: 0` hides a box and keeps every pixel of its width: this one held 63px for a keeper
+     nobody was being shown, which with the standfirst's 281px overran a 370px phone row and wrapped
+     the menu button onto a line of its own under the masthead. */
+  position: absolute; opacity: 0; transition: opacity .2s ease; }
+.topbar.condensed .tb-where { position: static; opacity: 1; }
 .tb-keeper { color: #8fb0c0; }
 /* the pass in her numerals, at notation size — the one place on the bar the book's own hand shows.
    It takes the notation's ink from the one `!important` rule that governs every mark on the page,
    and the trailing-advance cancel from the global `.scrawl`; both are deliberately not restated. */
-.tb-pass { font-family: var(--voice-marks); font-size: var(--sz-mark); letter-spacing: 0;
+.tb-pass { font-family: var(--voice-marks); font-size: 13px; letter-spacing: 0;
   text-transform: none; }
 
 /* THE ARC. Eleven segments, each as wide as that watch is tall on the page, so the bar is the book's
@@ -253,7 +252,7 @@ a:visited {
    caps, which is what it looked like more than what it meant. The space does the job. */
 .tb-arc { max-width: 660px; margin: 0 auto; padding: 16px 10px 12px; display: flex; gap: 3px;
   transition: padding .25s ease, gap .25s ease; }
-.topbar.condensed .tb-arc { padding: 0 10px 6px; gap: 2px; }
+.topbar.condensed .tb-arc { padding-top: 0; padding-bottom: 6px; gap: 2px; }
 /* THE TRACK IS A GROOVE, not a gray bar: an inset shadow and a ground darker than the bar's own,
    so the filled part reads as something laid IN it rather than beside it. */
 .tb-seg { flex-grow: 1; flex-basis: 0; height: 4px; border-radius: 2px; background: #1a242c;
@@ -287,7 +286,31 @@ a:visited {
    the bar again, which is how the 48px left here after the masthead redesign was caught. */
 :target, .entry, .tu, .preface, .msg-index { scroll-margin-top: 68px; }
 
-@media (max-width: 560px) { .tb-inner { gap: 0.8em; } }
+/* A PHONE GETS BIGGER CHROME, NOT SMALLER. Body prose there is ~19px, so the desk sizes read as an
+   afterthought beside it; and the button is under a thumb, so its hit area goes to the 44px both
+   platform guidelines ask for — the drawn mark stays the same, the padding around it grows. */
+@media (max-width: 560px) {
+  /* the standfirst may WRAP rather than push the button off the row. `white-space: normal` only
+     breaks when it has to, so at 390px it still stands on one line; at 320 it takes two instead of
+     stranding the menu on a line of its own. `min-width: 0` is what lets the flex item shrink below
+     its content at all — without it the row overflows no matter what the text is allowed to do. */
+  .tb-home { min-width: 0; }
+  .tb-tag { white-space: normal; font-size: 12.5px; }
+  .tb-inner { gap: 0.8em; font-size: 13px; padding-left: 14px; padding-right: 14px; }
+  .tb-arc { padding-left: 14px; padding-right: 14px; }
+  .topbar.condensed .tb-word, .tb-where, .tb-nav a { font-size: 13px; }
+  .tb-pass { font-size: 15px; }
+  /* THE HIT AREA MUST NOT HANG OFF THE SCREEN. A negative margin shrinks the LAYOUT box and not the
+     painted one, so 15px of padding against the bar's own 10px put the button's right edge 5px past
+     the viewport and gave the page a horizontal scrollbar — above 512px, where small.css's overflow
+     guard does not reach, so it was a real scrollbar and not a silent clip. The side padding and the
+     bar's own now match, and the button reaches exactly the edge and no further. */
+  .tb-menu > summary { padding: 15px 14px; margin: -15px -14px; }
+  .tb-nav a { padding: 12px 18px; }
+}
+/* the narrowest phones: the standfirst is what makes the top row too wide, so it gives way first —
+   it is the one thing up there a reader can do without. */
+@media (max-width: 370px) { .tb-tag { font-size: 11px; letter-spacing: 0.13em; } }
 
 /* the site foot — quiet, and not a second copy of the nav (see _includes/footer.html). Small caps
    like every other label on the site, so it reads as the end of the page rather than as a last
