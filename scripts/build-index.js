@@ -25,83 +25,20 @@
 'use strict';
 const fs = require('fs'), path = require('path');
 const ROOT = path.resolve(__dirname, '..');
-const DIR = path.join(ROOT, '_includes/listener');
-const msg = require(path.join(ROOT, '_data/msg.json'));
 const scrawl = require(path.join(ROOT, '_data/sign_scrawl.json'));
-const STAMP = require('./stamp');
+/* The spine and the diary walk are `scripts/wire.js` — the same two derivations `build-spine.js`
+   works from, so the cross-reference and the page's "whole run" panels cannot come to disagree
+   about which statement a row names. */
+const WIRE = require('./wire');
+const { statements, byCode } = WIRE;
 
-// --- the wire spine: seq (1-based over code+gate) -> source; and code -> seq --------------------------
-const statements = {};                 // seq -> source line
-const byCode = {};                      // code -> seq (first occurrence)
-let seq = 0;
-for (const s of msg) {
-  if ((s.role !== 'code' && s.role !== 'gate') || !s.code) continue;
-  seq++; statements[seq] = (s.lines || []).join(' ').replace(/\s+/g, ' ').trim();
-  if (!(s.code in byCode)) byCode[s.code] = seq;
-}
-const codesByLen = Object.keys(byCode).sort((a, b) => b.length - a.length);   // longest-first for greedy split
-
-// A data-of/data-code value names one OR MORE statements: whitespace-separated, and a single token may be
-// several statement codes run together. Decompose to the statement seqs (null for an unrecognised remainder).
-function decompose(value) {
-  const out = [];
-  for (const tok of value.split(/\s+/).filter(Boolean)) {
-    let r = tok;
-    while (r.length) {
-      const hit = codesByLen.find(c => r.startsWith(c));
-      if (!hit) { out.push(null); break; }
-      out.push(byCode[hit]); r = r.slice(hit.length);
-    }
-  }
-  return out;
-}
-
-// --- walk the diary in document order -----------------------------------------------------------------
-const rows = [];
+const scanned = WIRE.scanDiary();
+const rows = scanned.rows.map(r => Object.assign({}, r,
+  { sources: r.indices.map(x => (x == null ? null : statements[x])) }));
 const signs = {};                       // sign -> {scrawl, shownIn:Set}
-const coins = [];
-const files = fs.readdirSync(DIR).filter(f => f.endsWith('.html')).sort();
-
-for (const file of files) {
-  const html = fs.readFileSync(path.join(DIR, file), 'utf8');
-  const lines = html.split('\n');
-  let pass = null, entry = null, title = null, rbDepth = 0;
-  lines.forEach((ln, i) => {
-    const line = i + 1;
-    const id = ln.match(/class="entry[^"]*" id="p(\d+)"/); if (id) entry = 'p' + id[1];
-    const st = ln.match(STAMP.PASS); if (st) { pass = +st[1]; title = null; }
-    const h2 = ln.match(/<h2>([^<]*)<\/h2>/); if (h2 && title == null) title = h2[1].trim();
-
-    if (/class="readback"/.test(ln)) rbDepth += 1;
-    const inReadback = rbDepth > 0;
-    if (inReadback) rbDepth += (ln.match(/<div\b/g) || []).length - (ln.match(/<\/div>/g) || []).length
-                               - (/class="readback"/.test(ln) ? 1 : 0);
-    if (rbDepth < 0) rbDepth = 0;
-
-    // wire-bearing elements: data-code (row/msg/frag) and data-of (hand rows). data-src snippets carry no seq.
-    for (const m of ln.matchAll(/data-(code|of)="([0-9 ]+)"/g)) {
-      const kindAttr = m[1], value = m[2];
-      const indices = decompose(value);
-      const kind = kindAttr === 'of' ? 'of'
-                 : /class="msg"/.test(ln) ? 'msg' : /class="frag"/.test(ln) ? 'frag' : 'code';
-      rows.push({
-        file, line, pass, entry, title, kind, value, readback: inReadback,
-        codes: value.split(/\s+/).filter(Boolean),
-        indices,
-        sources: indices.map(x => (x == null ? null : statements[x])),
-      });
-    }
-    // signs shown on the page (the keeper's sign glyphs)
-    for (const m of ln.matchAll(/data-s="([^"]+)"/g)) {
-      const name = m[1];
-      (signs[name] || (signs[name] = { scrawl: scrawl[name] || null, shownIn: new Set() })).shownIn.add(pass);
-    }
-    // coined tokens
-    for (const m of ln.matchAll(/<span class="coin[^"]*" data-sign="([^"]+)"[^>]*>([^<]*)<\/span>/g)) {
-      coins.push({ word: m[2], sign: m[1], file, line, pass });
-    }
-  });
-}
+for (const [name, passes] of Object.entries(scanned.signs))
+  signs[name] = { scrawl: scrawl[name] || null, shownIn: passes };
+const coins = scanned.coins;
 
 // --- per-pass rollups, ordered by pass ----------------------------------------------------------------
 const median = a => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : null; };

@@ -254,6 +254,7 @@ title: "CosmicOS: an open source contact message"
 .entry {
   background: var(--ground); border-left: 2px solid #2b4a5c;
   border-radius: 0 12px 12px 0; padding: 22px 28px 24px; margin: 0 0 28px;
+  position: relative;   /* the head's own furniture hangs off this: `.entry-menu`, top right */
 }
 .entry .stamp {
   font-family: var(--voice-station);
@@ -387,6 +388,77 @@ title: "CosmicOS: an open source contact message"
 }
 .entry h2:hover .anchor-link, .entry h2 .anchor-link.flash { opacity: 1; }
 .entry h2 .anchor-link.flash { color: #9fe0ff; }
+
+/* "the whole run" — the ⋮ menu on an entry's head, and the block it opens.
+   Built by js/listener.js; which stretch it draws is `runsByEntry` in scripts/wire.js. */
+.entry-menu { position: absolute; top: 14px; right: 18px; }
+.entry.dispatch .entry-menu { top: 8px; }
+.entry-menu > summary {
+  display: block; cursor: pointer; list-style: none;
+  font-family: var(--voice-station); font-size: 15px; line-height: 1;
+  color: #4e6a7a; padding: 6px 8px; border-radius: 6px;
+  transition: color .15s ease, background-color .15s ease;
+}
+.entry-menu > summary::-webkit-details-marker { display: none; }
+.entry-menu > summary:hover, .entry-menu[open] > summary { color: #a8c4d4; background: rgba(140,180,220,.09); }
+/* right-anchored: it opens inward, so it can't widen a narrow page */
+.entry-menu-pop {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 3;
+  background: #101820; border: 1px solid #2b4a5c; border-radius: 8px;
+  padding: 7px 11px; white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0,0,0,.5);
+}
+.entry-menu .run-check {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  font-family: var(--voice-station); font-size: var(--sz-word); color: #a8c4d4;
+}
+/* `color-scheme` darkens the UNCHECKED box; `accent-color` only reaches the checked one */
+.entry-menu .run-check input { margin: 0; color-scheme: dark; accent-color: #5f9ab5; cursor: pointer; }
+
+/* No frame and no side padding: the rows sit on the prose's own left edge, marked off by the two
+   rules and nothing else. Every other exhibit is an inset box because a keeper is holding it up;
+   this is the part she didn't.
+   ★ NOT A SCROLL REGION. `max-height` + `overflow` here traps the wheel — the block is wide and sits
+   where the pointer already is. It is as tall as it is. Pinned by a test. */
+.run { display: none; }
+.run.open {
+  display: block;
+  margin: 0 0 var(--gap-block); padding: 7px 0;
+  border-top: 1px solid #24333e; border-bottom: 1px solid #24333e;
+}
+.run .run-row {
+  font-family: var(--voice-marks); font-size: var(--sz-mark);
+  line-height: 1.55; color: #8aa2b0; white-space: pre-wrap; word-break: break-word;
+  padding: 1px 0;
+}
+/* the ones the entry itself draws. A band, not a mark (the notation is a closed set) and not a
+   gutter rule (that would put banded and plain rows on two left edges). */
+.run .run-row.here { background: rgba(140,180,220,.085); }
+
+/* ── one rung simpler: the step-down control on a drawn line (js/listener.js) ──
+   Inside the marks' own cell, never beside it — a labeled row is a two-cell grid on
+   `display: contents`, so a third child would become a third cell and stack the line. */
+.simpler {
+  background: none; border: 0; padding: 0 0 0 .7em; margin: 0;
+  font-family: var(--voice-station); font-size: var(--sz-word); line-height: 1;
+  color: #4e6a7a; cursor: pointer; vertical-align: baseline;
+  opacity: 0; transition: opacity .12s ease, color .12s ease;
+}
+.row:hover .simpler, .frag:hover .simpler, .run-row:hover .simpler,
+.simpler:focus-visible { opacity: 1; }
+.simpler:hover, .simpler:focus-visible { color: #a8c4d4; }
+/* A line not at the rung its page put it at says so, or a reader mistakes a form they asked for
+   for the one the book chose. INK BEHIND IT, not a rule at the edge: a rule was an inset shadow,
+   which takes no space and so sat on top of the first mark, and giving it space would jog the line
+   sideways every time it was stepped. Warm, because the cool band on a run row already means
+   something else (that line is also drawn below). */
+/* on the element that actually HOLDS the marks. A labeled row is `display: contents`, so it has no
+   box of its own and a background on it is dropped on the floor — `.fig` is its marks cell. */
+.row.stepped, .frag.stepped, .run-row.stepped,
+.row.stepped > .fig, .frag.stepped > .fig { background: rgba(203,183,148,.075); }
+.row.stepped .simpler, .frag.stepped .simpler, .run-row.stepped .simpler { opacity: 1; color: #a08a63; }
+/* a finger has no hover: on touch the control is simply always there */
+@media (pointer: coarse) { .simpler { opacity: 1; padding-left: 1em; } }
 /* terse: short clipped lines, tighter rhythm */
 .entry p {
   font-family: var(--voice-hers);
@@ -861,6 +933,10 @@ title: "CosmicOS: an open source contact message"
   .entry.dispatch { padding: 13px 16px 14px; }
   .entry .stamp { padding: 11px 16px 0; margin: 0 -16px 7px; }
   .entry p { font-size: 102%; }
+  /* follows the entry's padding in, and gets a finger-sized target */
+  .entry-menu { top: 8px; right: 8px; }
+  .entry-menu > summary { padding: 11px 13px; }
+  .entry-menu .run-check { font-size: var(--sz-mark); padding: 3px 0; }
 
   /* the founder's raw runs: wrap them. They are a stream, not a structured row —
      there is nothing to lose by breaking one, and everything to lose by hiding it. */
@@ -1042,7 +1118,7 @@ title: "CosmicOS: an open source contact message"
 
 </div>
 
-<script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {% include wire_quotes.json %} };</script>
+<script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {% include wire_quotes.json %}, runs: {% include wire_runs.json %} };</script>
 <script src="{{ site.baseurl }}/js/listener.js?v={{ site.time | date: '%s' }}"></script>
 <script src="{{ site.baseurl }}/js/circuit-sim.js?v={{ site.time | date: '%s' }}"></script>
 {% comment %} The note-taking widget is NOT loaded here. It is local tooling, and it used to ride

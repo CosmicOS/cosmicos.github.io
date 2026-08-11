@@ -335,7 +335,9 @@ a:visited {
    down. A scroll-margin cannot be read back out of the layout, so this is maintained by measuring;
    `tests/topbar.spec.js` fails if an entry ever lands under the bar, which is how the 48px left
    after the masthead redesign was caught, and then the 68px left after this one. */
-:target, .entry, .tu, .preface, .msg-index { scroll-margin-top: 78px; }
+/* `.entry-menu` is a CONTROL, scrolled into view by a Tab as well as by an anchor jump — under the
+   bar it is not merely hidden, the bar takes the press. */
+:target, .entry, .entry-menu, .tu, .preface, .msg-index { scroll-margin-top: 78px; }
 
 /* A TOUCH SCREEN GETS BIGGER CHROME, NOT SMALLER. Body prose there is ~19px, so the desk sizes read
    as an afterthought beside it; and the button is under a thumb, so its hit area goes to the 44px

@@ -114,6 +114,9 @@ function flatten(frag) {
      A blind reader meets that as broken output in the middle of an entry. Nothing a reader CLICKS
      belongs in a flat read; drop the element, not the class. */
   s = s.replace(/<button\b[\s\S]*?<\/button>/g, '');
+  /* and the one control that is not a button: the head's `⋮` menu is a `<details>`, so the rule
+     above does not see it. Same principle, different tag. */
+  s = s.replace(/<details class="entry-menu"[\s\S]*?<\/details>/g, '');
   /* and the live status readout, which read.js sees because it reads the POST-JS DOM: the simulator
      writes 'still — set it going' into it, an instruction to click, in a text-only read where there
      is nothing to click. */

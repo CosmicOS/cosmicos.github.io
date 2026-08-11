@@ -6,6 +6,9 @@
  *   node scripts/look.js '.sheets'         any CSS selector
  *   node scripts/look.js --page 390 --scroll=3000            the page, at a width, scrolled
  *   node scripts/look.js --page --click='.tb-menu summary'   …after opening something
+ *   node scripts/look.js p239 --click='#p239 > .entry-menu > summary' --click='#p239 input'
+ *                                          …--click may repeat; they fire in order
+ *   node scripts/look.js p193 --hover='.row'   …a control that only shows under a pointer
  *   SCRAWL=numbers node scripts/look.js p207   every sign as the number the message sends for it
  *
  * IT DROVE CHROME DIRECTLY AND THAT HARNESS LIED, in three ways that all look like page bugs:
@@ -36,7 +39,10 @@ const wholePage = argv.includes('--page');
 const target = wholePage ? null : positional[0];
 const width = Number((wholePage ? positional[0] : positional[1]) || 760);
 const scrollTo = Number(flag('scroll') || 0);
-const click = flag('click');
+/* `--click` may repeat, firing in order — some states here are two presses deep. Repeated rather
+   than comma-split, because a selector may contain a comma. */
+const clicks = argv.filter(a => a.startsWith('--click=')).map(a => a.slice(8));
+const hovers = argv.filter(a => a.startsWith('--hover=')).map(a => a.slice(8));   // same idea: some controls only exist under a pointer
 const outFlag = flag('out');
 
 if (!wholePage && !target) {
@@ -99,7 +105,12 @@ const ISO  = path.join(SITE, '.look-iso.html');
     }
     await page.waitForTimeout(250);
 
-    if (click) { await page.click(click); await page.waitForTimeout(350); }
+    for (const c of clicks) { await page.click(c); await page.waitForTimeout(350); }
+    /* HOVER LAST, AND AFTER THE TARGET IS IN VIEW. `el.screenshot()` scrolls the element into place,
+       which slides it out from under the pointer and drops the hover before the shutter — so a
+       hover-only control photographed as absent. Scroll first, then hover, then shoot. */
+    if (sel && hovers.length) await page.locator(sel).first().scrollIntoViewIfNeeded();
+    for (const h of hovers) { await page.hover(h); await page.waitForTimeout(200); }
     if (scrollTo) { await page.evaluate(y => window.scrollTo(0, y), scrollTo); await page.waitForTimeout(500); }
 
     if (sel) {

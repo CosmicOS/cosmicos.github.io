@@ -7,6 +7,8 @@
 #   scripts/look.sh '.sheets'                any CSS selector
 #   scripts/look.sh --page 390 --scroll=3000 the whole page, at a width, in a scrolled state
 #   scripts/look.sh --page --click='.tb-menu summary'   …after opening something
+#   scripts/look.sh p239 --click=A --click=B            …--click may repeat, in order
+#   scripts/look.sh p193 --hover='.row'                 …a hover-only control
 #   SCRAWL=numbers scripts/look.sh p207      every sign as the number the message sends for it
 #
 # IT USED TO DRIVE CHROME DIRECTLY, and that harness lied about anything involving time or scroll:

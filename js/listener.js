@@ -48,6 +48,11 @@ function reckonNum(v, barred){
                                    // THE source of truth for coining. Re-coining = a later `.coin` for the same sign wins.
   var allFigures = false;          // "in plain figures": force EVERY sign to its own figure (one source w/ hand mode, so the two can't disagree)
   var WIRE  = DATA.wire   || {};   // code -> {parse, spider} for data-code widgets (looked up client-side, not baked)
+  /* the run bundle's statements join the SAME table, so a row in an open run is an ordinary wire
+     quote and every rung works on it without a second code path. Existing entries win: those carry
+     `spider` too, and this one does not. */
+  (function(sp){ for (var k in sp) if (sp[k].c && !WIRE[sp[k].c]) WIRE[sp[k].c] = { parse: sp[k].p }; })
+    ((DATA.runs && DATA.runs.spine) || {});
   var TONE  = { '0':'˩','1':'˨','2':'˦','3':'˥' };
   function wireOf(el){ var c = el.getAttribute('data-code'); return (c && WIRE[c]) ? WIRE[c] : {}; }
   function tones(code, cls){                   // RAW: the four-symbol stream, in real tone chars (copy-pasteable)
@@ -498,6 +503,12 @@ function reckonNum(v, barred){
   }
   var LEVEL_LABEL = { tones:'as it comes', cups:'in cups', atoms:'in atoms',
                       figures:'in plain figures', unworded:'in its own signs', hand:'as I set it down' };
+  /* THE ORDER OF THE RUNGS, AS DATA. It was only ever prose in the block above, plus the accidental
+     key order of two objects — so nothing could ask "what is one rung simpler than this?", which is
+     what the step-down control on each row needs. Simplest first. The break after `atoms` is the
+     one in that block: below it a rung needs only the code, above it it needs the parse. */
+  var LADDER = ['tones', 'cups', 'atoms', 'figures', 'unworded', 'hand'];
+  var NEEDS_PARSE = 3;                             // index of the first rung that cannot work off the code alone
   function renderMsg(el){                       // a .msg widget: several rungs of the ladder at once, labeled
     (el.getAttribute('data-at')||'hand,figures,tones').split(',').forEach(function(at){
       var row = document.createElement('div'); row.className = 'msg-line';
@@ -537,18 +548,50 @@ function reckonNum(v, barred){
     foldMode = false;
   }
 
+  /* ── WHAT THE PAGE HAD REACHED, AT EACH ROW ─────────────────────────────────────────────────────
+     The notation state is positional, so when the walk below ends it holds the END OF THE BOOK.
+     Anything that draws a row LATER — a run panel, a reader stepping a row down the ladder — would
+     put Lio's words on Maren's page. So the walk records what it held as it passed.
+
+     PER ROW, not per entry. A keeper coins a word partway down a night, and 143 of the book's 437
+     wire rows have a coining or a cut later in their own entry — so an entry-level state would
+     redraw a third of the book in a hand its page had not reached yet.
+     Copy-on-write: one frozen state is shared by every row until a cut or a coining moves the world,
+     which happens 40 times in the whole book. `NOTATION` keeps the entry-foot states too, which is
+     what a run panel wants — that block is the reader asking what else was in the night, so it is
+     drawn in the hand the entry ends in. */
+  var NOTATION = {}, openEntry = null;
+  var ROWSTATE = new WeakMap(), held = null;
+  function snapshot(){
+    var c = {}; for (var k in COINED) if (COINED.hasOwnProperty(k)) c[k] = COINED[k];
+    return { tallied: talliedOn, split: splitOn, nil: nilOn, numerals: numeralsOn, join: joinOn, coined: c };
+  }
+  function restore(s){
+    talliedOn = s.tallied; splitOn = s.split; nilOn = s.nil; numeralsOn = s.numerals; joinOn = s.join;
+    COINED = s.coined; allFigures = false; unworded = false;
+  }
+  function standing(){ return held || (held = snapshot()); }   // the state as it stands, made once
+  function moved(){ held = null; }                             // a cut or a coining: the next ask rebuilds
+
   /* ONE walk, in DOCUMENT ORDER — this is what makes coining linear/positional. A `.coin` span
      sits in the prose exactly where the keeper coins a shorthand; passing it switches that sign
      on (COINED) from there down. Every exhibit after it shows the token; everything before shows
      raw scrawl. The token itself is the span's own visible glyph — no duplication, no pass numbers.
      `.sg` prose marks (is/int) and `.msg`/`.row` exhibits all render through the same COINED map. */
   Array.prototype.forEach.call(
-    document.querySelectorAll('.coin[data-sign], [data-cut], .msg, .row[data-parse], .row[data-code], .frag[data-code], .sg[data-s], .num[data-n], .rk[data-n]'),
+    document.querySelectorAll('.entry[id], .coin[data-sign], [data-cut], .msg, .row[data-parse], .row[data-code], .frag[data-code], .sg[data-s], .num[data-n], .rk[data-n]'),
     function(el){
+      /* an entry OPENS here, so whatever the walk holds now is where the previous one left off.
+         An entry is an ancestor of everything in it, so it is reached before its own contents. */
+      if (el.classList.contains('entry')) {
+        if (openEntry) NOTATION[openEntry] = snapshot();
+        openEntry = el.id; return;
+      }
       // A CUT does NOT return: the marker rides on the very span that does the thing — §232's on the
       // span that coins `tal`, §267's on the rung that first shows a sign written as one glyph.
       var cut = el.getAttribute('data-cut'); if (cut && CUTS[cut]) CUTS[cut]();
-      if (el.classList.contains('coin')) { COINED[el.getAttribute('data-sign')] = (el.textContent||'').trim(); return; }
+      if (cut) moved();
+      if (el.classList.contains('coin')) { COINED[el.getAttribute('data-sign')] = (el.textContent||'').trim(); moved(); return; }
       if (el.classList.contains('msg')) { renderMsg(el); return; }
       if (el.classList.contains('sg'))  { allFigures = false; el.innerHTML = mark(el.getAttribute('data-s')); return; }
       /* both carry the figure as a gloss (note #40): the reader can ask an inline number what it
@@ -560,10 +603,192 @@ function reckonNum(v, barred){
          separating it from a `.row`, which is redrawn whole. It joins this walk now rather than
          running in a pass of its own, so a frag can take a parse rung like anything else — and so
          there is one tone map in this file instead of two. */
-      if (el.classList.contains('frag')) { var h = drawAt(el, null); if (h) el.insertAdjacentHTML('beforeend', h); return; }
-      if (el.hasAttribute('data-parse') || el.hasAttribute('data-code')) renderRow(el);
+      if (el.classList.contains('frag')) { ROWSTATE.set(el, standing());
+        var h = drawAt(el, null); if (h) el.insertAdjacentHTML('beforeend', h); return; }
+      if (el.hasAttribute('data-parse') || el.hasAttribute('data-code')) { ROWSTATE.set(el, standing()); renderRow(el); }
     }
   );
+  if (openEntry) NOTATION[openEntry] = snapshot();     // the last entry closes on the end of the book
+
+  /* ══ ONE RUNG SIMPLER — the step-down control on a drawn line ════════════════════════════════════
+     A reader who cannot make anything of `same ⟅tal ●●●●○⟆ ⟅tal ●●●●○⟆` has, until now, nowhere to go
+     but the prose around it. The rungs to go to already exist and are already how this page draws
+     everything; what was missing was a way to ask. So every drawn line gets a control that steps it
+     one rung DOWN the ladder, and round to where it started when it runs out.
+
+     DOWN ONLY, which is not a limitation but the rule: `data-at` may reach back down the ladder and
+     never up it, so every step this offers is one the page was already allowed to draw.
+
+     "THE NEXT ONE THAT IS DISTINCT." Rungs collapse constantly — `hand`, `unworded` and `figures`
+     are the same drawing for any statement with no coined word in it, which is most of them early
+     on. A control that appeared to do nothing on two presses out of three would read as broken, so
+     candidates are drawn and compared by their marks, and the first that actually differs wins.
+
+     IN THE HAND THAT ROW WAS DRAWN IN (ROWSTATE), never the state the walk ended holding. */
+  var addSteppers = (function(){
+    function bareMarks(html){ return html.replace(/<[^>]+>/g, ''); }
+    function rungAt(el){ return el.getAttribute('data-at') || 'hand'; }
+    function canDraw(el, rung){
+      /* below the break a rung needs only the code; above it, the parse. And `data-span` is a slice
+         of the STREAM — there is no such thing as half a parse — so a spanned row stays on the code
+         rungs however far down it is asked to go. */
+      if (LADDER.indexOf(rung) < NEEDS_PARSE) return !!codeOf(el);
+      if (el.getAttribute('data-span')) return false;
+      return !!(el.getAttribute('data-parse') || wireOf(el).parse);
+    }
+    function drawAtRung(el, rung){
+      var was = snapshot(), state = ROWSTATE.get(el);
+      if (state) restore(state);
+      foldMode = el.hasAttribute('data-fold');
+      var html = '';
+      try { html = LEVELS[rung](el); } catch (e) { html = ''; }
+      foldMode = false; restore(was);
+      return html;
+    }
+    // the next rung below `from` whose marks differ from what is on the page; null if there is none
+    function nextDistinct(el, from, shownMarks){
+      for (var i = LADDER.indexOf(from) - 1; i >= 0; i--) {
+        var rung = LADDER[i];
+        if (!canDraw(el, rung)) continue;
+        var html = drawAtRung(el, rung);
+        if (html && bareMarks(html) !== shownMarks) return { rung: rung, html: html };
+      }
+      return null;
+    }
+
+    /* WHERE THE MARKS LIVE INSIDE A ROW. A labeled row is a two-cell grid with `display: contents`,
+       so a third child becomes a third grid cell and the line stacks — the control has to go INSIDE
+       the cell holding the marks, not beside it. `.fig` is that cell where there is one. */
+    function body(el){ return el.querySelector(':scope > .fig') || el; }
+
+    function fit(el){
+      if (el.classList.contains('flood')) return false;         // the §189 wall: not a statement
+      var home = rungAt(el);
+      if (!LEVELS[home]) return false;
+      return !!nextDistinct(el, home, bareMarks(drawAtRung(el, home) || el.innerHTML));
+    }
+
+    function control(el){
+      var home = rungAt(el), at = home;
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'simpler';
+      btn.textContent = '↓';
+      function say(){
+        btn.title = at === home ? 'show it one step simpler'
+                                : LEVEL_LABEL[at] + ' — press for the next, or to come back';
+        btn.setAttribute('aria-label', btn.title);
+      }
+      say();
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var host = body(el);
+        var next = nextDistinct(el, at, bareMarks(drawAtRung(el, at)));
+        if (!next) { next = { rung: home, html: drawAtRung(el, home) }; }   // round back to where it began
+        at = next.rung;
+        var keep = host.querySelector(':scope > .lbl');
+        host.innerHTML = next.html;
+        if (keep) host.insertBefore(keep, host.firstChild);
+        host.appendChild(btn);
+        el.classList.toggle('stepped', at !== home);
+        say();
+      });
+      body(el).appendChild(btn);
+    }
+
+    return function(root){
+      Array.prototype.forEach.call(
+        (root || document).querySelectorAll('.row[data-code], .row[data-parse], .frag[data-code], .run-row[data-code]'),
+        function(el){ if (fit(el)) control(el); });
+    };
+  })();
+  addSteppers(document);
+
+  /* ══ THE WHOLE RUN ═══════════════════════════════════════════════════════════════════════════════
+     An entry holds up four or five sayings out of a stretch seventy long; the rest of that stretch is
+     the drilling the keeper is reading through. This opens it, on request, in the marks that page had
+     reached, with the ones the entry itself draws carrying a band.
+
+     Which stretch is `runsByEntry` in scripts/wire.js, not a judgement made here — every statement
+     added sits BETWEEN two the keeper put on her page herself.
+     One rung, `hand`: the panel is for bulk and repetition, which the drawn form shows and the tones
+     do not. `foldMode` on, so a long statement opens at its joints.
+     No caption over it. Every fact one could carry — how long the stretch is, which rows are also
+     below — is already in front of the reader (plans/README.md §2b). */
+  (function(){
+    var R = DATA.runs || {}, RUNS = R.runs || {}, SPINE = R.spine || {};
+    function build(entry, run){
+      var was = snapshot();                                  // the walk's own end state, put back below
+      restore(NOTATION[entry.id] || was);
+      var shown = {}, i;
+      for (i = 0; i < run.shown.length; i++) shown[run.shown[i]] = 1;
+      // the panel holds rows directly — a wrapper would be a third frame inside two inset boxes
+      var panel = document.createElement('div');
+      panel.className = 'run'; panel.id = entry.id + '-run';
+      var rows = '';
+      for (i = run.lo; i <= run.hi; i++) {
+        var st = SPINE[i]; if (!st || !st.c) continue;       // not in the bundle: draw nothing, claim nothing
+        rows += '<div class="run-row' + (shown[i] ? ' here' : '') + '" data-code="' + st.c +
+                '" data-at="hand" data-fold></div>';
+      }
+      panel.innerHTML = rows;
+      foldMode = true;
+      Array.prototype.forEach.call(panel.querySelectorAll('.run-row'), function(r){
+        ROWSTATE.set(r, NOTATION[entry.id] || was);          // the hand the entry ends in
+        r.innerHTML = LEVELS.hand(r);
+      });
+      foldMode = false;
+      restore(was);
+      addSteppers(panel);
+      return panel;
+    }
+
+    Object.keys(RUNS).forEach(function(id){
+      var entry = document.getElementById(id); if (!entry) return;
+      /* after the head, before the first paragraph. A dispatch has no note and no watch line, so
+         hang it off whichever of the three the entry has. */
+      var head = entry.querySelector(':scope > h2') || entry.querySelector(':scope > .passfields')
+              || entry.querySelector(':scope > .stamp');
+      if (!head) return;
+
+      /* a `<details>`, like the top bar's menu: it brings the opening, the keyboard and the focus
+         ring, so the script below is only the closing. One item today; the next thing that wants to
+         hang off an entry goes in beside it. */
+      var menu = document.createElement('details');
+      menu.className = 'entry-menu';
+      menu.innerHTML =
+        '<summary aria-label="more for this pass" title="more for this pass">⋮</summary>' +
+        '<div class="entry-menu-pop">' +
+          '<label class="run-check"><input type="checkbox" aria-controls="' + id + '-run">' +
+          '<span>Show whole run</span></label>' +
+        '</div>';
+      entry.appendChild(menu);
+
+      var box = menu.querySelector('input'), panel = null;
+      box.addEventListener('change', function(){
+        if (!panel) {                                        // built on the first ask: 40 of these
+          panel = build(entry, RUNS[id]);                    // at load is a thousand rows nobody wanted
+          head.parentNode.insertBefore(panel, head.nextSibling);
+        }
+        panel.classList.toggle('open', box.checked);
+      });
+
+      /* closing only (js/topbar.js does the same for `.tb-menu`). The timer is grace for crossing
+         the gap from the dots to the panel. */
+      var summary = menu.querySelector('summary'), shutTimer = null;
+      function hold(){ clearTimeout(shutTimer); shutTimer = null; }
+      function shut(){ hold(); menu.open = false; }
+      if (window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        menu.addEventListener('mouseleave', function(){ hold(); shutTimer = setTimeout(shut, 400); });
+        menu.addEventListener('mouseenter', hold);
+      }
+      document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape' && menu.open) { shut(); summary.focus(); }
+      });
+      document.addEventListener('pointerdown', function(e){
+        if (menu.open && !menu.contains(e.target)) shut();
+      });
+    });
+  })();
 })();
 
 /* A button whose label changes is a button that changes width, and these bars are centered, so the
