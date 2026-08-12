@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 # Rebuild the lesson (listener) in one command.
+#   0. prose -> arc: splice _prose/<keeper>.html + <keeper>.blocks.json back into the GENERATED
+#      _includes/listener/*.html.  MUST BE FIRST AND WAS MISSING UNTIL 08-12: the diary's source is
+#      _prose/, so without this an edit to the story built the OLD page, silently and with every gate
+#      green — you look at the site, your paragraph is not there, and nothing tells you why.
+#      verify.sh has always done this as its step 0; the two now agree.
 #   1. build-pics: regenerate the gate pictures from the WIRE (make-image data) so the committed
 #      assets/listener/*.png always equal what the message actually transmits — never a stale blob.
 #   2. build-frags over ALL includes: verify every quote is a real transmitted statement + rebuild
@@ -18,22 +23,25 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "1/6  build-pics (regenerate gate pictures from the wire)…"
+echo "0/7  prose -> arc (splice _prose/ into the generated _includes/listener/*.html)…"
+node scripts/prose.js build
+
+echo "1/7  build-pics (regenerate gate pictures from the wire)…"
 node scripts/build-pics.js
 
-echo "2/6  build-frags (verify quotes + rebuild wire_quotes.json)…"
+echo "2/7  build-frags (verify quotes + rebuild wire_quotes.json)…"
 node scripts/build-frags.js
 
-echo "3/6  build-runs (rebuild wire_runs.json — each entry's stretch of the message)…"
+echo "3/7  build-runs (rebuild wire_runs.json — each entry's stretch of the message)…"
 node scripts/build-runs.js
 
-echo "4/6  inventory-marks (rebuild MARK_INVENTORY.md + mark_cuts.json — the tap sheet)…"
+echo "4/7  inventory-marks (rebuild MARK_INVENTORY.md + mark_cuts.json — the tap sheet)…"
 node scripts/inventory-marks.js > /dev/null
 
-echo "5/6  build-index (refresh the cross-reference in plans/listener_index.json)…"
+echo "5/7  build-index (refresh the cross-reference in plans/listener_index.json)…"
 node scripts/build-index.js
 
-echo "6/6  jekyll build…"
+echo "6/7  jekyll build…"
 jekyll build --quiet
 
 echo "done -> _site/"

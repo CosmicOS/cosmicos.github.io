@@ -706,8 +706,12 @@ test('a sign shows both its faces, and the run under both', async ({ page }) => 
                says: d.textContent };
     });
   };
-  // the founder's first coinage, met two hundred passes after she made it
-  expect(await ask('#p400 [data-sid="18"]')).toMatchObject({ word: 'sarn', run: '▪⟅▪▫▫▪▫⟆', at: '#p207' });
+  /* The founder's first coinage, met two hundred passes after she made it. THE WORD IS READ OFF HER
+     COINING SPAN, not typed here: renaming a coinage is an ordinary story edit, and a test that
+     spells it out turns that into a failure in tests/ — the last place a writer thinks to look.
+     What must hold is that the panel hands back HER word, whatever she called it. */
+  const coined = await page.locator('#p207 .coin[data-sign="intro"]').innerText();
+  expect(await ask('#p400 [data-sid="18"]')).toMatchObject({ word: coined, run: '▪⟅▪▫▫▪▫⟆', at: '#p207' });
   /* A SIGN WHOSE NUMBER WILL NOT FIT IN ONE GLYPH — two base-64 digits, one id, one run. These
      answered with nothing at all until 08-12, because `idOf` gave up on a second glyph. */
   expect(await ask('#p384 [data-sid="73"]')).toMatchObject({ run: '▪⟅▪▫▫▪▫▫▪⟆' });
