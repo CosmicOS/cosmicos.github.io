@@ -10,13 +10,25 @@
 // VENDORED FILES ARE NOT MINE TO CORRECT: cosmicos.js and lib_cosmicos.js are compiled output and
 // jqconsole.js is somebody else's library, so they are skipped by name rather than by folder.
 const fs=require('fs'),path=require('path');
-const BR=['behaviour','behaviours','labour','colour','colours','honour','honours','neighbour','neighbours',
- 'favour','favours','flavour','centre','centres','metre','metres','theatre','realise','realised','realising',
- 'recognise','recognised','recognising','organise','organised','apologise','summarise','generalise',
- 'generalises','generalised','defence','offence','practise','licence','grey','sceptic','sceptical',
- 'travelling','travelled','marvelled','signalled','modelling','modelled','cancelled','fuelled','whilst','amongst',
- // added 08-10 when the gate first looked at the code it had never covered
- 'centred','centring','labelled','labelling','levelled','behavioural','colourful','greyish','spelt','learnt'];
+// STEMS, NOT WHOLE WORDS (08-12). The list was literal strings, so it caught exactly the inflection
+// somebody had already been caught using and no other: `defence` was on it, `defences` was not, and
+// `defences` went into a commit message with the gate green. Adding the plural by hand would have
+// been the same mistake one word later — `organising`, `honoured` and `flavours` were all missing
+// too. Each entry is now a STEM, and the endings English puts on it are matched with it, so a word
+// arrives with its whole family. A stem ending in `e` loses it before the ending, which is what
+// makes `centring` and `practising` fall out rather than needing their own line.
+const BR=['behaviour','labour','colour','honour','neighbour','favour','flavour',
+ 'centre','metre','theatre','defence','offence','licence','practise',
+ 'realise','recognise','organise','apologise','summarise','generalise',
+ 'sceptic','grey','whilst','amongst','spelt','learnt',
+ 'travelling','travelled','marvelled','signalled','modelling','modelled','cancelled','fuelled',
+ 'labelled','labelling','levelled'];
+// `colour` -> colour(s|ed|ing|ful|ish|al…)?   ·   `centre` -> centr(e|es|ed|ing)
+// NO `al` ON THE e-STEMS: `centr`+`al` is `central`, which is the American spelling and was reported
+// as a fault the first time this ran. A gate that cries on correct writing gets switched off.
+const ENDING = e => e.endsWith('e')
+  ? e.slice(0, -1) + '(?:e|es|ed|ing)'
+  : e + '(?:s|ed|ing|ful|less|ist|ish|al|ally)?';
 const files=[];
 const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){
   if(e.name==='archive'||e.name==='node_modules'||e.name==='_site'||e.name.startsWith('.'))continue;
@@ -33,7 +45,7 @@ const walkCode=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){
   else if(/\.(js|css|sh|py)$/.test(e.name)&&!VENDORED.has(e.name))files.push(p);}};
 ['js','css','scripts','tests'].forEach(d=>{if(fs.existsSync(d))walkCode(d)});
 let bad=0;
-const re=new RegExp('\\b('+BR.join('|')+')\\b','gi');
+const re=new RegExp('\\b('+BR.map(ENDING).join('|')+')\\b','gi');
 for(const f of files){
   const s=fs.readFileSync(f,'utf8').split('\n');
   s.forEach((line,i)=>{let m;re.lastIndex=0;

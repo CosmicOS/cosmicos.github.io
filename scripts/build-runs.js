@@ -13,8 +13,8 @@
  * serves both. Without it the three code rungs (tones/cups/atoms) cannot be drawn for these rows at
  * all — the browser has no wire encoder, and the codes cost 12kB over the wire.
  *
- * Inlined with the page rather than fetched: 89kB, 14kB over the wire beside a page already at
- * 570kB, which is cheaper than the failure modes a fetch brings (offline, file://, a QA harness
+ * Inlined with the page rather than fetched: 204kB, 27kB over the wire beside a page already at
+ * 796kB, which is cheaper than the failure modes a fetch brings (offline, file://, a QA harness
  * capturing the DOM before the response lands). In `_includes/` for the same reason
  * `wire_quotes.json` is — an include is read as text, never through Jekyll's YAML parser.
  *
@@ -30,15 +30,17 @@ const fs = require('fs'), path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const WIRE = require('./wire');
 
-/* A RUN WITH NOTHING BETWEEN GETS NO PANEL. If an entry quotes everything in its own run — the
-   founder's first pages, where she has three sayings and shows all three — the control would open on
-   what the reader is already looking at. Those entries simply do not get one, which is honest: there
-   is no more of the message there to show. */
+/* EVERY ENTRY WITH A RUN GETS ONE — including the fifteen that quote their whole stretch, the
+   founder's first pages among them. Those were skipped until 08-12, on the reasoning that the panel
+   would open on what the reader is already looking at. The reasoning was about the panel and not
+   about the reader: from the outside, an entry with no control and an entry whose control you have
+   not spotted are the same entry, and the founder's opening — five entries with nothing to press —
+   is where a reader learns whether there is anything to press at all. It also withholds a fact those
+   entries alone can give: the stretch IS the page, nothing between two of her sayings went unshown.
+   Every row in those panels comes up banded, and that band is the answer. */
 const runs = {};
-for (const r of WIRE.runsByEntry(WIRE.scanDiary().rows)) {
-  if (r.hi - r.lo + 1 <= r.shown.length) continue;
+for (const r of WIRE.runsByEntry(WIRE.scanDiary().rows))
   runs[r.entry] = { lo: r.lo, hi: r.hi, shown: r.shown };
-}
 
 /* The spine, trimmed to what the panels can actually draw. All 1,730 statements would be half again
    as large for statements no panel reaches; the union of the runs IS the panels' data, so the file

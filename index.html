@@ -187,6 +187,33 @@ title: "CosmicOS: an open source contact message"
   background: #1d2a34; color: #cdd6df; border: 1px solid #3a5567;
   font-family: var(--voice-station); font-size: 12px; letter-spacing: 0.08em; text-transform: none;
 }
+/* ── ASK A MARK WHAT IT IS ──
+   The panel is a child of <body>, not of the text, so a reader copying a run of marks never picks it
+   up. `user-select: none` is the second line of that defense, for a selection dragged over it.
+   AND IT IS NOT A SCROLL REGION: no max-height and no overflow below, because a block with its own
+   scroll traps the wheel the moment a pointer crosses it. Both pinned by tests. */
+.mk-pop{ position: absolute; z-index: 80; width: min(20em, 88vw); -webkit-user-select: none; user-select: none;
+  background: #101821; border: 1px solid #2f4756; border-radius: 5px; box-shadow: 0 6px 22px rgba(0,0,0,.5);
+  padding: 9px 11px 10px; color: #cdd6df; font-family: var(--voice-station); font-size: 12.5px; line-height: 1.5; }
+.mk-pop .mk-face{ font-family: var(--voice-marks); font-size: 16px; margin-right: .5em; }
+/* A sign's two faces sit side by side with the join drawn between them — that join IS the answer for
+   a reader who has met the glyph and the word three hundred passes apart and never seen them meet. */
+.mk-pop .mk-face .scrawl{ font-size: 19px; }
+.mk-pop .mk-face .mk-word{ font-family: var(--voice-station); font-size: 14px; letter-spacing: .05em;
+  text-transform: lowercase; color: #cfe0ea; }
+.mk-pop .mk-face .mk-word::before{ content: "="; margin: 0 .45em 0 .5em; color: #6a8496; font-size: 12px; }
+.mk-pop .mk-kind{ font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: #7996a8; }
+.mk-pop .mk-say{ margin: 6px 0 0; color: #cdd6df; }
+.mk-pop .mk-stands{ margin: 7px 0 0; }
+.mk-pop .mk-lbl{ font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: #7996a8; margin-right: .5em; }
+.mk-pop .mk-run{ font-family: var(--voice-marks); font-size: var(--sz-mark); }
+.mk-pop .mk-cut{ display: inline-block; margin-top: 9px; color: #9fc6dd; text-decoration: none;
+  white-space: nowrap; border-bottom: 1px dotted rgba(150,180,200,.45); }
+.mk-pop .mk-cut:hover{ border-bottom-color: rgba(170,205,230,.9); }
+@media (hover: hover) and (pointer: fine){
+  .bit, .fj, .cup, .lst, .tk, .nil, .key{ cursor: help; }
+}
+
 /* THE STAMP'S FIGURES CARRY THE HEAD. The stamp runs at 74% and the marks are hairlines, so a pass
    whose figures both fall in the bare column — 520, 528, 544, and 544 opens a cycle — came out as
    two faint scratches where the heading should be. Size and stroke are set here and nowhere else. */
@@ -401,6 +428,13 @@ title: "CosmicOS: an open source contact message"
 }
 .entry-menu > summary::-webkit-details-marker { display: none; }
 .entry-menu > summary:hover, .entry-menu[open] > summary { color: #a8c4d4; background: rgba(140,180,220,.09); }
+/* ★ ON A TOUCH SCREEN THERE IS NO HOVER TO FIND IT WITH. The resting color reads at 3.07:1 on the
+   entry ground — fine for something a pointer lights up on the way past, invisible for a control
+   whose only state is resting. So it sits lit, in a chip that shows it is a control. Same fix as
+   `.simpler`, which is opacity:0 until hovered and permanently on for a coarse pointer. */
+@media (pointer: coarse) {
+  .entry-menu > summary { color: #93b3c4; background: rgba(140,180,220,.10); }
+}
 /* right-anchored: it opens inward, so it can't widen a narrow page */
 .entry-menu-pop {
   position: absolute; right: 0; top: calc(100% + 4px); z-index: 3;
@@ -1118,7 +1152,7 @@ title: "CosmicOS: an open source contact message"
 
 </div>
 
-<script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {% include wire_quotes.json %}, runs: {% include wire_runs.json %} };</script>
+<script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {% include wire_quotes.json %}, runs: {% include wire_runs.json %}, marks: {% include mark_cuts.json %} };</script>
 <script src="{{ site.baseurl }}/js/listener.js?v={{ site.time | date: '%s' }}"></script>
 <script src="{{ site.baseurl }}/js/circuit-sim.js?v={{ site.time | date: '%s' }}"></script>
 {% comment %} The note-taking widget is NOT loaded here. It is local tooling, and it used to ride

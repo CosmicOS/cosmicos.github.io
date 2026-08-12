@@ -46,6 +46,12 @@ function reckonNum(v, barred){
   var COINED = {};                 // sign -> token, built LINEARLY as we walk the page: a `.coin` span in the prose
                                    // (where the keeper coins a shorthand) switches that sign on FROM THAT POINT down.
                                    // THE source of truth for coining. Re-coining = a later `.coin` for the same sign wins.
+  /* THE SAME WALK, KEPT AS TWO PLACES — where a sign first appears on the page, and the pass whose
+     prose gives it a word. The tap panel cites them; nothing here is a second traversal or a table
+     anybody maintains, so a sign that moves takes its citation with it. `walking` shuts the record
+     off at the end of the walk, because everything drawn after it is a panel and not a place in the
+     book. Declared HERE, beside `COINED`, because `mark()` reads all three. */
+  var COINED_AT = {}, SEEN_AT = {}, walking = true;
   var allFigures = false;          // "in plain figures": force EVERY sign to its own figure (one source w/ hand mode, so the two can't disagree)
   var WIRE  = DATA.wire   || {};   // code -> {parse, spider} for data-code widgets (looked up client-side, not baked)
   /* the run bundle's statements join the SAME table, so a row in an open run is an ordinary wire
@@ -209,15 +215,28 @@ function reckonNum(v, barred){
      showing the reader a mark nobody introduced. POSITIONAL, `data-cut="join"`, on the rung where
      she first writes the short form — the same placement as `numerals` and for the same reason. */
   var joinOn = false;
-  // a sign's id, off its braille codepoint. The map is in scripts/scrawl.js.
+  /* A SIGN'S ID, OFF ITS BRAILLE. One glyph is one base-64 digit (the map is in scripts/scrawl.js),
+     so a sign whose id will not fit in one spells itself across two or three, most significant
+     first — `map` is ⡁⡉, digits 1 and 9, id 73. This returned null for those until 08-12, which cost
+     the thirteen multi-glyph signs (`map` §384 down to `door` §540) both their figure and their run.
+     A COMPOUND KEY is a different thing and is not this function's: `is:int` is two signs standing
+     together, not one big id, and `mark()` splits it on the colon and draws each part. */
   function idOf(name){
+    if (name.indexOf(':') > 0) return null;           // a compound key is signs standing together, not one id
     var g = SCRAWL[name]; if (!g) return null;
-    var m = /&#x([0-9a-f]+);/i.exec(g); if (!m) return null;
-    if (/&#x[0-9a-f]+;.*&#x/i.test(g)) return null;      // a multi-glyph sign: leave it to the compound path
-    var id = parseInt(m[1], 16) - 0x2840;
-    return (id >= 0 && id < 64) ? id : null;
+    var re = /&#x([0-9a-f]+);/gi, m, id = 0, n = 0;
+    while ((m = re.exec(g))) {
+      var d = parseInt(m[1], 16) - 0x2840;
+      if (d < 0 || d > 63) return null;               // outside the name range: a numeral glyph, not a name
+      id = id * 64 + d; n++;
+    }
+    return n ? id : null;
   }
   function runOf(name){                         // a sign as she can write it before she has numerals
+    if (name.indexOf(':') > 0) {                // signs standing together: each one's run, in order
+      var ps = name.split(':').map(runOf);
+      return ps.every(Boolean) ? ps.join(' ') : null;
+    }
     var id = idOf(name); if (id === null) return null;
     return '<span class="bit">▪</span><span class="cup o">⟅</span>'
       + id.toString(2).split('').map(function(b){ return '<span class="bit">'+(b==='1'?'▪':'▫')+'</span>'; }).join('')
@@ -235,7 +254,26 @@ function reckonNum(v, barred){
      the keepers spend four hundred passes earning, and the moment a keeper earns it the page prints
      her word for it anyway. So: numbers, never meanings. If a gloss is ever tempted to say more
      than the wire said, it has stopped being an aid and become the answer key. */
-  function gloss(html, say){ return '<span class="gloss" title="' + say + '" data-v="' + say + '">' + html + '</span>'; }
+  /* A drawn sign carries a handle so it can be ASKED, not only hovered — the panel at the foot of
+     this file reads it. It goes on the wrapper the sign already has rather than in a new one, so
+     nothing about the spacing of a row changes.
+     The handle is the sign's NUMBER — `data-sid="237"` — because that is the sign's identity on the
+     wire, spelled out in every statement it stands in, and it is what the hover already says. Not a
+     secret kept: the source of this page is a teaching text and holds the whole sign table in plain
+     sight. It is the panel's OUTPUT that is governed, by the same rule as every gloss here: what the
+     wire sent, never what it means. The author's key (`hydrogen`, `equals-Object-Z`) is what it
+     means, so it stays on this side of the render and a test reads the panel back to check. */
+  function sidOf(name){
+    var ps = name.split(':'), out = [], i, id;
+    for (i = 0; i < ps.length; i++) { id = idOf(ps[i]); if (id === null) return null; out.push(id); }
+    return out.join('.');
+  }
+  /* A compound with a plain number among its parts — `cons:0` — has no one id, so it gets no handle
+     and no panel: the number is not a sign and the wire does not send it as one. */
+  function sidAttr(name){ var sid = name ? sidOf(name) : null; return sid ? ' data-sid="' + sid + '"' : ''; }
+  function gloss(html, say, name){
+    return '<span class="gloss"' + sidAttr(name)
+      + ' title="' + say + '" data-v="' + say + '">' + html + '</span>'; }
   function glossify(el, say){ if (say == null) return; el.classList.add('gloss'); el.title = say; el.setAttribute('data-v', say); }
   function signGloss(name){ var id = idOf(name); return id === null ? null : 'sign ' + id; }
 
@@ -243,7 +281,7 @@ function reckonNum(v, barred){
     if (!numeralsOn) { var r = runOf(name); if (r) return r; }
     if (!SCRAWL[name]) return '<span class="gl" style="opacity:.4">▩</span>';
     var g = '<span class="scrawl sign-fb">'+SCRAWL[name]+'</span>', say = signGloss(name);
-    return say ? gloss(g, say) : g; }
+    return say ? gloss(g, say, name) : g; }
   /* `data-unworded` on a row — DRAW THIS ONE WITHOUT HER WORDS. Same distinction `.msg` already
      draws between `hand` and `glyph` (her marks vs the message's own signs), narrowed to a single
      row and stopping short of `allFigures`, which forces scrawl and so says nothing before §267.
@@ -253,12 +291,13 @@ function reckonNum(v, barred){
      kin and a stranger, and no sentence can repair a row that draws the comparison wrong. */
   var unworded = false;
   function mark(name){                             // her token once introduced; else the sign in spider scrawl
+    if (walking && openEntry && SEEN_AT[name] === undefined) SEEN_AT[name] = openEntry;   // first drawn here
     if (allFigures) return scrawlSpan(name);                                         // plain-scrawl view: every sign as its scrawl
     if (!unworded && COINED[name] !== undefined) { var t=COINED[name];                    // she has coined it (a `.coin` span above, in reading order) -> her token
       /* her word carries the sign's NUMBER too, so a reader can tie the word she reads back to the
          figure she met before it was named — the join the book is otherwise asking them to hold. */
       var tok = '<span class="gl'+(/[a-z]/i.test(t)?' w':'')+'">'+t+'</span>', say = signGloss(name);
-      return say ? gloss(tok, say) : tok; }
+      return say ? gloss(tok, say, name) : tok; }
     /* AN UNCOINED COMPOUND. On the wire it is a name-cup shut round its parts — `▪⟅ ▪⟅a⟆ ▪⟅b⟆ ⟆`,
        flat, however many parts there are. One mark between the parts stands for the whole of that
        wrapper: the tag in front and both halves of the cup, three marks for one.
@@ -273,11 +312,11 @@ function reckonNum(v, barred){
     if (name.indexOf(':')>0) {
       var parts = name.split(':').map(function(p){ return /^-?\d+$/.test(p)?bitsOf(p):mark(p); });
       if (!joinOn)
-        return '<span class="fam">'
+        return '<span class="fam"' + sidAttr(name) + '>'
              + '<span class="bit">▪</span><span class="cup o">⟅</span> '
              + parts.join(' ')
              + ' <span class="cup c">⟆</span></span>';
-      return '<span class="fam">' + parts.join('<span class="fj">‿</span>') + '</span>';
+      return '<span class="fam"' + sidAttr(name) + '>' + parts.join('<span class="fj">‿</span>') + '</span>';
     }
     return scrawlSpan(name);                                                             // else: the sign in real spider scrawl (the base)
   }
@@ -591,7 +630,8 @@ function reckonNum(v, barred){
       // span that coins `tal`, §267's on the rung that first shows a sign written as one glyph.
       var cut = el.getAttribute('data-cut'); if (cut && CUTS[cut]) CUTS[cut]();
       if (cut) moved();
-      if (el.classList.contains('coin')) { COINED[el.getAttribute('data-sign')] = (el.textContent||'').trim(); moved(); return; }
+      if (el.classList.contains('coin')) { var cn = el.getAttribute('data-sign');
+        COINED[cn] = (el.textContent||'').trim(); COINED_AT[cn] = openEntry; moved(); return; }
       if (el.classList.contains('msg')) { renderMsg(el); return; }
       if (el.classList.contains('sg'))  { allFigures = false; el.innerHTML = mark(el.getAttribute('data-s')); return; }
       /* both carry the figure as a gloss (note #40): the reader can ask an inline number what it
@@ -609,6 +649,7 @@ function reckonNum(v, barred){
     }
   );
   if (openEntry) NOTATION[openEntry] = snapshot();     // the last entry closes on the end of the book
+  walking = false;                                    // everything drawn from here on is a panel, not a place in the book
 
   /* ══ ONE RUNG SIMPLER — the step-down control on a drawn line ════════════════════════════════════
      A reader who cannot make anything of `same ⟅tal ●●●●○⟆ ⟅tal ●●●●○⟆` has, until now, nowhere to go
@@ -789,6 +830,137 @@ function reckonNum(v, barred){
       });
     });
   })();
+
+  /* ══ ASK A MARK WHERE IT CAME FROM ═══════════════════════════════════════════════════════════════
+     A reader four hundred passes past §221 meets `‿` with nothing to get back to the wrapper it
+     stands for — 32 of the 34 wrong reconstructions in the blind reads are that failure.
+
+     The sheet is GENERATED from the mark inventory (`_includes/mark_cuts.json`), so a mark the
+     renderer draws and nobody declares cannot acquire an explanation here — that stays a hole in the
+     inventory, where a gate can see it.
+
+     ★ IT MUST NOT COST THE READER A SELECTION. The panel hangs off <body>, so it is never inside a
+     range anybody is copying; and a click that ended a drag is a selection, not a question. */
+  var SHEET = DATA.marks || {};
+  var KIND  = { HERS: 'a keeper\'s own mark', STRUCTURE: 'the wire\'s own' };
+  var pop = null, popFor = null;
+
+  /* The class must match WHOLE — `nil w` is the founder's word, `nil` is Ren's mark, and they are
+     cut fourteen passes and one argument apart. Up a few levels, because a mark can be tapped
+     through a wrapper (`.fam` round a compound). */
+  function askedFor(node){
+    for (var e = node, i = 0; e && e.nodeType === 1 && i < 4; e = e.parentNode, i++) {
+      if (typeof e.className === 'string' && SHEET[e.className]) return e;
+      // a drawn sign (`data-sid`, set in gloss()), or the coining span itself, which names its sign
+      if (e.getAttribute && (nameOfSid(e.getAttribute('data-sid'))
+                             || SCRAWL[e.getAttribute('data-sign')])) return e;
+    }
+    return null;
+  }
+  /* A SIGN ALREADY ANSWERS ON HOVER — `title="sign 18"`, the cheap version, and worth keeping for a
+     reader who only wants the figure and does not want to press anything. But the panel says that and
+     four things more, so with both up the browser's own tooltip is a second answer to a question
+     already answered, sitting on top of the first. The title comes off while the panel is open and
+     goes back when it shuts, so hovering still works and asking does not stutter. */
+  var hushed = null;
+  function hush(el){ var t = el.getAttribute('title');
+    if (t !== null) { hushed = [el, t]; el.removeAttribute('title'); } }
+  function unhush(){ if (hushed) { hushed[0].setAttribute('title', hushed[1]); hushed = null; } }
+  function shutAsk(){ unhush(); if (pop) { pop.remove(); pop = null; popFor = null; } }
+
+  /* ══ AND A SIGN, WHICH IS THE HARDER HALF ═════════════════════════════════════════════════════════
+     A mark means the same wherever it is met, so its answer is one row in a sheet. A sign wears two
+     faces — the scrawl it arrives in, and the word a keeper cuts for it later — and the reader who
+     needs help is the one who has lost the join between them, three hundred passes past the pass
+     where it was made. So the panel shows BOTH faces and the run underneath, which is the only thing
+     that was ever true of both.
+
+     NOTHING HERE IS DECLARED ANYWHERE. The two faces, the run and the two passes all fall out of what
+     the renderer already holds: `SCRAWL` off the sign table, `COINED` off the walk, the run off the
+     sign's own id. That is why there are no thirty-nine hand-written lines to go stale — and why the
+     gate on it is not "did somebody write this down" but "does the wire contain what this claims".
+
+     ★ AND IT MAY NOT REACH FORWARD. A reader at §193 tapping ⡒ is standing before anybody has named
+     anything; handing her `sarn` there is the page telling her something the book has not. The word
+     appears only from the pass that cuts it — the same rule every mark on this page already obeys,
+     and the only thing about a sign that is positional at all. */
+  /* Number back to name, built once off the sign table the renderer already holds. The name stays in
+     here and never reaches the page: what the panel prints is the scrawl, the run, and — once a
+     keeper has cut it — her word. */
+  var BY_SID = null;
+  function nameOfSid(sid){
+    if (!sid) return null;
+    if (!BY_SID) { BY_SID = {}; for (var k in SCRAWL) { var s = sidOf(k); if (s && !(s in BY_SID)) BY_SID[s] = k; } }
+    return BY_SID[sid] || null;
+  }
+  function passAt(el){ var e = el.closest ? el.closest('.entry[id]') : null; return e ? +e.id.slice(1) : 0; }
+  function signPanel(el, name){
+    var d = document.createElement('div'); d.className = 'mk-pop';
+    var word = COINED[name], cutAt = COINED_AT[name];
+    var told = word !== undefined && cutAt && passAt(el) >= +cutAt.slice(1);
+    var faces = '<span class="scrawl">' + SCRAWL[name] + '</span>'
+              + (told ? '<span class="mk-word">' + word + '</span>' : '');
+    var h = '<span class="mk-face">' + faces + '</span>'
+          + '<span class="mk-kind">a sign the wire sends</span>';
+    var run = runOf(name);
+    if (run) h += '<p class="mk-stands"><span class="mk-lbl">comes in as</span> '
+                + '<span class="mk-run">' + run + '</span></p>';
+    var where = told ? cutAt : SEEN_AT[name];
+    if (where) h += '<a class="mk-cut passref" href="#' + where + '">'
+                  + (told ? 'named at ' : 'first on the page at ')
+                  + reckonNum(where.slice(1), true) + '</a>';
+    d.innerHTML = h;
+    return d;
+  }
+
+  function askPanel(el, row){
+    var d = document.createElement('div');
+    d.className = 'mk-pop';
+    var face = (el.textContent || '').slice(0, 8);
+    var h = (face ? '<span class="mk-face">' + face + '</span>' : '')
+          + '<span class="mk-kind">' + KIND[row.k] + '</span>'
+          + '<p class="mk-say">' + row.s + '</p>';
+    if (row.c) h += '<p class="mk-stands"><span class="mk-lbl">stands for</span> '
+                  + '<span class="mk-run">' + atomsOf(row.c) + '</span></p>';
+    h += '<a class="mk-cut passref" href="#' + row.e + '">cut at '
+       + reckonNum(row.e.slice(1), true) + '</a>';
+    d.innerHTML = h;
+    return d;
+  }
+
+  /* Page coordinates, so the panel travels with the text it belongs to and no scroll handler is
+     needed. Beside and below where it can be; flipped up when the foot of the window is closer. */
+  function place(d, el){
+    var r = el.getBoundingClientRect(), doc = document.documentElement;
+    var sx = window.pageXOffset, sy = window.pageYOffset, pad = 8;
+    d.style.left = '-9999px'; d.style.top = '0';
+    var w = d.offsetWidth, h = d.offsetHeight;
+    var x = Math.min(r.left + sx, sx + doc.clientWidth - w - pad);
+    var y = r.bottom + sy + pad;
+    if (r.bottom + pad + h > doc.clientHeight && r.top - pad - h > 0) y = r.top + sy - h - pad;
+    d.style.left = Math.max(sx + pad, x) + 'px';
+    d.style.top = y + 'px';
+  }
+
+  var downAt = null;
+  document.addEventListener('pointerdown', function(e){ downAt = [e.clientX, e.clientY]; }, true);
+  document.addEventListener('click', function(e){
+    if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;   // let the browser have its own gestures
+    if (pop && pop.contains(e.target)) { if (e.target.closest('.mk-cut')) shutAsk(); return; }
+    if (downAt && Math.abs(e.clientX - downAt[0]) + Math.abs(e.clientY - downAt[1]) > 6) return shutAsk();
+    var sel = window.getSelection();
+    if (sel && !sel.isCollapsed) return shutAsk();
+    var el = askedFor(e.target);
+    if (!el || el === popFor) return shutAsk();                 // ask it again to put it away
+    shutAsk();
+    var row = typeof el.className === 'string' && SHEET[el.className];
+    pop = row ? askPanel(el, row)
+              : signPanel(el, nameOfSid(el.getAttribute('data-sid')) || el.getAttribute('data-sign'));
+    popFor = el; hush(el);
+    document.body.appendChild(pop);
+    place(pop, el);
+  });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') shutAsk(); });
 })();
 
 /* A button whose label changes is a button that changes width, and these bars are centered, so the
@@ -1133,7 +1305,8 @@ function pinWidth(btn, labels) {
 
    READING IT BACK. Both kinds carry the figure as a `title`, so hovering says it in the reader's
    own numerals. Touch has no hover, so a plain numeral also toggles `.showing` on tap; a link
-   doesn't need it, since following it is the better answer to "which pass is this".
+   doesn't need it, since following it is the better answer to "which pass is this". Nor does a
+   sign, since 08-12 — the panel is the better answer there, and the toggler below leaves it alone.
 
    TEXT NODES ONLY, collected before any are replaced — never an attribute, and never inside a
    rendered exhibit, where a digit would belong to the message rather than to a keeper. */
@@ -1195,8 +1368,15 @@ function pinWidth(btn, labels) {
     node.parentNode.replaceChild(frag, node);
   });
 
+  /* THE BADGE IS FOR A GLOSS WITH NOWHERE BETTER TO SEND THE READER. A keeper's numeral has only
+     the one thing to say, so a tap says it beside the figure and that is the whole answer. A SIGN
+     no longer works that way: tapping one opens the panel, which gives the figure as the run the
+     wire sent, both faces, and the pass — so a badge saying `sign 18` on top of it is the same
+     question answered twice, in two boxes, one over the other. Signs carry `data-sid`; they are
+     skipped here and answered there. */
   document.addEventListener('click', function(e){
     var t = e.target.closest && e.target.closest('.gloss');
+    if (t && t.hasAttribute('data-sid')) t = null;
     Array.prototype.forEach.call(document.querySelectorAll('.gloss.showing'), function(el){
       if (el !== t) el.classList.remove('showing');     // one at a time, so taps don't litter the page
     });

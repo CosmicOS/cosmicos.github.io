@@ -116,7 +116,8 @@ function scanDiary(dir) {
        message has come round again) and the occasional deliberate reach back to an old statement.
        Either would stretch the run across a thousand sayings the pass has nothing to do with.
      - The run is then [min, max] of what is left. A pass quoting one statement has a run of one, and
-       gets no panel: there is nothing between.
+       its panel draws that one row: the control is on every entry that has a run at all, so that
+       finding nothing new in it is a reading and not a missing button (scripts/build-runs.js).
 
    TOL is `audit-provenance.js`'s number and means the same thing there and here — how far from its
    pass's place a quote can sit before it is something other than local interleave. */

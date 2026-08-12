@@ -498,3 +498,282 @@ test('stepping a line marks it without moving it', async ({ page }) => {
     expect(after.painted, `${sel} gives no sign it was stepped`).not.toBe(before.painted);
   }
 });
+
+/* ---------- asking a mark where it came from ------------------------------------ */
+
+test('every mark that answers for itself cites a pass it does not precede', async ({ page }) => {
+  await page.goto(PAGE);
+  /* ★ THE CHECK scripts/inventory-marks.js CANNOT MAKE. That gate reads `_includes/listener/*.html`,
+     so it sees only marks somebody typed; ⟅ ▪ ‿ ⟦ are drawn by the renderer and are invisible to it,
+     which is how four classes carried no citation at all. Here the whole book is drawn, so "the
+     reader met it here first" is a question about the real page. */
+  const bad = await page.evaluate(() => {
+    const sheet = window.LISTENER.marks, out = [];
+    const order = [...document.querySelectorAll('.entry[id]')].map(e => e.id);
+    for (const cls of Object.keys(sheet)) {
+      const first = [...document.querySelectorAll('span')].find(e => e.className === cls);
+      if (!first) { out.push(`${cls}: declared but never drawn`); continue; }
+      const at = first.closest('.entry[id]');
+      if (!at) continue;                                  // page furniture, outside the diary
+      if (order.indexOf(at.id) < order.indexOf(sheet[cls].e))
+        out.push(`${cls}: cites ${sheet[cls].e} but is already drawn in ${at.id}`);
+    }
+    return out;
+  });
+  expect(bad, 'a mark may not be drawn before the pass its panel sends the reader to').toEqual([]);
+});
+
+test('a mark answers with what it stands for, and where it was cut', async ({ page }) => {
+  await page.goto(PAGE);
+  const ask = async (sel) => {
+    await page.keyboard.press('Escape');
+    const el = page.locator(sel).first();
+    await el.scrollIntoViewIfNeeded();
+    await el.click();
+    return page.evaluate(() => {
+      const d = document.querySelector('.mk-pop');
+      if (!d) return null;
+      const run = d.querySelector('.mk-run');
+      return { say: d.querySelector('.mk-say').textContent,
+               run: run ? run.textContent.replace(/\s+/g, '') : null,
+               cut: d.querySelector('.mk-cut').getAttribute('href'),
+               parent: d.parentElement.tagName };
+    });
+  };
+  /* Ren's mark for the empty number-cup, and the founder's tally: both are abbreviations the book
+     claims are undoable, so the panel has to hand back the run each one replaces. */
+  expect(await ask('#p246 .nil')).toMatchObject({ run: '▫⟅⟆', cut: '#p246' });
+  expect(await ask('#p214 .tk')).toMatchObject({ run: '▫⟅▪⟆', cut: '#p214' });
+  /* Two that hand back no run, for two different reasons: the join stands for a wrapper of no fixed
+     length, and ⟦ stands for a run with a sign in it, which §400 draws as one reckoning glyph. */
+  expect(await ask('#p221 .fj')).toMatchObject({ run: null, cut: '#p221' });
+  expect(await ask('#p400 .cup.lo')).toMatchObject({ run: null, cut: '#p400' });
+  // never inside the text: a panel a reader can select is a panel a reader can copy by accident
+  expect((await ask('#p193 .cup.o')).parent).toBe('BODY');
+});
+
+test('asking a mark costs no selection, and traps no scroll', async ({ page }) => {
+  await page.goto(PAGE);
+  const row = page.locator('#p246 .row').first();
+  await row.scrollIntoViewIfNeeded();
+
+  /* ★ A DRAG IS A SELECTION, NOT A QUESTION. Sweeping across a run of marks to copy it ends in a
+     click on a mark, and a panel opening there would land on top of what was just selected. */
+  const at = await row.evaluate(el => {
+    const r = el.getBoundingClientRect();
+    return { x: r.left + 4, y: r.top + r.height / 2, x2: r.left + Math.min(180, r.width - 4) };
+  });
+  await page.mouse.move(at.x, at.y);
+  await page.mouse.down();
+  await page.mouse.move(at.x2, at.y, { steps: 12 });
+  await page.mouse.up();
+  expect(await page.locator('.mk-pop').count(), 'a drag over marks opened a panel').toBe(0);
+  expect(await page.evaluate(() => window.getSelection().toString().trim()),
+    'the drag selected nothing').not.toBe('');
+
+  // and with one open, selecting the page must not pick its words up
+  await page.mouse.click(at.x2 + 40, at.y);                    // collapse the selection first
+  await page.locator('#p246 .nil').first().click();
+  await expect(page.locator('.mk-pop')).toHaveCount(1);
+  const leaked = await page.evaluate(() => {
+    const said = document.querySelector('.mk-pop .mk-say').textContent;
+    const r = document.createRange(); r.selectNodeContents(document.body);
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    return s.toString().includes(said);
+  });
+  expect(leaked, 'the panel is inside the copyable page').toBe(false);
+
+  /* ★ NOT A SCROLL REGION — the whole-run block trapped the wheel this way once (max-height +
+     overflow + overscroll-behavior pasted off a drawer recipe). Pinned so it cannot come back. */
+  await page.evaluate(() => window.getSelection().removeAllRanges());
+  await page.locator('#p288 .nil.n').first().scrollIntoViewIfNeeded();
+  await page.locator('#p288 .nil.n').first().click();
+  const box = await page.locator('.mk-pop').boundingBox();
+  const before = await page.evaluate(() => window.pageYOffset);
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.wheel(0, 400);
+  await page.waitForTimeout(200);
+  expect(await page.evaluate(() => window.pageYOffset) - before,
+    'the wheel died inside the panel').toBeGreaterThan(200);
+});
+
+test('what a mark says it stands for is on the page at the pass that cuts it', async ({ page }) => {
+  await page.goto(PAGE);
+  /* ★ THE CHECK THAT CAUGHT A REAL ONE. The expansions are hand-written four-symbol runs — the one
+     fact in this feature nothing derives — and `⟦` carried `⟅ ▪⟅▪▫▫▫▫⟆`, which is what the wire
+     sends and NOT what §400 draws: a sign goes down as one reckoning glyph from §267, so the panel
+     was handing back a run in a hand the page gave up 133 passes earlier.
+
+     The book's own rule settles it. A mark is cut by showing it before and after, so the run it
+     replaces is on the page at the pass that cuts it, drawn in that night's hand. If the panel's
+     expansion is not there, the panel and the page disagree and the page is right. */
+  const bad = await page.evaluate(() => {
+    const sheet = window.LISTENER.marks, out = [];
+    for (const cls of Object.keys(sheet)) {
+      const row = sheet[cls];
+      if (!row.c) continue;
+      const el = [...document.querySelectorAll('span')].find(e => e.className === cls);
+      if (!el) { out.push(`${cls}: never drawn`); continue; }
+      el.click();
+      const run = document.querySelector('.mk-pop .mk-run');
+      const claim = run ? run.textContent.replace(/\s+/g, '') : null;
+      document.querySelector('.mk-pop').remove();
+      const at = document.getElementById(row.e);
+      if (!claim) { out.push(`${cls}: declares a run the panel does not draw`); continue; }
+      if (!at.textContent.replace(/\s+/g, '').includes(claim))
+        out.push(`${cls}: says it stands for ${claim}, which ${row.e} never shows`);
+    }
+    return out;
+  });
+  expect(bad, 'a mark may not hand back a run its own cut does not draw').toEqual([]);
+});
+
+test('the run menu is findable where there is no pointer to hover with', async ({ page }) => {
+  /* ⋮ rests at 3.07:1 on the entry ground — right for something a pointer lights up on the way
+     past, invisible on a phone, where the resting state is the only state there is. Paul could not
+     find it at all. Measured, not eyeballed: the touch color must be a real lift on the mouse one. */
+  await page.goto(PAGE);
+  const lum = (rgb) => {
+    const [r, g, b] = rgb.match(/\d+/g).map(n => {
+      const c = n / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const read = () => page.locator('#p239 .entry-menu > summary').evaluate(el => {
+    const c = getComputedStyle(el), b = el.getBoundingClientRect();
+    return { color: c.color, w: b.width, h: b.height };
+  });
+  const mouse = await read();
+  const touch = await page.emulateMedia({ forcedColors: null }).then(async () => {
+    const ctx = await page.context().browser().newContext({ hasTouch: true, isMobile: true,
+      viewport: { width: 390, height: 844 }, deviceScaleFactor: 3,
+      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148' });
+    const pg = await ctx.newPage();
+    await pg.goto(PAGE);
+    const s = pg.locator('#p239 .entry-menu > summary');
+    const got = await s.evaluate(el => {
+      const c = getComputedStyle(el), b = el.getBoundingClientRect();
+      return { color: c.color, w: b.width, h: b.height };
+    });
+    await s.tap();
+    got.opens = await pg.locator('#p239 .entry-menu[open]').count() === 1;
+    await ctx.close();
+    return got;
+  });
+  expect(lum(touch.color), 'the ⋮ rests as dim on a phone as it does under a mouse').toBeGreaterThan(lum(mouse.color) * 1.5);
+  expect(Math.min(touch.w, touch.h), 'and it must be a finger-sized target').toBeGreaterThanOrEqual(28);
+  expect(touch.opens, 'a tap did not open it').toBe(true);
+});
+
+/* ── ASKING A SIGN ──────────────────────────────────────────────────────────────────────────────
+   A sign's panel is not written down anywhere: the scrawl comes off the sign table, the word off the
+   walk, the run off the sign's own number. Nothing to keep in step, and so nothing a stale line can
+   go wrong in — but also nothing a reader could have checked. These are that check. */
+
+const WIRE = require('../scripts/wire');
+const CODES = Object.values(WIRE.codes).filter(Boolean);
+const marksOfCode = c => c.replace(/1(?=2)/g, '▪').replace(/2/g, '⟅').replace(/3/g, '⟆')
+                          .replace(/1/g, '▪').replace(/0/g, '▫');
+
+// every handle on the page, and the run its panel will claim for it
+const sidRun = sid => sid.split('.').map(d => '12' + Number(d).toString(2) + '3').join('');
+
+test('a sign hands back a run the wire actually sent', async ({ page }) => {
+  await page.goto(PAGE);
+  const sids = await page.evaluate(() =>
+    [...new Set([...document.querySelectorAll('[data-sid]')].map(e => e.getAttribute('data-sid')))]);
+  expect(sids.length, 'no sign on the page carries a handle').toBeGreaterThan(200);
+  /* THE ONE CHECK WORTH HAVING. The panel tells a reader "this came in as ▪⟅▪▫▫▪▫⟆". If that run is
+     not in some statement of the message, word for word, the panel is inventing the wire — which is
+     exactly how ⟦ came to claim a run §400 does not draw (08-11). Not a sample: all of them. */
+  const wrong = sids.filter(sid => { const r = sidRun(sid); return !CODES.some(c => c.includes(r)); });
+  expect(wrong.map(s => s + ' -> ' + marksOfCode(sidRun(s))),
+    'a sign\'s panel claims a run that appears in no statement').toEqual([]);
+});
+
+test('a sign shows both its faces, and the run under both', async ({ page }) => {
+  await page.goto(PAGE);
+  const ask = async (sel) => {
+    await page.keyboard.press('Escape');
+    const el = page.locator(sel).first();
+    await el.scrollIntoViewIfNeeded(); await el.click();
+    return page.evaluate(() => {
+      const d = document.querySelector('.mk-pop'); if (!d) return null;
+      const run = d.querySelector('.mk-run'), cut = d.querySelector('.mk-cut');
+      return { word: (d.querySelector('.mk-word') || {}).textContent || null,
+               run: run ? run.textContent.replace(/\s+/g, '') : null,
+               at: cut ? cut.getAttribute('href') : null,
+               says: d.textContent };
+    });
+  };
+  // the founder's first coinage, met two hundred passes after she made it
+  expect(await ask('#p400 [data-sid="18"]')).toMatchObject({ word: 'sarn', run: '▪⟅▪▫▫▪▫⟆', at: '#p207' });
+  /* A SIGN WHOSE NUMBER WILL NOT FIT IN ONE GLYPH — two base-64 digits, one id, one run. These
+     answered with nothing at all until 08-12, because `idOf` gave up on a second glyph. */
+  expect(await ask('#p384 [data-sid="73"]')).toMatchObject({ run: '▪⟅▪▫▫▪▫▫▪⟆' });
+});
+
+test('a sign panel never prints the author\'s name for it', async ({ page }) => {
+  await page.goto(PAGE);
+  /* THE GLOSS RULE, ENFORCED ON THE ONE AID THAT COULD BREAK IT. `hydrogen`, `equals-Object-Z` is
+     what a sign MEANS — the thing the book spends four hundred passes earning — and the panel is
+     only ever allowed to say what the wire sent. The key has to be in the browser for the panel to
+     find a keeper's WORD for a sign; it must not come out the other side. (Not secrecy: the page
+     ships the whole sign table and is meant to. What is governed is what the panel PRINTS.) */
+  const bad = await page.evaluate(() => {
+    const out = [];
+    document.querySelectorAll('[data-sid]').forEach(e => {
+      const sid = e.getAttribute('data-sid');
+      if (!/^\d+(\.\d+)*$/.test(sid)) out.push('handle is not a number: ' + sid);
+    });
+    return out;
+  });
+  expect(bad, 'a sign handle must be the number the wire sends, never the author\'s key').toEqual([]);
+  const el = page.locator('#p540 [data-sid]').first();
+  await el.scrollIntoViewIfNeeded(); await el.click();
+  const said = await page.locator('.mk-pop').textContent();
+  for (const key of ['hydrogen', 'proton', 'door', 'room', 'java', 'instanceof'])
+    expect(said.toLowerCase(), `the panel printed the author's key "${key}"`).not.toContain(key);
+});
+
+test('a sign panel does not reach forward past the pass that names it', async ({ page }) => {
+  await page.goto(PAGE);
+  /* Two signs in the book are drawn before anybody has a word for them: `unary` at §214, named at
+     §232, and `begin` at §388, named at §462. A reader standing at the earlier pass must be told
+     what came in and not what it will later be called. */
+  const early = async (sel) => {
+    await page.keyboard.press('Escape');
+    const el = page.locator(sel).first();
+    await el.scrollIntoViewIfNeeded(); await el.click();
+    return page.evaluate(() => {
+      const d = document.querySelector('.mk-pop'); if (!d) return null;
+      const cut = d.querySelector('.mk-cut');
+      return { word: !!d.querySelector('.mk-word'), at: cut ? cut.textContent : null };
+    });
+  };
+  const before = await early('#p388 [data-sid="75"]');   // `begin`, five passes of walking before its name
+  expect(before, 'a sign drawn before its coining must still answer').not.toBeNull();
+  expect(before.word, 'the panel handed over a word the book has not cut yet').toBe(false);
+  expect(before.at, 'and it should say where the reader is meeting it').toContain('first on the page');
+});
+
+test('a sign that answers in a panel does not also answer in a tooltip', async ({ page }) => {
+  await page.goto(PAGE);
+  const el = page.locator('#p400 [data-sid="18"]').first();
+  await el.scrollIntoViewIfNeeded();
+  expect(await el.getAttribute('title'), 'the cheap hover answer should be there to begin with').toBe('sign 18');
+  await el.click();
+  await expect(page.locator('.mk-pop')).toHaveCount(1);
+  expect(await el.getAttribute('title'), 'the browser tooltip is a second answer over the first').toBeNull();
+  /* AND THE OTHER ONE. A `.gloss` also has a badge of its own, toggled on tap by the keeper-numeral
+     handler, which is how `sign 18` sat on top of the panel that already says it. A sign is skipped
+     there now — but a keeper's numeral must keep its badge, since it has no panel to go to. */
+  await expect(page.locator('.gloss.showing'), 'the badge answered the same question again').toHaveCount(0);
+  await page.keyboard.press('Escape');
+  expect(await el.getAttribute('title'), 'and it must come back when the panel shuts').toBe('sign 18');
+
+  const num = page.locator('#p400 .rk, #p400 .num').first();
+  await num.scrollIntoViewIfNeeded(); await num.click();
+  await expect(page.locator('.gloss.showing'), 'a keeper\'s numeral still says its figure on a tap')
+    .toHaveCount(1);
+});
