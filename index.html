@@ -1154,6 +1154,8 @@ title: "CosmicOS: an open source contact message"
 
 <script>window.LISTENER = { scrawl: {{ site.data.sign_scrawl | jsonify }}, strings: {{ site.data.string_glyphs | jsonify }}, wire: {% include wire_quotes.json %}, runs: {% include wire_runs.json %}, marks: {% include mark_cuts.json %} };</script>
 <script src="{{ site.baseurl }}/js/listener.js?v={{ site.time | date: '%s' }}"></script>
+{% comment %} AFTER listener.js, which declares reckonNum — the one thing the widgets need from it. {% endcomment %}
+<script src="{{ site.baseurl }}/js/listener-widgets.js?v={{ site.time | date: '%s' }}"></script>
 <script src="{{ site.baseurl }}/js/circuit-sim.js?v={{ site.time | date: '%s' }}"></script>
 {% comment %} The note-taking widget is NOT loaded here. It is local tooling, and it used to ride
    along in the built site doing nothing but firing a 404 at /api/notes on every visitor's page
