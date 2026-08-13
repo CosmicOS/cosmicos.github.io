@@ -37,8 +37,9 @@
 {% for js in page.extra_js %}
         <script src="{{site.baseurl}}/{{ js }}"></script>
 {% endfor %}
+{% comment %} bump ?v= when one of these changes {% endcomment %}
 {% for css in page.extra_css %}
-        <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/{{css}}" />
+        <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/{{css}}?v=1" />
 {% endfor %}
         <link rel='shortcut icon' type='image/x-icon' href='{{site.baseurl}}/favicon.ico' />
 <script type="text/javascript">

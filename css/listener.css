@@ -1,0 +1,1032 @@
+/* ══ THE LISTENER'S STYLESHEET — everything the decoder's log looks like ═════════════════════════
+   Lifted out of index.html on 08-13, where it was 931 of that file's 1163 lines: the page you open
+   to change one word of markup opened on a thousand lines of CSS, and nothing linted it or could
+   reach it from anywhere else. It is loaded through the `extra_css` list in index.html's front
+   matter, which puts it after main/dark_syntax/small/big — the same last-in position the inline
+   block held, so the cascade is unchanged.
+
+   WHAT LIVES WHERE. The design tokens (--voice-*, --sz-*) and the top bar are in css/main.css, site
+   furniture the whole site reaches. This file is the log alone. The tokens are DOCUMENTED here,
+   above the rules that spend them, because this is where you need to know what they mean.
+
+   ONE LINE CHANGED IN THE MOVE: the @font-face src was `{{site.baseurl}}/fonts/...`, and Liquid is
+   not run on a stylesheet with no front matter. It is `../fonts/...` now, which is what main.css's
+   four @font-face rules already do and what resolves correctly from /css/ however the site is
+   served. ══ */
+
+/* ---- listener: the decoder's log ---- */
+/* THE BOOK'S TYPE SIZE, IN ONE PLACE. 118% puts body prose at 20px, and holds the line to ~66
+   characters in this fixed 606px column. It goes on `.diary` rather than `.entry p` because nearly
+   everything here is sized in `%`, so one number carries the preface, register, records and letters
+   too, in proportion.
+   KNOWN DEBT: `--sz-mark` and this column are px, so the marks do NOT follow a reader who has
+   enlarged their browser default — prose grows, notation stays at 12px. The fix is marks in `em`
+   and the column in `rem`/`ch`; it is not a one-liner, because several exhibits carry meaning in
+   their layout and want looking at once the marks move. */
+.diary { max-width: 660px; margin: 0 auto; padding: 0 6px; font-size: 118%; }
+
+/* the message index — an editor's key to what each pass decodes (collapsible) */
+/* THE CHEAT SHEET LIVES INSIDE THE TITLE BLOCK, so it has no panel of its own: it is a note about
+   this book, not a second thing beside it. What marks it off is a rule and the space above it —
+   which is also what stops a closed disclosure reading as a stray line under the title. */
+/* the intro under the title: her serif, because it is prose, and quiet enough that the title still
+   leads. The four-symbol run at the end runs on and FADES rather than stopping at a tidy edge — it
+   is standing in for a message 336,105 tones long, and an ellipsis would make it look finite. */
+.pf-intro { font-family: var(--voice-hers); font-size: 15.5px; line-height: 1.6; color: #93a7b4;
+  margin: 12px 0 0; max-width: 46em; }
+.pf-intro em { color: #b3c4cf; }
+/* IT MAY BREAK ANYWHERE. A run of digits has no word boundaries, so with `nowrap` the whole span
+   was one unbreakable box that could not fit on the rest of the sentence's line and dropped to the
+   next one entire, leaving a gap after "than". `break-all` lets it start where the sentence stops
+   and fill the measure like text.
+   THE FADE GOES DOWNWARD once it wraps: a sideways gradient on a multi-line box fades the right
+   edge of every line, which reads as damage rather than as continuing. */
+.raw-wire { font-family: var(--voice-station); letter-spacing: .4px;
+  word-break: break-all; overflow-wrap: anywhere;
+  /* INLINE, so it starts where the sentence stops. An inline-BLOCK sizes itself against the
+     containing block rather than the space left on the line, so it could never share one: it took a
+     line of its own and left a gap after "than". A digit run has no word boundaries either, so
+     `break-all` is what lets it fill the measure like ordinary text. */
+  display: inline;
+  /* AND IT FADES BY ITS OWN INK, not by a mask. `mask-image` does not apply to an inline box, and a
+     sideways gradient on a wrapped one would fade the right edge of every line, which reads as
+     damage rather than as going on. A gradient clipped to the TEXT is painted across the whole
+     inline box — every line fragment together — so the run simply gets fainter as it descends. */
+  color: #cbb794; }
+/* IT TRAILS OFF IN STEPS, NOT A GRADIENT. A gradient was tried twice and cannot work here: a mask
+   does not apply to an inline box at all, and a background clipped to text is painted PER LINE
+   FRAGMENT — measured, the ink went 139→101 down the first line and then jumped back to 128 at the
+   start of the second, so every line restarted bright and the run looked striped rather than
+   receding. Three flat tones do the same job and cannot be broken by where the lines happen to
+   fall, because each span has one color wherever it lands. */
+.raw-wire .w2 { color: #8e8069; }
+.raw-wire .w3 { color: #5c5548; }
+
+.msg-index { margin: 18px 0 0; }
+.msg-index > summary { cursor: pointer; padding: 11px 0 0; font-family: var(--voice-station); font-size: 80%; letter-spacing: 0.04em; color: #8fb0c0; list-style: none; }
+.msg-index > summary::-webkit-details-marker { display: none; }
+.msg-index > summary::before { content: "\25B8\00a0"; color: #6f95a8; }
+.msg-index[open] > summary::before { content: "\25BE\00a0"; }
+.msg-index .idx-note { color: #5f7382; font-style: italic; letter-spacing: 0; }
+.msg-index .idx-body { padding: 6px 0 4px; columns: 15em; column-gap: 28px; }
+.msg-index .idx-arc { break-inside: avoid; color: #c98b5a; font-family: var(--voice-station); font-size: 72%; text-transform: uppercase; letter-spacing: 0.12em; margin: 13px 0 4px; }
+.msg-index a { display: block; break-inside: avoid; color: #cdd6df; text-decoration: none; font-size: 87%; line-height: 1.42; padding: 1px 0; }
+.msg-index a:hover { color: #9fe0ff; }
+.msg-index a b { color: #7f9bab; font-weight: normal; font-family: var(--voice-station); margin-right: 0.45em; }
+
+/* ══ THE DESIGN LANGUAGE — THREE VOICES, FIVE SIZES. Nothing on this page picks a face or a size
+      directly; everything goes through these. Three voices, because three kinds of writing exist
+      inside the fiction:
+
+        --voice-hers      SERIF.  Her sentences: entry prose, margin notes, and every aside inside an
+                          exhibit box — the exhibit is hers and so is the line under it.
+        --voice-station   MONOSPACE.  Anything RULED AND FILLED IN rather than spoken: the register,
+                          the pass head, the taking-up record, her ledger, labels, captions. Also her
+                          coined tokens, which are transcription and belong with the marks.
+        --voice-marks     listener-marks.woff, the 17-character notation subset, plus the alien
+                          scrawl face for the sender's own letters.
+
+      Five sizes, all ABSOLUTE — a percentage silently changes when its container does, which is how
+      a gloss set at 70% of a row ended up at 8.4px:
+
+        --sz-mark 12px   NOTATION. Every mark, in every kind of row: a generated quote, her own hand,
+                         a peel rung, a fold, a frag. A hand row is the same notation as a quote.
+        --sz-tone 15px   TONES ONLY. The four pitch marks differ in stroke height and nothing else,
+                         and telling them apart is the founder's whole first problem.
+        --sz-word 11px   A WORD IN A ROW OF MARKS — a coined token, a row label, a gloss.
+        --sz-cap  10px   A CAPTION — the uppercase label over a rung.
+        --sz-side 13px   AN ASIDE — her sentence inside an exhibit box.
+
+      One rule is inheritance rather than a declaration: A MARK SET INSIDE A SENTENCE TAKES THE
+      SENTENCE'S SIZE. In a row a mark is read; in a sentence it is named. The face never changes. ══ *//* THE DESIGN TOKENS MOVED TO css/main.css (08-09), where the whole site can reach them — the top
+   bar is site furniture now and takes the same station voice as the log's ruled lines. They were
+   defined here, inside this page's <style>, so every other page saw them as undefined. One
+   definition, in one file; nothing below changed. */
+
+/* ---- message rendering: ONE place to swap glyphs (used by the JS renderer) ---- */
+.tn, .tones{ font-size: var(--sz-tone); }
+.tones{ letter-spacing:3px; }   /* generated wire-quote: real tone chars, copy-pasteable */
+
+/* The notation's color, set here and nowhere else. `!important` because twenty-odd dead `color:`
+   lines for these classes were scattered down this file and two sessions "fixed" a mark by editing
+   one of them. Change it here. */
+.tn, .tones, .bit, .cup, .gl, .tk, .nil, .scrawl, .var, .kind, .rel, .op, .coin,
+.msg-val .msg-view { color:#cbb794 !important; }
+/* Keepers' own figures — a pass in a heading, a reference in a sentence, a ledger count — take the
+   color of the line they sit in. A count inside a message row (`.num`) keeps the notation color. */
+.rknum .scrawl, .passref .scrawl, .rk .scrawl { color: inherit !important; }
+/* a COINED WORD (her homespun name for a sign she has cracked) — one ink, told apart by form:
+   small, spaced, lowercase transcription, so a fragment reads as her marks and not as prose. */
+/* `.nil.w` rides with `.gl.w`: both are a keeper's WORD standing in a row of marks, and a reader has no way to
+   know that one stands for a sign and the other for a pair of wire atoms — so they must not look different.
+   (`tirrel tally ●●●● ◦` had them in two fonts at two sizes.) */
+.gl.w, .nil.w{ font-family: var(--voice-station); font-size: var(--sz-word); letter-spacing:.05em; text-transform:lowercase; }
+/* …EXCEPT in a sentence, where there are no marks for it to be subordinate to. `.8em` made a coined
+   word shrink to whatever 80% of its container happened to be — 13.6px in prose, 10.4px in an aside,
+   9.6px in a row — three sizes for one word. In her prose a coined word is a word: prose size, and
+   told apart by being italic monospace among serif. */
+.entry p .gl.w, .rb-note .gl.w, .more-note .gl.w, .cp-item .gl.w{ font-size:inherit; }
+/* end-of-section READ-BACK: re-show a real fragment now carrying the pass's new term — a
+   semi-formal "what I can read now", paying off the coining and consolidating the lesson. */
+.readback{ margin:var(--gap-block) 0; padding:11px 16px 12px; border-left:2px solid #2a3b47; background:rgba(255,255,255,.03); border-radius:0 6px 6px 0; }
+.readback .rb-label{ font-family: var(--voice-station); font-size: var(--sz-cap); text-transform:uppercase; letter-spacing:.2em; color:#7f9bab; margin-bottom:8px; }
+.readback .row{ margin:4px 0; }
+.readback .rb-note{ margin-top:9px; font-family: var(--voice-hers); font-size: var(--sz-side); color:#8fa2ad; font-style:italic; }
+/* toggleable message widget */
+.msg{ background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:10px 14px; margin:var(--gap-block) 0; }
+.msg-view{ font-size: var(--sz-mark); letter-spacing:0; color:#cdd9e2; }   /* MATCH .row (12px): the .msg widget renders the
+   same notation through the same form() renderer, so it must not be a different size from the wire-quote rows it
+   sits beside. Was 20px+2px — 67% larger than a .row three lines above it in the same entry. */
+/* THE EMPTIES ◇ ◆ — one mark each for ▫⟅⟆ and ▪⟅⟆ (see inventory-marks `.nil`/`.nil n`). They are in the ONE INK
+   list above and take no color of their own; the FILL alone says which of the two it is, the same way ▪ and ▫ do.
+   Two colors were tried here first — cup-slate, then ◦'s dim — and both were wrong for the same reason: any color
+   at all made `.nil` the one mark on the page wearing its own ink, which is precisely how it read. */
+/* SCRAWL TRACKING, AND THE TRAILING SPACE IT LEAVES BEHIND.
+   `letter-spacing` puts its space after EVERY character, the last one included. A scrawl run is
+   nearly always inside something — `⟅⠫⟆`, or a `·`-joined compound — so that last space pushes
+   whatever closes it to the right, and `⟅⠫⟆` comes out lopsided: a wider gap before the `⟆` than
+   after the `⟅`.
+   Both earlier answers to this were local patches. `.fam .scrawl` set tracking to 0 so the `·` would
+   not sit shoved right; `.msg-view .scrawl.sign-fb` set it to 2px. Between them and the site-wide
+   5px (css/main.css, for the big scrawl banners on other pages) that was FOUR values for one thing,
+   and the lopsided cup survived everywhere none of them reached.
+   The tracking itself is real and stays: a compound sign is two glyphs with nothing between them and
+   a string literal is a dozen, and they must not fuse. So — one value, and cancel the trailing
+   advance with a negative right margin, which is the thing that was actually wrong. */
+.scrawl{ margin-right:-5px; }
+/* ONE RULE FOR NUMBERS, and it is the rule our own digits use. Places inside a single number are
+   FLUSH; separate numbers are separated by a SPACE. So `⣁⣁` is sixty-five and `⣁ ⣁` is two counts of
+   one, exactly as `11` is eleven and `1 1` is two ones. **That rests entirely on the two gaps being
+   visibly different sizes, so both are set here and neither may drift.** Flush was tried and the two
+   places of 189 touched and read as one composite mark; 5px between places was tried and made a
+   two-place figure look like two numbers. So: 2px inside a number, a word-space between numbers, and
+   the word-space widened so the difference is not a judgement call. */
+.rk .scrawl, .num .scrawl, .rknum .scrawl, .passref .scrawl{ margin-right:-3px; }   /* 2px BETWEEN PLACES of one number: parted, not spaced */
+/* TWO COUNTS SIDE BY SIDE ARE SEPARATED BY A SPACE, like every other pair of atoms in a row — not by
+   a margin. Digits inside one `.num` stay flush, which is what makes a two-place figure read as one
+   number. The distinction between `⣁⣁` (one number, sixty-five) and `⣁ ⣁` (two counts of one) is
+   therefore exactly the distinction between 11 and 1 1, and rests on the space being a real space.
+   A 4px margin was tried here and is not enough to carry that; write the space in the markup. */
+.rk .scrawl:last-child, .num .scrawl:last-child,
+.rknum .scrawl:last-child, .passref .scrawl:last-child{ margin-right:-5px; }   /* cancel the trailing advance */
+/* a COMPOUND sign — a name-cup shut round its parts, written as one join mark between them. The
+   join carries the whole wrapper (`▪⟅ … ⟆`, three marks for one), so it must stay FULLY visible;
+   and the parts must stay tight against it, because the space between separate signs is the only
+   thing telling `a‿b` from two signs side by side. See the note in `mark()`. */
+.fam{ }
+.fam .fj{ margin:0 1px; }
+/* separate signs must sit clearly apart, so two scrawl signs "C C" never read as one run "CC".
+   The gap between terms (a real space) is widened; compound parts stay tight, held by their · joins
+   (which are NOT spaces, so word-spacing leaves them alone). Tune the value if it reads too airy. */
+.row, .msg-view, .fold{ word-spacing:0.4em; }
+.msg-view .tn{ letter-spacing:3px; }
+/* A CROSS-REFERENCE TO ANOTHER PASS — present, and quiet. The number is part of her sentence, so it
+   keeps the prose color and takes no link decoration; a faint rule under it says it can be followed,
+   and firms up on hover. Overrides the site-wide `a:hover{text-decoration:underline}` so the number
+   does not jump when the pointer crosses it. */
+.entry a.passref, .entry a.passref:link, .entry a.passref:visited{
+  color: inherit; text-decoration: none;
+  border-bottom: 1px dotted rgba(150,180,200,.32); }
+.entry a.passref:hover{ text-decoration: none; border-bottom-color: rgba(170,205,230,.85); }
+/* Ask a mark what it is: hover, or tap where there is no pointer. Shows BESIDE the mark — on a
+   phone the finger covers what it just pressed. What a gloss may say is fixed in js/listener.js. */
+.gloss{ cursor: help; position: relative; }
+.gloss.showing::after{
+  content: attr(data-v); position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+  margin-left: 0.5em; padding: 1px 6px; border-radius: 4px; white-space: nowrap; z-index: 3;
+  background: #1d2a34; color: #cdd6df; border: 1px solid #3a5567;
+  font-family: var(--voice-station); font-size: 12px; letter-spacing: 0.08em; text-transform: none;
+}
+/* ── ASK A MARK WHAT IT IS ──
+   The panel is a child of <body>, not of the text, so a reader copying a run of marks never picks it
+   up. `user-select: none` is the second line of that defense, for a selection dragged over it.
+   AND IT IS NOT A SCROLL REGION: no max-height and no overflow below, because a block with its own
+   scroll traps the wheel the moment a pointer crosses it. Both pinned by tests. */
+.mk-pop{ position: absolute; z-index: 80; width: min(20em, 88vw); -webkit-user-select: none; user-select: none;
+  background: #101821; border: 1px solid #2f4756; border-radius: 5px; box-shadow: 0 6px 22px rgba(0,0,0,.5);
+  padding: 9px 11px 10px; color: #cdd6df; font-family: var(--voice-station); font-size: 12.5px; line-height: 1.5; }
+.mk-pop .mk-face{ font-family: var(--voice-marks); font-size: 16px; margin-right: .5em; }
+/* A sign's two faces sit side by side with the join drawn between them — that join IS the answer for
+   a reader who has met the glyph and the word three hundred passes apart and never seen them meet. */
+.mk-pop .mk-face .scrawl{ font-size: 19px; }
+.mk-pop .mk-face .mk-word{ font-family: var(--voice-station); font-size: 14px; letter-spacing: .05em;
+  text-transform: lowercase; color: #cfe0ea; }
+.mk-pop .mk-face .mk-word::before{ content: "="; margin: 0 .45em 0 .5em; color: #6a8496; font-size: 12px; }
+.mk-pop .mk-kind{ font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: #7996a8; }
+.mk-pop .mk-say{ margin: 6px 0 0; color: #cdd6df; }
+.mk-pop .mk-stands{ margin: 7px 0 0; }
+.mk-pop .mk-lbl{ font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: #7996a8; margin-right: .5em; }
+.mk-pop .mk-run{ font-family: var(--voice-marks); font-size: var(--sz-mark); }
+.mk-pop .mk-cut{ display: inline-block; margin-top: 9px; color: #9fc6dd; text-decoration: none;
+  white-space: nowrap; border-bottom: 1px dotted rgba(150,180,200,.45); }
+.mk-pop .mk-cut:hover{ border-bottom-color: rgba(170,205,230,.9); }
+@media (hover: hover) and (pointer: fine){
+  .bit, .fj, .cup, .lst, .tk, .nil, .key{ cursor: help; }
+}
+
+/* THE STAMP'S FIGURES CARRY THE HEAD. The stamp runs at 74% and the marks are hairlines, so a pass
+   whose figures both fall in the bare column — 520, 528, 544, and 544 opens a cycle — came out as
+   two faint scratches where the heading should be. Size and stroke are set here and nowhere else. */
+.entry .stamp .rknum .scrawl, .taking-up .tu-head .rknum .scrawl{
+  font-size: 132%; -webkit-text-stroke: 0.7px currentColor; }
+.msg-line{ margin:8px 0; }
+.msg-line + .msg-line{ padding-top:8px; border-top:1px solid #16202a; }
+.msg-line .lbl{ display:block; letter-spacing:.16em; font-size: var(--sz-cap); text-transform:uppercase; color:#5f7f90; margin-bottom:4px; }
+
+
+.preface {
+  background: var(--ground); border-radius: 14px; padding: 24px 30px;
+  color: #cdd6df; margin-bottom: 30px;
+  font-family: var(--voice-hers); line-height: 1.65;
+}
+.preface h1 {
+  font-family: var(--voice-station);
+  color: #eaf2f6; text-shadow: none; font-size: 190%; margin: 0 0 4px; font-weight: normal;
+}
+.preface p { margin: 0 0 10px; text-align: left; }
+.preface p:last-child { margin-bottom: 0; }
+
+/* ── THE STATION BOOK. It opens the page, before Pass 189, because it is the FIRST book: the
+   coast's own register, ruled and supplied by the steward's clerk, filled a row per tide-turn,
+   and the only document this post is paid to keep. Maren describes it in her second paragraph
+   and Lio still describes it, unchanged, four hundred passes later. So the reader should have
+   seen it: four columns of a job being done, and then, at the foot and out of the ruling, the
+   one line that disposes of the message in two words. The book that follows is a refusal of
+   that line. Kin to `.taking-up` — both are station forms — and colder, because this one
+   belongs to the coast and a clerk reads it. ── */
+.register {
+  font-family: var(--voice-station);
+  border: 1px solid #2a3a45; border-radius: 3px; background: var(--ground);
+  color: #b8c6d0; font-size: 84%; margin: 0 0 22px; padding-top: 13px;
+}
+.register .reg-head { padding: 0 14px 10px; border-bottom: 1px solid #2a3a45; }
+.register .reg-title { text-transform: uppercase; letter-spacing: 0.2em; font-size: 86%; color: #7f9bab; }
+.register .reg-sub { font-style: italic; color: #5f7382; font-size: 90%; margin-top: 4px; }
+/* the ruling: five max-content columns, so the form's shape is measured off its own entries and
+   never off a width I typed. Cells nowrap, box scrolls — a broken column is a wrong column. The
+   last column takes the slack so the rules run to the edge the way a ruled page does. */
+.register .reg-grid {
+  display: grid; grid-template-columns: repeat(4, max-content) minmax(max-content, 1fr);
+  overflow-x: auto;
+}
+.register .reg-k, .register .reg-c {
+  padding: 7px 14px; border-bottom: 1px solid #232f38; white-space: nowrap;
+}
+.register .reg-k {
+  text-transform: uppercase; letter-spacing: 0.14em; font-size: 78%; color: #5f7f90;
+  border-bottom-color: #2a3a45;
+}
+.register .reg-w { color: #9db0bd; }        /* the tide-turn: the row's key, and all the row is filed under */
+/* THE LAST LINE, and it is not in the ruling. No cell, no column head, and warm against the
+   coast's gray because a different hand writes it: "it sits at the foot of the page because it
+   isn't anybody's column." Every keeper in this room has written that sentence and no other. */
+.register .reg-foot {
+  /* HER voice, and it is the only line of the station's form that is: the register is ruled and
+     filled in (station face), and this line is not in the ruling. The comment above says a different
+     hand writes it; now a different face does. */
+  font-family: var(--voice-hers);
+  padding: 12px 14px 13px; font-style: italic; color: #c6a97a; font-size: var(--sz-side);
+}
+
+.entry {
+  background: var(--ground); border-left: 2px solid #2b4a5c;
+  border-radius: 0 12px 12px 0; padding: 22px 28px 24px; margin: 0 0 28px;
+  position: relative;   /* the head's own furniture hangs off this: `.entry-menu`, top right */
+}
+.entry .stamp {
+  font-family: var(--voice-station);
+  font-size: 74%; letter-spacing: 0.2em; text-transform: uppercase; color: #6f95a8; margin-bottom: 6px;
+}
+.entry h2 { cursor: pointer; }   /* everything else about the h2 is set by `.entry > h2`, below */
+/* ── THE MARKS NOW HAVE A FONT OF THEIR OWN.
+   The four tone letters were chosen deliberately (65f2610: "literally tones, and legible at
+   flood-run density") and the whole notation is a closed set declared in MARK_INVENTORY.md.
+   But inconsolata, the page face, contains NONE of it — not the tones, cups, bits, tally, slots
+   or stems — so every mark was being drawn by whatever fallback the reader's device picked:
+   a different shape on a phone than on a desk, different advance widths (which is why columns
+   that should be monospace did not line up), and tofu on any device without coverage.
+   listener-marks.woff is a 1.8KB subset carrying exactly those 17 characters and nothing else,
+   so the marks render the same everywhere and the inventory is the charset. ── */
+@font-face {
+  font-family: 'listenermarks';
+  src: url('../fonts/listener-marks.woff') format('woff');
+  font-weight: normal; font-style: normal; font-display: block;
+}
+.tn, .tones, .flood-run, .bit, .cup, .tk, .gl, .nil, .gap, .sheets .row, .binstack .fig,
+.msg-view, .peel, .reduce, .row {
+  font-family: var(--voice-marks);
+}
+/* `.nil` (◇ ◆) was NOT in that list until 08-07, so the two empties were the only marks in the book
+   drawn in the page's SERIF whenever they stood in a sentence — a different shape from the same mark
+   four lines below in a row. If you add a mark class, add it here; the list and MARK_INVENTORY.md are
+   supposed to be the same set. */
+
+/* WEIGHT. The scrawl face (cosmic_spider) ships a single light weight, and its hairline strokes go
+   faint beside the solid bit-marks — a sign should carry the same ink as the cups and bits around
+   it, since it is all one pen. There is no bold face to switch to and `font-weight:bold` would only
+   get the browser's faux-bold smear, so thicken the strokes themselves. Scoped to this page; the
+   `.scrawl` class is used elsewhere on the site. Tune the px, it is the only knob. */
+.scrawl { -webkit-text-stroke: 0.5px currentColor; }
+
+/* MAREN's TWO SHEETS (§193). One stream written twice; the lower page slid along until the
+   marks stand over their own. Monospace with white-space:pre so the columns are real columns —
+   the whole point is seeing them fail to stack, and then stack. */
+.sheets { background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:12px 14px;
+  margin:var(--gap-block) 0; overflow-x:auto; }
+.sheets .row { white-space:pre; line-height:2.0; word-spacing:0; letter-spacing:1px; }
+.sheets .pc { letter-spacing:0; padding:0 0.45em; }
+.sheets .lbl { display:inline-block; width:5.5em; letter-spacing:0; font-style:normal;
+  color:#6f8494; font-size: var(--sz-word); text-align:right; padding-right:1.1em; }
+.sheets .say { display:block; font-family: var(--voice-hers); letter-spacing:0; word-spacing:normal; font-style:italic;
+  color:#8fa2ad; font-size: var(--sz-word); margin:2px 0 12px 5.5em; white-space:normal; }
+.sheets .row:last-child .say { margin-bottom:0; }
+
+/* ── THE PASS HEAD. Until 08-01 an entry opened with a stamp and a serif chapter title, and
+   nobody inside the fiction writes chapter titles. But the book already says three times what
+   this actually is — a FINDING AID, ruled at the head of the page so a later hand can locate a
+   night without reading the whole book: Ona "go back and cut it in at the head of this pass,
+   deep and big, where a fellow hunting for it will walk into it"; Vess "wrote across the top of
+   the page what's missing"; Lio "I've cut the two columns into the press at the head of this
+   pass." And Maren rules it in the first entry: "I've headed it for the pass, the way the
+   station heads everything."
+   So: a semi-formal divider — a ruled line across the page, the pass, and her note beside it.
+   Kin to the taking-up record and deliberately lighter: that one is a station form filled at a
+   handoff, this one is a keeper's own hand at the top of a night. ── */
+/* THE RULE ITSELF IS GONE (08-10). The reasoning above is about a keeper HEADING her page, and that
+   is done by the stamp — the pass, in her numerals, in the station's hand. The line over it was
+   drawing a second divider between entries that are already separate panels with space between
+   them, so every entry opened on a horizontal stroke nobody had asked for. What the keepers do is
+   head the page; the ruling was mine. */
+.entry .stamp {
+  padding: 2px 0 0; margin: 0 0 8px;
+}
+/* the fields that make the head a form rather than a title, and both have to be things somebody
+   actually wanted written down. WHO WAS ON WATCH, read off the text and never invented. And the
+   CYCLE, the tablers' long reckoning, which is what a record is dated by — so §385 lands twice,
+   the head saying "unreckoned" for the whole famine because nobody crossed to bring it.
+   Maren's heads carry no cycle: the form was not finished until Ren cut the taking-up record at
+   232 and put the reckoning on it. Forms grow.
+   NOT a sky-sound field, which was the first thing I put here and was wrong three ways — that
+   line lives in the REGISTER, at the FOOT, and is explicitly not ruled: "it sits at the foot of
+   the page because it isn't anybody's column." A form has fields for what the station wants, and
+   the station does not want this. That is the premise. */
+.passfields {
+  font-family: var(--voice-station);
+  font-size: 74%; letter-spacing: 0.06em; color: #90a8b8; margin: 0 0 9px;
+}
+.passfields .pf-k {
+  text-transform: uppercase; letter-spacing: 0.18em; color: #5f7f90;
+  margin-right: 0.6em; }
+.passfields .pf-k + * , .passfields .pf-k ~ .pf-k { margin-left: 1.6em; }
+/* THE KEY COLUMN. The first key on each of the head's lines is boxed to one width, so the values
+   start at the same place down the head and it reads as a ruling rather than three loose lines:
+       PASS 193
+       ON WATCH  Maren, Ren copying
+       NOTE      Cups
+   `em`, not `ch` — letter-spacing is outside the ch unit, and these keys are spaced 0.18em. Both
+   boxes measure in the same em because both run at 74% of the entry (the h2's key is 71% of 104%),
+   so one number holds them. A key that is NOT first on its line — the cycle — stays tight against
+   its value; padding it would open a hole in the middle of the line. */
+.entry > .stamp .pf-k, .passfields .pf-k:first-child, .entry > h2::before {
+  display: inline-block; min-width: 7.1em; margin-right: 0; }
+/* the stamp's own key. It runs at .stamp's 74%, the same em the other two boxes measure in, so
+   one min-width holds all three. Spaced 0.18em like them rather than the stamp's own 0.2em — the
+   key column is a column, and it should read as one. */
+.entry > .stamp .pf-k { color: #5f7f90; letter-spacing: 0.18em; }
+/* the third line of the head, and it belongs to the HEAD, not to the entry. It was #cbd8e2 —
+   brighter than the prose under it — so it read as a chapter title sitting on top of a form.
+   It takes the stamp's own color now, so pass, watch and note are one block a reader's eye
+   passes over on the way in. */
+/* SAME SIZE, SAME INK as the watch line above it — 74% and #90a8b8, straight off `.passfields`.
+   It was 104% and a different color, which made it a chapter title wearing a field key. The head
+   is a form: three keys in one column, three values in another, and no line of it louder than the
+   next. */
+.entry > h2 {
+  font-family: var(--voice-station);
+  font-size: 74%; font-weight: normal; letter-spacing: 0.06em;
+  /* last line of the head: the gap under it must out-rank a paragraph gap, or the head reads as
+     the first paragraph. The form's own three lines stay tight above. */
+  color: #90a8b8; text-shadow: none; margin: 0 0 var(--gap-block); clear: both;
+}
+/* …and it gets a field key like the two lines above it, so the head is three fields and not two
+   fields with a title stuck under them. NOTE, because that is what §189 says the line is: "two or
+   three words for what the night was, so a fellow can find the night again without reading her way
+   to it." Drawn in CSS rather than typed into 79 entries — it is the form's ruling, not anybody's
+   words, and nothing in the book should have to carry it. No font-size of its own: the h2 now runs
+   at 74%, the same as .passfields, so the key inherits the size the other two keys already have. */
+.entry > h2::before {
+  content: "NOTE"; letter-spacing: 0.18em; color: #5f7f90;
+}
+/* click a header to pin the URL to its anchor (and copy the link where allowed) */
+.entry h2 .anchor-link {
+  font-family: var(--voice-station); font-weight: normal;
+  font-size: 86%; color: #6f95a8; text-decoration: none; margin-left: 0.55em;
+  vertical-align: 0.12em; opacity: 0; transition: opacity .15s ease; white-space: nowrap;
+}
+.entry h2:hover .anchor-link, .entry h2 .anchor-link.flash { opacity: 1; }
+.entry h2 .anchor-link.flash { color: #9fe0ff; }
+
+/* "the whole run" — the ⋮ menu on an entry's head, and the block it opens.
+   Built by js/listener.js; which stretch it draws is `runsByEntry` in scripts/wire.js. */
+.entry-menu { position: absolute; top: 14px; right: 18px; }
+.entry.dispatch .entry-menu { top: 8px; }
+.entry-menu > summary {
+  display: block; cursor: pointer; list-style: none;
+  font-family: var(--voice-station); font-size: 15px; line-height: 1;
+  color: #4e6a7a; padding: 6px 8px; border-radius: 6px;
+  transition: color .15s ease, background-color .15s ease;
+}
+.entry-menu > summary::-webkit-details-marker { display: none; }
+.entry-menu > summary:hover, .entry-menu[open] > summary { color: #a8c4d4; background: rgba(140,180,220,.09); }
+/* ★ ON A TOUCH SCREEN THERE IS NO HOVER TO FIND IT WITH. The resting color reads at 3.07:1 on the
+   entry ground — fine for something a pointer lights up on the way past, invisible for a control
+   whose only state is resting. So it sits lit, in a chip that shows it is a control. Same fix as
+   `.simpler`, which is opacity:0 until hovered and permanently on for a coarse pointer. */
+@media (pointer: coarse) {
+  .entry-menu > summary { color: #93b3c4; background: rgba(140,180,220,.10); }
+}
+/* right-anchored: it opens inward, so it can't widen a narrow page */
+.entry-menu-pop {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 3;
+  background: #101820; border: 1px solid #2b4a5c; border-radius: 8px;
+  padding: 7px 11px; white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0,0,0,.5);
+}
+.entry-menu .run-check {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  font-family: var(--voice-station); font-size: var(--sz-word); color: #a8c4d4;
+}
+/* `color-scheme` darkens the UNCHECKED box; `accent-color` only reaches the checked one */
+.entry-menu .run-check input { margin: 0; color-scheme: dark; accent-color: #5f9ab5; cursor: pointer; }
+
+/* No frame and no side padding: the rows sit on the prose's own left edge, marked off by the two
+   rules and nothing else. Every other exhibit is an inset box because a keeper is holding it up;
+   this is the part she didn't.
+   ★ NOT A SCROLL REGION. `max-height` + `overflow` here traps the wheel — the block is wide and sits
+   where the pointer already is. It is as tall as it is. Pinned by a test. */
+.run { display: none; }
+.run.open {
+  display: block;
+  margin: 0 0 var(--gap-block); padding: 7px 0;
+  border-top: 1px solid #24333e; border-bottom: 1px solid #24333e;
+}
+.run .run-row {
+  font-family: var(--voice-marks); font-size: var(--sz-mark);
+  line-height: 1.55; color: #8aa2b0; white-space: pre-wrap; word-break: break-word;
+  padding: 1px 0;
+}
+/* the ones the entry itself draws. A band, not a mark (the notation is a closed set) and not a
+   gutter rule (that would put banded and plain rows on two left edges). */
+.run .run-row.here { background: rgba(140,180,220,.085); }
+
+/* ── one rung simpler: the step-down control on a drawn line (js/listener.js) ──
+   Inside the marks' own cell, never beside it — a labeled row is a two-cell grid on
+   `display: contents`, so a third child would become a third cell and stack the line. */
+.simpler {
+  background: none; border: 0; padding: 0 0 0 .7em; margin: 0;
+  font-family: var(--voice-station); font-size: var(--sz-word); line-height: 1;
+  color: #4e6a7a; cursor: pointer; vertical-align: baseline;
+  opacity: 0; transition: opacity .12s ease, color .12s ease;
+}
+.row:hover .simpler, .frag:hover .simpler, .run-row:hover .simpler,
+.simpler:focus-visible { opacity: 1; }
+.simpler:hover, .simpler:focus-visible { color: #a8c4d4; }
+/* A line not at the rung its page put it at says so, or a reader mistakes a form they asked for
+   for the one the book chose. INK BEHIND IT, not a rule at the edge: a rule was an inset shadow,
+   which takes no space and so sat on top of the first mark, and giving it space would jog the line
+   sideways every time it was stepped. Warm, because the cool band on a run row already means
+   something else (that line is also drawn below). */
+/* on the element that actually HOLDS the marks. A labeled row is `display: contents`, so it has no
+   box of its own and a background on it is dropped on the floor — `.fig` is its marks cell. */
+.row.stepped, .frag.stepped, .run-row.stepped,
+.row.stepped > .fig, .frag.stepped > .fig { background: rgba(203,183,148,.075); }
+.row.stepped .simpler, .frag.stepped .simpler, .run-row.stepped .simpler { opacity: 1; color: #a08a63; }
+/* a finger has no hover: on touch the control is simply always there */
+@media (pointer: coarse) { .simpler { opacity: 1; padding-left: 1em; } }
+/* terse: short clipped lines, tighter rhythm */
+.entry p {
+  font-family: var(--voice-hers);
+  color: #dde3ea; line-height: 1.6; font-size: 106%; margin: 0 0 var(--gap-para); text-align: left;
+  letter-spacing: 0.01em;   /* reversed type irradiates; a hair of tracking opens the counters */
+}
+.entry p:last-child { margin-bottom: 0; }
+.entry .coin { font-style: italic; }
+/* a dispatch: a short in-the-moment note, kept closer to the wire than a full entry.
+   lighter box, greener accent, no title — a quick hand, not a considered pass. */
+.entry.dispatch {
+  background: var(--ground); border-left-color: #3a5a3f;   /* lighter = smaller, not transparent */
+  padding: 14px 28px 15px; margin: 0 0 28px;
+}
+.entry.dispatch .stamp { color: #6f9a7a; }
+/* the "taking-up": a spare, diegetic change-of-watch record when a new keeper inherits the log — carries the
+   FACTS of succession (from/to, trade, the copied creed) so the prose need not. Born at the first succession
+   (Ren, a letter-cutter, §232); the form and its creed drift a little down the line. */
+.taking-up {
+  font-family: var(--voice-station);
+  max-width: 440px; margin: 40px auto 8px; padding: 12px 20px 13px;
+  border: 1px solid #35443d; border-radius: 3px;
+  background: #121812; color: #c2cfc6; font-size: 88%; line-height: 1.8; text-align: center;
+}
+.taking-up .tu-head {
+  text-transform: uppercase; letter-spacing: 0.24em; font-size: 74%; color: #7fa389;
+  margin-bottom: 8px; border-bottom: 1px solid #2a352f; padding-bottom: 6px;
+}
+.taking-up .tu-line { color: #c6d2c9; }
+.taking-up .tu-k { text-transform: uppercase; letter-spacing: 0.1em; font-size: 80%; color: #6f8a7c; }
+.taking-up .tu-creed {
+  margin-top: 8px; text-transform: uppercase; letter-spacing: 0.2em; font-size: 76%;
+  color: #8aa495; border-top: 1px solid #2a352f; padding-top: 7px;
+}
+
+/* ---- four page-forms that belong to ONE keeper each (plans/LISTENER_CHARACTERS.md §7).
+   They are how the hands differ on the page rather than in their sentences. Do not spread them:
+   a form used by everybody is a template, not a voice. ---- */
+
+/* REN's cut ledger (§239 on). What she copied and did not work, entered as a coded row with a key
+   cut at the front of it. Inherited: Vess keeps it through the famine when she has no hand for prose,
+   and Ona reads the key a hundred and sixty passes later to find out what an empty column meant. */
+.tally {
+  font-family: var(--voice-station);
+  background: rgba(10,14,20,0.7); border-left: 2px solid #4a4332;
+  padding: 10px 16px; margin: var(--gap-block) 0; color: #cbbf9e; font-size: 92%; line-height: 1.75;
+}
+.tally .key { font-family: var(--voice-hers); color: #8a7f63; font-size: var(--sz-side); font-style: italic; display: block; margin-bottom: 6px; }
+/* `.tally-row`, not `.row` — `.row` is what the message renderer draws into, and a page-wide sweep
+   cannot tell them apart by element alone. */
+.tally .tally-row { display: block; white-space: pre; overflow-x: auto; }
+.tally .gap { display: inline-block; width: 1.15em; border-bottom: 1px solid #6b6250;
+  vertical-align: baseline; }   /* a column she could not fill: ruled to the width of the missing
+  thing and left empty — her own words. Drawn, never typed; the span holds no characters at all. */
+
+/* NERU's gauge (§310–345). The vine's condition and whose hands read it, entered as an instrument
+   line under the stamp, every entry, whatever it costs her to fill it. Exactly one echo afterwards
+   (Vess, the vine dead) and then it stops. If it spreads, cut it back. */
+.gauge {
+  font-family: var(--voice-station);
+  font-size: 76%; letter-spacing: 0.12em; color: #7f9a86;
+  margin: -2px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #24332b;
+}
+.gauge .k { color: #5f7a68; text-transform: uppercase; letter-spacing: 0.2em; }
+.gauge .hand { color: #a08d6a; }              /* whose hands read it, once it stops being hers */
+
+/* TAMSIN's captions (§559 on). She reads the raised figures by hand, and the caption is what the
+   hand found, in the order it found it — no verbs, no argument. A different grammar from her prose,
+   set right under the figure it belongs to. */
+.cap {
+  font-family: var(--voice-station);
+  font-size: 88%; line-height: 1.7; color: #b9a98c;
+  margin: -4px 0 14px; padding-left: 14px; border-left: 2px solid #3d3628;
+}
+
+/* CAEL's correspondence (§505–540). She keeps the book's only live friendship, across the water, and it
+   runs both ways. When a letter matters the letter is on the page in the other hand's own cadence, not
+   summarized in hers — the one keeper whose entries are sometimes somebody else's words. */
+.letter {
+  font-family: var(--voice-station);
+  font-size: 92%; line-height: 1.85; color: #c3ccd6;
+  background: rgba(255,255,255,.03); border: 1px solid #2b3540; border-radius: 3px;
+  padding: 12px 18px; margin: var(--gap-block) 0;
+}
+.letter .sig { display: block; margin-top: 8px; color: #8095a6; }
+/* one line of a block that is LINES rather than prose — a quoted letter, a bench list. Never a mark. */
+.ln { display: block; }
+
+/* ISO's later hand (§271–306). She marks her guesses as noticing, so she is the one who comes back
+   and writes against herself. Dated, bracketed, in the entry it corrects. */
+.later {
+  font-family: var(--voice-hers); font-size: 96%; line-height: 1.55;
+  color: #b9b2c6; margin: var(--gap-para) 0; padding-left: 14px; border-left: 2px solid #3a3348;
+}
+
+.frag {
+  font-family: var(--voice-station);
+  background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px;
+  padding: 12px 14px; margin: var(--gap-block) 0; color: #d6e6ef;
+  font-size: var(--sz-mark); letter-spacing: 3px; overflow-x: auto; white-space: nowrap;
+}
+.frag .lbl {
+  display: block; letter-spacing: 0.16em; font-size: var(--sz-cap); text-transform: uppercase;
+  color: #5f7f90; margin-bottom: 6px;
+}
+.frag.flood { white-space: normal; overflow: hidden; padding: 12px 14px 2px; }
+/* A TONE RUN WRAPS, AT EVERY WIDTH. It is one unbroken string of modifier letters, so nothing in it
+   is a break opportunity and `.frag`'s nowrap sent it off the side to be dragged at. Having nothing
+   to break at is the reason to let it break ANYWHERE, not the reason to refuse. The break has to go
+   on the run, not the box — a container rule never reaches inside a string. Same recipe as
+   `.frag.flood` and as the narrow-screen block, which had this right for phones only. */
+.frag .tones { white-space: normal; word-break: break-all; overflow-wrap: anywhere; }
+/* the atoms view exists to show which marks belong together, so the gap BETWEEN atoms has to beat the
+   gap between marks inside one. `.frag`'s 3px letter-spacing is tuned for the founder's loose tone
+   runs, where every mark is its own thing; here it flattens the grouping the view is for. */
+.frag[data-view="atoms"] { letter-spacing: 0; word-spacing: 0.8em; }
+.frag[data-view="atoms"] .bit, .frag[data-view="atoms"] .cup { letter-spacing: 1px; }
+/* a .frag used as a RUNG of a peel is not its own exhibit — strip its box so the forms of one
+   statement read as a single ladder and not as boxes stacked inside a box. */
+.peel .frag { background: none; border: 0; border-radius: 0; padding: 0; margin: 0; display: block;
+  /* and it must WRAP. `.frag` is nowrap+scroll above 640px, which is right for the founder's tone
+     streams (one unbroken string, nothing to break at) and wrong here: a cups rung is a row the
+     reader is asked to count the marks in, and §232's is long enough to run off the side at desk
+     width. The renderer already puts a space between every mark, so it breaks cleanly. */
+  white-space: normal; overflow-x: visible;
+  /* and it must be the SIZE OF THE OTHER RUNGS. `.frag` is 108% (17.28px) because a standalone frag
+     is a magnifier; `.peel .msg-view` and a `.row[data-code]` rung are 12px. In §232's peel that put
+     "as I have it" and "as it came" — the same statement, the whole point of the ladder — at two
+     sizes, one above the other. A rung is not its own exhibit; it takes the ladder's size. */
+  font-size: var(--sz-mark); }
+.flood .flood-run {
+  display: block;
+  line-height: 1.6; letter-spacing: 3px; color: #cbb794;
+  white-space: normal; word-break: break-all; overflow-wrap: anywhere;
+  max-height: 15em; overflow: hidden;
+  -webkit-mask-image: linear-gradient(#000 80%, transparent);
+          mask-image: linear-gradient(#000 80%, transparent);
+}
+
+/* the "peel" stepper */
+.peel { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 12px 14px; margin: var(--gap-block) 0; }
+.peel .msg-view { display: block; margin-top: 4px; }
+.peel-say { font-family: var(--voice-hers); color: #8fb0c0; font-size: var(--sz-word); font-style: italic; margin-top: 3px; }
+/* §267: the figures set in a right-aligned column so the place-columns line up and the reader
+   can read DOWN each column and watch it toggle (units every step, twos every two, …). */
+/* §267: the short figures cut one under the next, RIGHT EDGE SQUARE — "read down the right-hand
+   column, on, off, on, off, the whole way." The alignment IS the lesson, so it must not depend on a
+   width anyone has to compute. This was `width: 5ch`, and 5ch was measured against a font that does
+   not contain the boxes (`.fig` renders in `listenermarks`, a 17-character subset with no digit) —
+   so the four-box run for eight overflowed, wrapped, and left a lone ▫ beside the word "eight",
+   which reads as none. A max-content grid column is exactly as wide as the widest run, in any font,
+   and cannot wrap. Nothing to keep in step by hand. */
+/* IT HAS TO SCROLL, like every other exhibit box. §267's table went to six columns on 08-07 and
+   overflowed a phone by 93px with `overflow-x: visible` — so the entry clipped it, the document did
+   not scroll, and the last two columns were simply unreachable. A table is a table; it scrolls. */
+.binstack { font-family: var(--voice-station); margin: 12px 0 14px; line-height: 1.7;
+  display: grid; grid-template-columns: repeat(6, max-content); column-gap: 1.3em;
+  max-width: 100%; overflow-x: auto; }
+.binstack .num { text-align: center; }
+.binstack .hd { display: contents; }
+.binstack .hd > * { font-size: var(--sz-cap); letter-spacing: .12em; text-transform: uppercase;
+  color: #5f7f90; text-align: left; padding-bottom: 4px; border-bottom: 1px solid #1d2a34; }
+.binstack .row { display: contents; }
+.binstack .fig { text-align: right; letter-spacing: 3px; white-space: nowrap; }
+/* A GLOSS BESIDE HER MARKS (Ren's readings §239–260, Senn's walk and tables §501). `.say` had NO
+   rule inside a plain `.rows` — only .sheets/.binstack/.reduce ever styled it — so in 16 rows it
+   inherited the marks' font, size, letter-spacing AND word-spacing, with no gap: "▪standing at the
+   last cell" ran the words straight off the notation, and a wrapped line started again at the far
+   left, beneath the marks, merging one row's words into the next row's figure. inline-block gives
+   the gloss its own column, so it wraps inside itself and never under the notation. Found
+   08-01, looking at a screenshot I had never taken. */
+.rows .row.hand .say { display: inline-block; vertical-align: top; margin-left: 1.1em;
+  font-family: var(--voice-hers); font-size: var(--sz-word); font-style: italic;
+  letter-spacing: 0; word-spacing: normal; color: #8fa2ad; }
+
+.binstack .say { font-family: var(--voice-hers); color: #8fb0c0; font-style: normal; font-size: var(--sz-word); }
+/* §310: NERU'S DESCENT, listed the way she'd list a bad tide — indented going in, level coming out.
+   The V IS the content, so a row must never wrap: a wrapped line at the deepest indent destroys the
+   turn, and one at the outermost destroys the return. nowrap guarantees the shape whatever the text
+   or the font; the box already scrolls if it must. Depth stays per-row (it is data, not styling). */
+.descent .row { white-space: nowrap; }
+
+/* §587: Lio's memory-that-keeps-time, five columns — what she says, the mark, whether a beat came,
+   the verb, what it holds after. The beat column was a centered `width:7em` picked so "a beat" and
+   "— no beat —" would occupy the same space; a max-content column does that by measuring them. */
+.rows.beats { display: grid; grid-template-columns: repeat(4, max-content) minmax(0,1fr);
+  column-gap: 1em; align-items: baseline; row-gap: 3px; }
+.rows.beats .row { display: contents; }
+.rows.beats .beat { color: #bfe8c8; text-align: center; }
+.rows.beats .beat.none { color: #7f8598; }
+.rows.beats .keeps { color: #c9a3ff; }
+
+/* §605: Lio's ledger of the engine's own orders — mark, what the order does, the trace it left.
+   Three columns, previously three inline `width:3.5em/20em` boxes. Same reason as `.labeled`. */
+.rows.ledgered { display: grid; grid-template-columns: max-content max-content minmax(0,1fr);
+  column-gap: 1.4em; align-items: baseline; row-gap: 3px; }
+.rows.ledgered .row { display: contents; }
+.rows.ledgered .does { color: #7f8598; }
+.rows.ledgered .trace { color: #bfe8c8; white-space: nowrap; }
+
+/* A LABELED TABLE (Tamsin's gate answers §564-579, Lio's §587). The label column used to be an
+   inline `width:5.5em` per row — a number that happened to fit "both-knot" and would silently
+   misalign the day a label grew. Same construction that corrupted §267. max-content sizes it to the
+   widest label in whatever font, and the marks keep their own column. */
+.rows.labeled { display: grid; grid-template-columns: max-content minmax(0,1fr);
+  column-gap: 1.4em; align-items: baseline; row-gap: 3px; }
+.rows.labeled .row { display: contents; }
+.rows.labeled .row .lbl,
+.rows.beats .row .lbl { display: inline; color: #c9a3ff; letter-spacing: 0;
+  word-spacing: normal; font-size: var(--sz-word); text-transform: none; margin-bottom: 0; }
+  /* beats `.rows .row.hand .lbl` (the §207 rule, 4 classes) on specificity — that one is a
+     block, uppercase caption, and these labels are her coined WORDS, which are never uppercase. */
+.rows.labeled .fig { white-space: nowrap; }
+/* except a tone row, which is a string of pitches with no break opportunity in it — nowrap sends it
+   off the side, and the tail is usually the point of showing it. Same recipe as `.frag .tones`. */
+.rows.labeled .row[data-as="tones"] .fig { white-space: normal; word-break: break-all; overflow-wrap: anywhere; }
+/* and a row whose LENGTH is the thing being shown. §214's longest count is announced as "here it is
+   whole, once, because it is worth seeing once" and then runs about 98 marks — nowrap sent all but
+   the first four small cups off the side, behind a scrollbar, so the one row on the page whose job
+   is to be seen entire was the one row a reader could not see entire. It breaks at the spaces the
+   renderer already puts between atoms, so no atom is ever split across two lines. */
+.rows.labeled .row.whole .fig { white-space: normal; }
+/* a run of tones standing inside a longer one (`data-echo`). A BAND BEHIND THE MARKS, not a color on
+   them: the marks keep the notation's one color, and the band survives a line break, which matters
+   because the run being marked is usually long enough to wrap. */
+.echo { background: rgba(140,180,220,.17); box-shadow: 0 0 0 1px rgba(140,180,220,.22); border-radius: 2px; }
+
+/* §501: SENN'S WALK and her four tables — a figure with a gloss beside it. The gloss must start at
+   the same place on every line, and it cannot: the reading-place box (`.head`) has width, so a row
+   with the stone on cell 4 is wider than one with it on cell 3, and inline-block glosses came out
+   ragged. Alignment across rows needs the column on the CONTAINER, which is what `.binstack` already
+   does — same pattern, reused: rows go `display:contents`, the marks live in a `.fig`, and the first
+   column is max-content so it is exactly as wide as the widest figure. */
+.rows.glossed { display: grid; grid-template-columns: max-content minmax(0,1fr);
+  column-gap: 1.2em; align-items: baseline; row-gap: 4px; }
+.rows.glossed .row { display: contents; }
+.rows.glossed .fig { white-space: nowrap; }
+.rows.glossed .say { margin-left: 0; }
+
+/* §288: the keeper's OWN worked reduction (her scratch, not transmitted wire) — pour a value into a
+   maker's slots and watch it reduce, so the reader sees the substitution the message only asserts. */
+.reduce { font-family: var(--voice-station); font-size: var(--sz-mark); margin: 12px 0 14px; line-height: 2; }
+.step { font-family: var(--voice-hers); color: #8a94a0; font-style: italic; font-size: var(--sz-word); margin: 0 5px; }  /* narration word ("becomes"), not a mark */
+.reduce .say { font-family: var(--voice-hers); color: #8fb0c0; font-size: var(--sz-word); font-style: italic; margin-left: 1.6em; }
+
+.rows { background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px; padding: 10px 14px; margin: var(--gap-block) 0; overflow-x: auto; }
+.row {
+  font-family: var(--voice-station); font-size: var(--sz-mark);
+  line-height: 1.55; color: #8aa2b0; white-space: pre-wrap; word-break: break-word;
+  padding: 0; border-left: none; margin: 0;
+}
+/* AN ASIDE INSIDE AN EXHIBIT — her sentence, not her notation. `.more-note` ("…and on, the same, more
+   times than I will copy…"), `.rb-note` under a read-back, `.cp-item` in a copied block: one job, and
+   they were 13px / 14.72px / 14.88px because two of them were percentages of the ENTRY. One size now.
+   13px is a caption: clearly below body prose (16px) so it reads as inside the box, and one pixel off
+   the marks so it does not tower over the rows it is a note on.
+   The row-level glosses (`.say`, `.lbl`) are absolute for the opposite reason: they were percentages
+   of `.row.hand`, so dropping hand rows 17px→12px shrank a `.say` to 8.4px. An aside's size must not
+   be a function of the marks' size. */
+.more-note { font-family: var(--voice-hers); color: #61748a; font-style: italic; font-size: var(--sz-side); padding: 4px 0; }
+
+/* "copied, not read" — the line copies every pass faithfully and only reads some of it. What a keeper
+   passed over is still in the archive as marks; it is just unworked. Noting it is not filler: nothing
+   unnoted survives the four hundred passes to the next turn, so an honest log says what it set aside. */
+.copied { margin: 14px 0 4px; padding: 9px 0 2px; border-top: 1px solid #1d2a34; }
+.copied .cp-label { font-family: var(--voice-station); font-size: var(--sz-cap);
+  text-transform: uppercase; letter-spacing: .2em; color: #6c8494; margin-bottom: 7px; }
+.copied .cp-item { font-family: var(--voice-hers); color: #93a5b1; font-size: var(--sz-side); line-height: 1.5; padding: 1px 0 1px 1.1em; text-indent: -1.1em; }
+.copied .cp-item::before { content: "\2014\00a0"; color: #4a5f6c; }
+
+/* THE LISTENER'S OWN HAND — AND WHY IT IS THE SIZE OF A QUOTE.
+   This was 17px with 1px letter-spacing while `.row[data-code]` (the generated wire quotes, which are
+   most of the book) is 12px with none. Same marks, two sizes, often four inches apart inside one entry:
+   §232 showed her comparison rungs at 17px and the run they are a comparison OF at 12px, and the eye
+   reads the size difference as a difference in kind. It is not one — a hand row is the SAME notation,
+   drawn by her instead of generated. So: same notation, same size. (The `.ledger` exception below had
+   already reached this conclusion for one case in 07-24; this is that argument applied everywhere.)
+   NO EXCEPTIONS, and there were three: `.binstack` (§267), `.sheets` (§193) and `.descent` (§310) were
+   held back at 17px as "drawings rather than rungs". That is not a reason a reader can recover. §267's
+   stack of figures sits four lines under a generated row of the same marks; §193's two sheets are the
+   founder's own copying of a stream she also quotes; §310 is words, not marks at all. What those three
+   exhibits actually need is COLUMN ALIGNMENT, and each already has it from its own container
+   (`.binstack .fig` right-aligned in a max-content grid, `.sheets .row` white-space:pre) at any size. */
+.row.hand { font-size: var(--sz-mark); color: #cdd9e2; padding: 2px 0; }
+/* A LABEL INSIDE A PLAIN `.rows` BOX (§207: the run, against the mark she sets down instead). `.row`
+   carries word-spacing .4em — for MARKS — and words inherit it and come out spaced like notation.
+   Reset that, and put the label on its own line exactly as `.frag .lbl` does, so the marks start at
+   the box edge and lay directly under the pieces in the frags above, which is the comparison the
+   exhibit exists to make. A right-aligned label column (the `.sheets` treatment) indents the marks
+   ~100px and breaks that alignment. The GRID variants (`.rows.labeled`, `.rows.beats`) override this
+   with an inline label; they are 4 classes to this rule's 3, so they win wherever they apply.
+   IT WAS SCOPED TO `.row.hand` AND THAT WAS THE WRONG AXIS — the same bug as the tally spacing
+   directly below, and found the same way. Whether a row is hand-authored is a fact about its
+   PROVENANCE; whether its label needs a line of its own is a fact about the BOX it sits in. Five
+   generated rows in plain `.rows` boxes had a label running straight into the marks ("the cup with
+   nothing in it▫ ⟅ ⟆"), and three of those predate the conversion that surfaced it. */
+.rows .row .lbl { display: block; letter-spacing: 0.16em; word-spacing: normal;
+  font-size: var(--sz-cap); text-transform: uppercase; color: #5f7f90; margin-bottom: 4px; }
+/* TALLIES ARE FOR COUNTING, IN EVERY KIND OF ROW. The spacing between `●` marks was scoped to
+   `.row.hand` and `.peel`, so a GENERATED `.row[data-code]` — most of the book — got none of it, and
+   the longest run in the arc (25) came out as one unbroken block while the hand-drawn one four lines
+   above it was spaced. Global now.
+   The grouping that used to sit here is GONE (08-09): a gap after every fifth `●` is one hand, and
+   these people have sixteen feet and no hands. Do not put it back. If a run is ever to be grouped,
+   the group has to be a number they would reach for and a keeper has to cut it on the page. */
+.tk { letter-spacing: 2px; }
+.tk.z { letter-spacing: 0; }
+/* WHERE THE SEAM FALLS. Ren's cut-tests (§232) print one run three ways — as it comes, cut at the
+   doubling, and cut a tone early — and the gap IS the exhibit: it shows where she puts the knife. */
+.seam { display: inline-block; width: 7px; }
+/* TWO THINGS ON THE PILE, NOT ONE LONGER RUN. In Lio's engine trace `▪▫▪ ▪▫▫▪` is two values and the
+   row below it, `▪▫▪▪▫▪`, is one — a single space carries too little of that. This used to borrow
+   `.gp`, the tally grouping, which was a different job under the same name and went out with it. */
+.trace .apart { display: inline-block; width: 9px; }
+.row.hand .head { outline: 1px solid #ffd479; border-radius: 2px; padding: 0 2px; }  /* the reading-place on the strip */
+
+/* an expression opened all the way — cups within cups, no floor */
+.fold {
+  font-family: var(--voice-station);
+  background: #0a0e14; border: 1px solid #1d2a34; border-radius: 8px;
+  padding: 12px 14px; margin: 10px 0; font-size: var(--sz-mark); line-height: 1.75;
+  white-space: pre; overflow-x: auto; color: #cdd9e2;
+}
+.fold .bit { letter-spacing: 2px; }
+.coda {
+  text-align: center; font-family: var(--voice-station);
+  color: #7f9bab; font-size: 86%; line-height: 1.8; margin: 34px 0 40px;
+}
+.coda a { color: #9fe0ff; }
+.colophon {
+  max-width: 34em; margin: 0 auto 40px; color: #5f7382; font-size: 78%;
+  line-height: 1.65; text-align: center; font-style: italic;
+}
+.divider { text-align: center; color: #35505f; margin: 20px 0; letter-spacing: 1em; }
+
+/* ---- the seeker's map (§619): an animated patrol of the room-tree ---- */
+/* ONA's BOARD (§455). A peg for each place, a cord between the ones that reach. Her own physical
+   model — the net is a board on a wall, and Cael walks into exactly this at Kell a hundred passes later
+   ("a board on the wall with the stations on it and lines between them"). No JS: she pegs it once. */
+.board { border:1px solid #2c3a2f; border-radius:10px; padding:14px 8px 10px; margin:10px 0;
+  background:linear-gradient(180deg,rgba(20,26,21,0.85),rgba(14,18,15,0.85)); }
+.board svg { display:block; width:100%; height:auto; max-width:420px; margin:0 auto; overflow:visible; }
+.board .cord { stroke:#9ab08b; stroke-width:2.5; stroke-linecap:round;
+  filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)); }
+.board .peg circle { fill:#1b2118; stroke:#bcd0aa; stroke-width:2;
+  filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)); }
+.board .rule { stroke:#c98b5a; stroke-width:2; stroke-dasharray:3 3; }
+.board .rule-tag { fill:#c98b5a !important; font-size: var(--sz-cap); }
+.board .tick circle { r:4; fill:#cbb794; stroke:none; }
+.board .peg .tag { font-family: var(--voice-station); fill:#cbb794;
+  font-size: var(--sz-word); letter-spacing:1px; text-anchor:middle; }
+/* a peg labeled with a FIGURE — the keepers' numeral, the same one the exhibit above the board
+   draws, so the board and the wire quote agree about which place is which. */
+.board .peg .tag.fig { font-family: "fontcustom"; font-size: var(--sz-tone); letter-spacing:0; }
+.seekmap { position:relative; border:1px solid #3a2f22; border-radius:8px; padding:12px 8px 8px; margin:10px 0;
+  background:radial-gradient(rgba(216,201,168,0.05) 0.5px, transparent 0.7px) 0 0 / 6px 6px, radial-gradient(120% 100% at 30% 8%, #1d1710, #120d08);
+  box-shadow:inset 0 0 26px rgba(0,0,0,0.55); }
+.seekmap svg { display:block; width:100%; height:auto; max-width:460px; margin:0 auto; overflow:visible; }
+/* the map is a relief she feels out: raised ridges (emboss), her warm "hand" palette */
+.seekmap .door { stroke:#b79b6f; stroke-width:2.5; filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2)); transition:opacity .5s ease, stroke .3s ease; }
+.seekmap .room circle { fill:#241b12; stroke:#cbb488; stroke-width:2; filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2)); transition:opacity .5s ease, stroke .3s ease, stroke-width .18s ease; }
+.seekmap .room .rm  { font-family: var(--voice-station); fill:#ecdcb8; font-size:16px; text-anchor:middle; transition:opacity .5s ease; }
+.seekmap .room .tag { font-family: var(--voice-station); fill:#bfe8c8; font-size: var(--sz-cap); letter-spacing:1px; text-anchor:middle; transition:opacity .5s ease; }
+/* reveal mode (JS on): the not-yet-touched lie flat and faint; the hand's passing raises them into relief */
+.seekmap.reveal .door:not(.seen),
+.seekmap.reveal .room:not(.seen) circle { opacity:.32; filter:none; }
+.seekmap.reveal .room:not(.seen) .rm,
+.seekmap.reveal .room:not(.seen) .tag { opacity:.32; }
+.seekmap .room.here circle { stroke:#ffd479; stroke-width:3; }
+.seekmap .room.press circle { stroke-width:5.5; }
+.seekmap .seeker { fill:#ffd479; opacity:0; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(255,244,214,0.45)); transition:cx .5s ease, cy .5s ease, opacity .4s ease; }
+.seekmap .seeker.on { opacity:1; }
+.seekmap-bar button { background:none; border:1px solid #4a3f2e; color:#c3b48f; font:inherit; font-size: var(--sz-word); padding:2px 11px; border-radius:11px; cursor:pointer; }
+.seekmap-bar button:hover { border-color:#e0c48a; color:#f0dcae; }
+.seekmap-say { font-family: var(--voice-hers); font-style:italic; color:#a89b80; }
+/* ── THE CONTROLS MUST HOLD STILL UNDER THE READER ────────────────────────────────────────────
+   Both bars are the same object and are now built the same way: a wrapping row of buttons, centered,
+   with the reading on a row of its own beneath it.
+
+   This looks like fussing and is not. A reader drives these by pressing one button over and over.
+   Every reading in the bar changes as the thing runs — play/pause, let-it-run/rest, and a say-line
+   that is a different length at every single step — and in a centered row ANY width change
+   re-centers the whole row. So pressing `step` slid the button out from under the finger that was
+   pressing it, and the longest say-lines wrapped and shoved the row up and down as well.
+
+   The say-line on its own row means its text can never move a button. The two buttons whose LABELS
+   change have their width pinned in JS, measured from their own longest label at load — see
+   pinWidth() in js/circuit-sim.js and js/listener.js. That is deliberately not a number in this
+   stylesheet: a hard-coded width is wrong the moment the font, the font-size or the wording moves,
+   and `ch` is no better, because in this font a character advance is not one ch. */
+.circuit-bar, .seekmap-bar { display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
+  gap:6px 8px; margin-top:8px; font-family: var(--voice-station); font-size: var(--sz-mark); }
+.seekmap-bar { color:#a89772; }
+.seekmap-say, .circuit-say { flex:0 0 100%; margin:2px 0 0; min-height:1.45em; text-align:center; }
+/* A finger is not a pointer. On touch the controls get a target you can actually hit. */
+@media (pointer:coarse) {
+  .circuit-bar button, .seekmap-bar button { font-size: var(--sz-mark); padding:7px 14px; min-height:34px; }
+}
+/* geo-world: a second seeker (cool), and a flash where the two cross */
+.seekmap .seeker.s2 { fill:#7fcbd6; filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(214,244,255,0.45)); }
+
+/* THE ENGINE WALKING A STRIP (§501). Same furniture as the map: a raised relief she reads by hand,
+   a stone for the reading-place, and the bar under it. The strip is cells; the stone slides. */
+/* The engine's drawing is 460 across and had no width rule of its own, so on a phone it simply ran
+   off the side of the page: the last cell of the strip and the end of every reading were not there
+   to be read. This is the rule .seekmap has always had. */
+.engine { max-width:100%; }
+.engine > svg { display:block; width:100%; height:auto; max-width:460px; margin:0 auto; }
+.engine .cell rect { fill:#241b12; stroke:#cbb488; stroke-width:2;
+  filter:drop-shadow(0.7px 0.9px 0.4px rgba(0,0,0,0.7)) drop-shadow(-0.6px -0.7px 0.3px rgba(242,228,198,0.2));
+  transition:stroke .3s ease, stroke-width .18s ease, opacity .4s ease; }
+.engine .cell .mk { font-family: var(--voice-station); fill:#ecdcb8; font-size:19px;
+  text-anchor:middle; transition:opacity .35s ease; }
+.engine .cell.blank rect { stroke-dasharray:3 3; opacity:.5; }
+.engine .cell.at rect { stroke:#ffd479; stroke-width:3; }
+.engine .cell.wrote rect { stroke-width:5.5; }
+/* the stone Senn set down for the reading-place */
+.engine .stone { fill:#ffd479; opacity:0; transition:cx .42s ease, opacity .4s ease;
+  filter:drop-shadow(0.8px 1px 0.5px rgba(0,0,0,0.75)) drop-shadow(-0.7px -0.8px 0.4px rgba(255,244,214,0.45)); }
+.engine .stone.on { opacity:1; }
+.engine .cond { font-family: var(--voice-station); fill:#bfe8c8; font-size: var(--sz-word);
+  letter-spacing:1px; text-anchor:middle; transition:opacity .3s ease; }
+.engine .cond.done { fill:#ffd479; }
+/* the run home changes nothing, so it reads quieter than the part that does */
+.engine.idle .cell.at rect { stroke:#9c8b63; }
+.seekmap.meet .room.here circle { stroke:#fff2cf; stroke-width:4.5; }
+
+/* pictures: same exhibit box as everything else */
+.entry img.pic { background:#0a0e14 !important; border:1px solid #1d2a34 !important; border-radius:8px !important; padding:12px !important; }
+
+/* live circuit simulator: same ink & frame as the .pic gate stills, so a live figure and a
+   still one read as the same drawn hand. Controls echo the seeker's map bar, in green. */
+.circuit { margin:0.7em 0; }
+.circuit-frame { background:#0a0e14; border:1px solid #1d2a34; border-radius:8px; padding:12px; }
+.circuit-cvs { image-rendering:pixelated; width:453px; max-width:100%; height:auto; display:block; margin:0 auto; }
+.circuit-bar { color:#8fa88f; }   /* the shared bar layout is up with .seekmap-bar */
+.circuit-bar button { background:none; border:1px solid #2c4436; color:#9fc0a8; font:inherit; font-size: var(--sz-word); padding:2px 11px; border-radius:11px; cursor:pointer; }
+.circuit-bar button:hover { border-color:#8fe6a8; color:#c9f0d4; }
+.circuit-bar .sw { display:inline-block; width:9px; height:9px; border-radius:2px; margin-left:5px; vertical-align:middle; border:1px solid #4a6152; }
+.circuit-bar .sw.lit { background:#8fe6a8; border-color:#8fe6a8; }
+.circuit-bar .sw.dark { background:#0a0e14; }
+.circuit-bar .sw.free { background:transparent; border-style:dashed; }
+.circuit-say { font-family: var(--voice-hers); font-style:italic; color:#8a9b86; }
+/* ──────────────────────────────────────────────────────────────────────────────
+   NARROW SCREENS. The listener page had NO media query at all until 08-01 — it was
+   built and reviewed at desk width, and read on a phone the exhibits either ran off
+   the side or sat too small to work. Three separate faults, fixed here:
+     1. .frag was white-space:nowrap, so the founder's tone runs (§189/§193/§207 —
+        the six exhibits a reader meets FIRST) could only be seen by dragging sideways.
+     2. 52px of .entry padding out of a ~390px screen, taken off the exhibits.
+     3. 12px rows with 0.4em word-spacing: sized for a desk, not a hand.
+   Wire rows keep white-space:pre-wrap, so a statement still breaks rather than being
+   hidden behind a scrollbar the reader may never find.
+   ────────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* `.msg-index` WAS IN THIS LIST and is not any more. It was a bordered panel of its own, 660 PLUS
+     the border, which gave a phone a horizontal scrollbar. It is now a disclosure inside the title
+     block with no border and no width of its own, and it reaches to the block's edges with negative
+     margins — which `max-width: 100%` canceled on the right only, so the rule under the title
+     stopped 30px short of it. */
+  .diary, .entry, .taking-up, .register, .rows, .frag, .tally, .msg, .peel, .readback, .board, .letter, .cap
+    { box-sizing: border-box; max-width: 100%; }
+  /* the register keeps its columns and scrolls; shrink it rather than break a rule across a row */
+  .register { font-size: 78%; }
+  .register .reg-k, .register .reg-c { padding: 6px 10px; }
+  /* tighter gaps, same ordering — override the variables, not the rules that use them */
+  :root { --gap-para: 15px; --gap-block: 24px; }
+  .diary { padding: 0; }
+  /* 16px, not the 13 this block was built with: that bought width for exhibits which now wrap or
+     scroll inside themselves, and it cost an hour's reading its side margin. */
+  .entry { padding: 16px 16px 17px; border-radius: 0 8px 8px 0; }
+  .entry.dispatch { padding: 13px 16px 14px; }
+  .entry .stamp { padding: 11px 16px 0; margin: 0 -16px 7px; }
+  .entry p { font-size: 102%; }
+  /* follows the entry's padding in, and gets a finger-sized target */
+  .entry-menu { top: 8px; right: 8px; }
+  .entry-menu > summary { padding: 11px 13px; }
+  .entry-menu .run-check { font-size: var(--sz-mark); padding: 3px 0; }
+
+  /* the founder's raw runs: wrap them. They are a stream, not a structured row —
+     there is nothing to lose by breaking one, and everything to lose by hiding it. */
+  .frag { white-space: normal; overflow-x: hidden; letter-spacing: 2px; padding: 10px 11px; }
+  /* the break has to go on the RUN, not the box: a tone stretch is one unbroken string of
+     modifier letters, and a container-level rule never reaches inside it. This is the same
+     recipe .frag.flood already uses, which is why the founder's big block wrapped and these
+     six did not. */
+  .frag .tones, .msg-view, .msg-view .tn, .msg-view .scrawl {
+     white-space: normal; word-break: break-all; overflow-wrap: anywhere; }
+  .msg, .msg-line { max-width: 100%; }
+  .tones { letter-spacing: 2px; }
+
+  .rows, .peel, .msg, .readback { padding: 9px 10px; }
+  /* THE SCALE MOVES AS ONE. 12px notation is a desk size; a phone wants a point more. This used to
+     bump `.row` alone, which was wrong twice: `.row.hand` is two classes and outranked it, so her own
+     rows stayed at 12 while the generated rows beside them went to 13 — inside the same box — and
+     `.frag`, `.fold`, `.reduce` and `.msg-view` never moved at all. Move the variables instead and
+     every kind of row goes together, which is the whole reason they are variables. */
+  :root { --sz-mark: 13px; --sz-tone: 16px; }
+  .row { line-height: 1.6; }
+  .row, .msg-view, .fold { word-spacing: 0.22em; }
+  .reduce { line-height: 1.75; }
+
+  /* her ledger and her ruled blank keep their columns (white-space:pre), so give
+     them room by shrinking instead of wrapping — a broken column is a wrong column. */
+  .tally { padding: 9px 11px; font-size: 84%; }
+  .binstack { column-gap: 0.75em; }   /* six columns on a 360px screen: buy back what the gaps cost */
+  .binstack .say { margin-left: 1em; }
+
+  /* A LABELED TABLE HAS NO ROOM FOR TWO COLUMNS ON A PHONE. The label column plus a nowrap figure
+     runs 40–140px past a 360px screen, so the marks sit behind a sideways scroll the reader may never
+     find — the exact fault this whole media query was written for. Stack it: caption over rung, which
+     is what `.peel` already does with the same material, and let the figure wrap. */
+  .rows.labeled { display: block; }
+  .rows.labeled .row { display: block; margin-bottom: 7px; }
+  .rows.labeled .row:last-child { margin-bottom: 0; }
+  .rows.labeled .row .lbl { display: block; margin-bottom: 2px; }
+  .rows.labeled .fig { white-space: normal; }
+
+  .taking-up { padding: 10px 12px 11px; font-size: 82%; letter-spacing: 0; }
+  .taking-up .tu-head, .taking-up .tu-creed { letter-spacing: 0.12em; }
+  .cap, .letter { padding-left: 10px; font-size: 90%; }
+  .letter { padding: 10px 12px; }
+  .board { padding: 10px 4px 8px; }
+}
+
+
+/* The top bar's stylesheet lives in css/main.css — it is site furniture, on every page. */
