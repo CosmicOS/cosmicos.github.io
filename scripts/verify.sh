@@ -22,6 +22,8 @@
 #  10. audit-assets   — every image (inline or referenced) decodes and validates; no broken material ships
 #  11. build         — build-frags verifies every data-code is a real transmitted statement, then jekyll build
 #  12. render-check   — renders the story (/) through real headless Chrome; fails on JS errors / unrendered signs
+#      audit-blanks   — and every container the renderer fills came back with marks in it. NOT a count:
+#                       the old `scrawl spans > 100` passed with 96% of the book blanked (measured)
 #  13. browser suite  — Playwright drives the built site the way a reader does: the live exhibits, and the
 #                       top bar's behavior, which NOTHING else here can see. Every other check reads a
 #                       static DOM; these are the only ones that scroll, tap, follow a link and look at

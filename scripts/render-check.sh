@@ -28,20 +28,18 @@ else
   echo "✓ no JS console errors"
 fi
 
-# COUNT THE SIGN GLYPHS, not `.gl`. `.gl` used to hold the lambda-slot hollows and so ran to hundreds;
-# those were removed on 08-08 (a bound name is a sign and renders as its scrawl), leaving `.gl` at
-# single digits and this check red for the wrong reason. `.scrawl` is what a rendered row is made of,
-# so it is the honest proxy for "the rows rendered".
+# THE SPAN COUNTS ARE REPORTED, NEVER ASSERTED ON. This used to demand `scrawl spans > 100` against a
+# real count of 2420, so 96% of the book could go dark and the gate still said RENDER OK — measured,
+# not supposed. audit-blanks.js asks the total question instead (is any container the renderer fills
+# still empty?), which needs no threshold and cannot be cleared by the surviving rows.
 n_gl=$( { grep -o 'class="scrawl' "$DOM" || true; } | wc -l)
 n_bit=$( { grep -o 'class="bit"' "$DOM" || true; } | wc -l)
 n_box=$( { grep -o '▩' "$DOM" || true; } | wc -l)
-n_frag=$( { grep -oE 'class="frag"[^>]*>[^<]*<span class="lbl">[^<]*</span></div>' "$DOM" || true; } | wc -l)  # label-only = unrendered
 echo "  rendered scrawl spans: $n_gl   bit spans: $n_bit"
 echo "  ▩ unrenderable signs in DOM: $n_box"
-echo "  label-only (unrendered) frags: $n_frag"
-[ "$n_gl" -gt 100 ] || { echo "❌ suspiciously few rendered glyph spans — rows likely didn't render"; fail=1; }
 [ "$n_box" -eq 0 ]  || { echo "❌ ▩ present — a sign has no glyph/scrawl"; fail=1; }
-[ "$n_frag" -eq 0 ] || { echo "❌ some .frag widgets rendered label-only (JS didn't fill them)"; fail=1; }
+
+node scripts/audit-blanks.js "$DOM" || fail=1
 
 # THE BOOK HAS NO ARABIC NUMERALS — checked here and not in verify.sh's static gates, because it is
 # a fact about what the renderer PRODUCED. See scripts/audit-numerals.js for why it is worth a gate.
