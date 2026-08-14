@@ -23,25 +23,57 @@
         <link rel="stylesheet" href="{{site.baseurl}}/css/dark_syntax.css?v={{ site.time | date: '%s' }}">
         <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/small.css?v={{ site.time | date: '%s' }}" media="screen and (max-width: 512px)" />
         <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/big.css?v={{ site.time | date: '%s' }}" media="screen and (min-width: 800px)" />
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="//www.youtube.com/player_api"></script>
+        {% comment %} ══ WHAT A PAGE ASKS FOR ══════════════════════════════════════════════════════════
+             These were unconditional and undeferred on every page, and four of them belong to the
+             four old pages alone — the story at `/` waited on 235 KB it never used. So a page names
+             what it needs in its front matter (`needs: jquery eval`), a layout passes it in for all
+             its pages ({% raw %}{% include header.html needs="jquery" %}{% endraw %}), and a page
+             that names nothing gets nothing.
+
+               jquery     js/vendor/jquery-1.10.2.min.js — js/jqconsole.js is a jQuery plugin, the
+                          circuit editor in _layouts/gate.html is jQuery, and so is js/site.js.
+                          Vendored rather than fetched from ajax.googleapis.com over a protocol-
+                          relative URL with no integrity attribute. Still 1.10.2: jqconsole and the
+                          circuit editor both predate jQuery 3 and neither has been tried on it.
+               eval       js/lib_cosmicos.js — the `Eval` the two console pages construct.
+               sound      js/cosmicos.js — `cosmicos.Sound`, for message.html's `hear` links.
+                          Implies jquery; the handler at the foot of this file is jQuery's.
+               carousel   js/site.js and its YouTube hooks — slideshow.html only. Implies jquery.
+        {% endcomment %}
+        {% capture needs %}{{ page.needs }} {{ include.needs }}{% endcapture %}
+        {% if needs contains 'jquery' or needs contains 'sound' or needs contains 'carousel' %}
+        <script src="{{site.baseurl}}/js/vendor/jquery-1.10.2.min.js"></script>
+        {% endif %}
+        {% if needs contains 'eval' %}
         <script src="{{site.baseurl}}/js/lib_cosmicos.js"></script>
+        {% endif %}
+        {% if needs contains 'sound' %}
         <script src="{{site.baseurl}}/js/cosmicos.js"></script>
+        {% endif %}
+        {% if needs contains 'carousel' %}
+        <script src="//www.youtube.com/player_api"></script>
         <script src="{{site.baseurl}}/js/site.js"></script>
+        {% endif %}
         {% comment %} DEFER, and that is load-bearing. The bar is on every page, so this cannot live at the
              foot of one of them. Deferred scripts run after the document is parsed and after the
              ordinary scripts at the end of the body have already executed — which is how this still
              finds `reckonNum` from js/listener.js on the story page, and works without it
              everywhere else. {% endcomment %}
         <script defer src="{{site.baseurl}}/js/topbar.js?v={{ site.time | date: '%s' }}"></script>
+{% comment %} A page's own js and css are versioned like every other, for the reason set out above the
+     stylesheets. These emitted a hardcoded `?v=1` and nothing at all, which made css/listener.css —
+     the story's whole stylesheet — the one file on the site a browser would never re-fetch.
+{% endcomment %}
 {% for js in page.extra_js %}
-        <script src="{{site.baseurl}}/{{ js }}"></script>
+        <script src="{{site.baseurl}}/{{ js }}?v={{ site.time | date: '%s' }}"></script>
 {% endfor %}
-{% comment %} bump ?v= when one of these changes {% endcomment %}
 {% for css in page.extra_css %}
-        <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/{{css}}?v=1" />
+        <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/{{css}}?v={{ site.time | date: '%s' }}" />
 {% endfor %}
         <link rel='shortcut icon' type='image/x-icon' href='{{site.baseurl}}/favicon.ico' />
+{% comment %} the `hear` links on message.html — jQuery's, and cosmicos.Sound's, so it goes out with
+     them rather than sitting on every page waiting for a `.hear` that only one page has. {% endcomment %}
+{% if needs contains 'sound' %}
 <script type="text/javascript">
            var current_audio = null;
            $(document).ready(function() {
@@ -59,6 +91,7 @@
               });
            });
         </script>
+{% endif %}
     </head>
     <body>
 
@@ -110,7 +143,7 @@
        `<details>` AND NOT A SCRIPT — see the note over `.tb-menu` in css/main.css for why it is a
        disclosure at every width rather than links-at-desk-and-a-button-on-a-phone.
     {% endcomment %}
-    <details class="tb-menu">
+    <details class="tb-menu" data-autoshut>
       <summary aria-label="Menu"><span class="tb-burger" aria-hidden="true"></span></summary>
       <nav class="tb-nav">
         {% if page.url == '/' %}

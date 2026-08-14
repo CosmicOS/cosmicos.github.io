@@ -1,4 +1,6 @@
-{% include header.html %}
+{% comment %} the editor below is jQuery's, on every page under this layout — so the layout asks,
+     rather than seven COS_*.html pages each repeating it. {% endcomment %}
+{% include header.html needs="jquery" %}
 
 <script src="{{site.baseurl}}/js/unless-net.js?v={{ site.time | date: '%s' }}"></script>
 <script>
