@@ -272,6 +272,60 @@ function pinWidth(btn, labels) {
      the reader arrives is already right. The first scroll takes it from there. */
 })();
 
+/* `[` AND `]` STEP PASS TO PASS. Eighty-nine entries over a hundred and fifty thousand pixels, and
+   until now the only key bound anywhere on the page was Escape — a reader who wanted the next pass
+   had a wheel and the seekmap and nothing else.
+
+   Both keys measure against where a jumped-to entry LANDS, not against the reading line the block
+   above uses: the sticky bar covers the top of the page, so an anchor jump leaves the head a little
+   below the viewport top, and a rule written round the reading line would make `[` return you to the
+   entry you were already on twice running. The landing height is `scroll-margin-top` (css/main.css),
+   read off computed style rather than copied, so the two cannot drift.
+
+   `[` on a long entry goes to ITS OWN head first and to the pass before on the second press. That is
+   what every other document does and it is the more useful of the two readings.
+
+   The URL follows on its own — this only scrolls, and the block above is listening. */
+(function () {
+  var entries = [].slice.call(document.querySelectorAll('.entry[id]'));
+  if (!entries.length) return;
+
+  var smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  function landing() {
+    var m = parseFloat(getComputedStyle(entries[0]).scrollMarginTop);
+    return m > 0 ? m : 78;                       // no computed value on very old engines
+  }
+
+  function go(dir) {
+    var top = landing(), i, target = null;
+    if (dir > 0) {
+      for (i = 0; i < entries.length; i++)
+        if (entries[i].getBoundingClientRect().top > top + 4) { target = entries[i]; break; }
+    } else {
+      for (i = entries.length - 1; i >= 0; i--)
+        if (entries[i].getBoundingClientRect().top < top - 4) { target = entries[i]; break; }
+    }
+    if (!target) return false;                   // at one end of the book: let the key do nothing
+    target.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+    return true;
+  }
+
+  /* ★ NEVER STEAL A KEY SOMEBODY IS TYPING. `[` is an ordinary character: in the note box, in a
+     browser find bar's field, in any editable region, it belongs to whatever has focus. Modifiers
+     are the browser's — Alt+[ and the like are its own bindings and shortcuts of the reader's. */
+  function typing(t) {
+    if (!t || t.nodeType !== 1) return false;
+    return t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName);
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return;
+    if (e.key !== '[' && e.key !== ']') return;
+    if (go(e.key === ']' ? 1 : -1)) e.preventDefault();
+  });
+})();
+
 /* the geo-world (§619): two seekers in a looping world; they cross at the hub.
    World, starts, and the meeting are the real message (msg.json #1832-1858); the round is its own rule, run on. */
 (function () {

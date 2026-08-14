@@ -457,6 +457,62 @@ test('every run offers a way into the message, and it lands on the right stateme
   expect(missing, 'every anchor the log points at is on the message page').toEqual([]);
 });
 
+/* ---------- `[` and `]`, which step pass to pass ----------
+   Eighty-nine entries over 150,000 pixels. The two risks are opposite: a key that does nothing, and
+   a key stolen from someone typing. */
+
+test('[ and ] walk the passes, and stop at both ends', async ({ page }) => {
+  await page.goto(PAGE);
+  // settle after each press rather than guessing a delay — the scroll is smooth, and a fixed wait
+  // reads a half-finished jump as a key that did nothing.
+  async function press(key) {
+    await page.keyboard.press(key);
+    let last = -1, y = await page.evaluate(() => window.pageYOffset);
+    for (let i = 0; i < 40 && y !== last; i++) {
+      last = y; await page.waitForTimeout(60);
+      y = await page.evaluate(() => window.pageYOffset);
+    }
+    return page.evaluate(() => {
+      const top = parseFloat(getComputedStyle(document.querySelector('.entry')).scrollMarginTop);
+      const at = [...document.querySelectorAll('.entry[id]')]
+        .filter(e => e.getBoundingClientRect().top <= top + 4).pop();
+      return at ? at.id : null;
+    });
+  }
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  const forward = [await press(']'), await press(']'), await press(']')];
+  expect(new Set(forward).size, 'three presses, three different passes').toBe(3);
+  expect(await press('['), 'and back to the one before').toBe(forward[1]);
+
+  /* on a long entry, `[` goes to that entry's OWN head first — what every document does, and the
+     reason both keys measure against where a jump lands rather than against the reading line the
+     URL tracker uses. */
+  await page.evaluate(() => { document.getElementById('p267').scrollIntoView(); window.scrollBy(0, 900); });
+  expect(await press('['), 'first press on a long pass returns to its head').toBe('p267');
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  expect(await press('['), 'nothing above the first pass').toBe(null);
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  const end = await press(']');
+  expect(await press(']'), 'and nothing past the last').toBe(end);
+});
+
+test('] is not stolen from someone typing it', async ({ page }) => {
+  await page.goto(PAGE);
+  await page.evaluate(() => {
+    const ta = document.createElement('textarea');
+    ta.id = 'probe'; ta.style.cssText = 'position:fixed;top:0;left:0;z-index:9999';
+    document.body.appendChild(ta); ta.focus();
+  });
+  const before = await page.evaluate(() => window.pageYOffset);
+  await page.keyboard.press(']');
+  await page.waitForTimeout(400);
+  expect(await page.evaluate(() => document.getElementById('probe').value),
+         'the character belongs to the field that has focus').toBe(']');
+  expect(await page.evaluate(() => window.pageYOffset), 'and the page did not move').toBe(before);
+});
+
 /* ---------- one rung simpler: the step-down control on a drawn line ----------
    Every mark on this page is drawn in the browser from a parse tree, so any line can be redrawn at
    any rung of the ladder. These check that the stepping is down-only, never repeats itself, and —
