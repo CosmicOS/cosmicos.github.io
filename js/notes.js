@@ -21,7 +21,6 @@
     '  bottom:10px!important;top:auto!important;width:auto!important}}',
     '.nt-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:#e0a33c;',
     '  box-shadow:0 0 0 2px rgba(224,163,60,.25);cursor:pointer;z-index:60}',
-    '.nt-mark{background:rgba(224,163,60,.18);border-bottom:1px dashed #c68a2e;border-radius:2px}',
     '.nt-pop{position:absolute;z-index:70;width:min(340px,92vw);background:#0d1219;color:#dde3ea;',
     '  border:1px solid #33506080;border-radius:9px;padding:10px 11px;box-shadow:0 10px 30px #0009;',
     '  font-family:Georgia,serif;font-size:14px;line-height:1.45}',
@@ -43,7 +42,8 @@
     '.nt-badge i{font-style:normal;color:#7fd18d}',
     '.nt-badge.nt-hot{border-color:#3e7a4d}',
     /* a word you left a note on, so the answer comes back where the question was */
-    '.nt-mark{background:rgba(224,163,60,.14);border-bottom:1px dotted #b8862f;cursor:pointer}',
+    '.nt-mark{background:rgba(224,163,60,.14);border-bottom:1px dotted #b8862f;border-radius:2px;',
+    '  cursor:pointer}',
     '.nt-mark.nt-answered{background:rgba(127,209,141,.18);border-bottom:1px solid #5aa06c}',
     '.nt-mark.nt-flash{animation:ntflash 1.4s ease-out 1}',
     '@keyframes ntflash{0%{background:rgba(127,209,141,.55)}100%{background:rgba(224,163,60,.14)}}',

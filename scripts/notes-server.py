@@ -29,7 +29,7 @@ keeps the file itself out of _site, and nothing has to be remembered or stripped
 It used to be a tag in index.html that "did nothing in production" — which still meant shipping the
 script and firing a 404 at /api/notes on every visitor's page load.
 """
-import http.server, json, os, sqlite3, sys, urllib.parse
+import contextlib, http.server, json, os, sqlite3, sys, urllib.parse
 from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,6 +61,9 @@ COLUMNS = {'changed': 'TEXT'}
 
 
 def db():
+    """A connection, ready to use. Take it as `with closing(db())` or `with writing()` — `with db()`
+    alone is a transaction, not a lifetime: sqlite3's context manager commits and leaves the
+    connection open, so every request leaked one."""
     c = sqlite3.connect(DB)
     c.row_factory = sqlite3.Row
     c.executescript(SCHEMA)
@@ -69,6 +72,17 @@ def db():
         if col not in have:
             c.execute('ALTER TABLE issues ADD COLUMN %s %s' % (col, typ))
     return c
+
+
+@contextlib.contextmanager
+def writing():
+    """A connection that commits and then closes — the two `with db()` was only doing one of."""
+    c = db()
+    try:
+        with c:
+            yield c
+    finally:
+        c.close()
 
 
 def now():
@@ -94,7 +108,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return json.loads(self.rfile.read(n) or b'{}')
 
     def log_message(self, fmt, *args):          # quiet: one line per API call only
-        if '/api/' in (args[0] if args else ''):
+        """ARGS ARE NOT ALL STRINGS. This is the hook for log_request AND log_error, and send_error
+        calls the latter with an HTTPStatus first, not a request line. `in` on that raised TypeError
+        and killed the handler thread mid-response, so every 404 reached the browser as a dropped
+        connection instead."""
+        first = str(args[0]) if args else ''
+        if '/api/' in first:
             sys.stderr.write("  %s\n" % (fmt % args))
 
     # --- routes -------------------------------------------------------------
@@ -121,7 +140,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if where:
                 sql += ' WHERE ' + ' AND '.join(where)
             sql += ' ORDER BY id'
-            with db() as c:
+            with contextlib.closing(db()) as c:
                 rows = [dict(r) for r in c.execute(sql, args)]
             return self._json({'notes': rows})
 
@@ -138,8 +157,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     # --- static, with the widget spliced in ---------------------------------
     def _local_html(self, path):
-        """the file _site would serve for this URL, if it is an HTML page."""
-        p = os.path.join(SITE, urllib.parse.unquote(path).lstrip('/'))
+        """the file _site would serve for this URL, if it is an HTML page.
+
+        THE RESULT MUST BE INSIDE _site. This joins the URL path itself rather than going through
+        SimpleHTTPRequestHandler.translate_path, which is what strips `..` — so `/%2e%2e/x.html`
+        unquoted to `../x.html` and read any HTML file on the disk. The server binds 0.0.0.0."""
+        p = os.path.realpath(os.path.join(SITE, urllib.parse.unquote(path).lstrip('/')))
+        if os.path.commonpath([p, os.path.realpath(SITE)]) != os.path.realpath(SITE):
+            return None
         if os.path.isdir(p):
             p = os.path.join(p, 'index.html')
         return p if p.endswith('.html') and os.path.isfile(p) else None
@@ -173,7 +198,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if u.path == '/api/notes':
             if not (b.get('body') or '').strip():
                 return self._json({'error': 'empty note'}, 400)
-            with db() as c:
+            with writing() as c:
                 cur = c.execute(
                     'INSERT INTO issues (created_at, author, status, page, section, anchor, context, body)'
                     ' VALUES (?,?,?,?,?,?,?,?)',
@@ -185,14 +210,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self._json({'id': cur.lastrowid})
 
         if u.path == '/api/notes/close':
-            with db() as c:
+            with writing() as c:
                 c.execute('UPDATE issues SET status="done", closed_at=?, reply=COALESCE(?, reply),'
                           ' changed=COALESCE(?, changed) WHERE id=?',
                           (now(), b.get('reply'), b.get('changed'), b.get('id')))
             return self._json({'ok': True})
 
         if u.path == '/api/notes/reopen':
-            with db() as c:
+            with writing() as c:
                 c.execute('UPDATE issues SET status="open", closed_at=NULL WHERE id=?', (b.get('id'),))
             return self._json({'ok': True})
 
@@ -216,7 +241,7 @@ PORT = 3333          # fixed, so the phone bookmark never goes stale
 
 if __name__ == '__main__':
     port = int(sys.argv[1]) if len(sys.argv) > 1 else PORT
-    db().close()
+    db().close()                                     # create/migrate once, loudly, before serving
     if not os.path.isdir(SITE):
         sys.exit('no _site/ — run scripts/build.sh (or jekyll build) first')
     srv = http.server.ThreadingHTTPServer(('0.0.0.0', port), Handler)
