@@ -66,12 +66,16 @@
     }
   }
 
-  /* ── LETTING GO OF THE MENU. It opens on click (touch has no hover); this is only the other half,
-     so that it stops being sticky once the reader has moved on. Everything here CLOSES — `<details>`
+  /* ── LETTING GO OF A MENU. It opens on click (touch has no hover); this is only the other half, so
+     that it stops being sticky once the reader has moved on. Everything here CLOSES — `<details>`
      does the opening and the keyboard, so with the script gone the menu still works. The grace timer
-     is so that crossing the gap to the panel does not count as leaving. */
-  var menu = bar.querySelector('.tb-menu');
-  if (menu) {
+     is so that crossing the gap to the panel does not count as leaving.
+
+     ANY `<details data-autoshut>`, not just the bar's own. This was written twice, once here and once
+     in js/listener.js for the per-entry menus, each with a comment naming the other. The marker is on
+     the element so neither file has to know what the other builds; this one runs deferred, after the
+     listener has added its menus to the page. */
+  function autoShut(menu) {
     var summary = menu.querySelector('summary'), shutTimer = null;
     var hold = function () { clearTimeout(shutTimer); shutTimer = null; };
     var shut = function () { hold(); menu.open = false; };
@@ -87,6 +91,7 @@
       if (menu.open && !menu.contains(e.target)) shut();
     });
   }
+  Array.prototype.forEach.call(document.querySelectorAll('details[data-autoshut]'), autoShut);
 
   var watches = [];
   Array.prototype.forEach.call(document.querySelectorAll('section.watch'), function (sec) {

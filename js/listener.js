@@ -61,15 +61,14 @@ function reckonNum(v, barred){
     ((DATA.runs && DATA.runs.spine) || {});
   var TONE  = { '0':'˩','1':'˨','2':'˦','3':'˥' };
   function wireOf(el){ var c = el.getAttribute('data-code'); return (c && WIRE[c]) ? WIRE[c] : {}; }
-  function tones(code, cls){                   // RAW: the four-symbol stream, in real tone chars (copy-pasteable)
-    var s = ''; for (var i = 0; i < code.length; i++) s += TONE[code.charAt(i)] || '?';
-    // `.tones` is the generated wire-quote look (letter-spaced); `.tn` is the founder writing pitches
-    // down in a row. Same characters, one implementation — the caller says which page-furniture it is.
-    return '<span class="' + (cls || 'tones') + '">' + s + '</span>';
-  }
-  function TONE_RUN(code){                     // the pitch characters alone, no wrapper
+  function TONE_RUN(code){                     // RAW: the four-symbol stream in real tone chars, no wrapper
     var s = ''; for (var i = 0; i < code.length; i++) s += TONE[code.charAt(i)] || '?';
     return s;
+  }
+  // `.tones` is the generated wire-quote look (letter-spaced); `.tn` is the founder writing pitches
+  // down in a row. Same characters, one implementation — the caller says which page-furniture it is.
+  function tones(code, cls){
+    return '<span class="' + (cls || 'tones') + '">' + TONE_RUN(code) + '</span>';
   }
   function cupsOf(code) {                    // 1-before-2 = a lone marker outside the cup; 2/3 = cups; else bits
     var out = [], bits = '';
@@ -796,6 +795,7 @@ function reckonNum(v, barred){
          hang off an entry goes in beside it. */
       var menu = document.createElement('details');
       menu.className = 'entry-menu';
+      menu.setAttribute('data-autoshut', '');    // js/topbar.js does the closing — see autoShut there
       menu.innerHTML =
         '<summary aria-label="more for this pass" title="more for this pass">⋮</summary>' +
         '<div class="entry-menu-pop">' +
@@ -813,21 +813,6 @@ function reckonNum(v, barred){
         panel.classList.toggle('open', box.checked);
       });
 
-      /* closing only (js/topbar.js does the same for `.tb-menu`). The timer is grace for crossing
-         the gap from the dots to the panel. */
-      var summary = menu.querySelector('summary'), shutTimer = null;
-      function hold(){ clearTimeout(shutTimer); shutTimer = null; }
-      function shut(){ hold(); menu.open = false; }
-      if (window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        menu.addEventListener('mouseleave', function(){ hold(); shutTimer = setTimeout(shut, 400); });
-        menu.addEventListener('mouseenter', hold);
-      }
-      document.addEventListener('keydown', function(e){
-        if (e.key === 'Escape' && menu.open) { shut(); summary.focus(); }
-      });
-      document.addEventListener('pointerdown', function(e){
-        if (menu.open && !menu.contains(e.target)) shut();
-      });
     });
   })();
 
