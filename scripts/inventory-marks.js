@@ -290,6 +290,7 @@ ${rows.join('\n')}
 
 ${problems.length ? '**DRIFT:**\n' + problems.map(p => '- ' + p).join('\n') : '_No drift: every class declared, every closed class within its inventory._'}
 `;
+  fs.mkdirSync(path.join(ROOT, 'plans'), { recursive: true });   // gitignored: absent in a fresh clone
   fs.writeFileSync(path.join(ROOT, 'plans/MARK_INVENTORY.md'), md);
   fs.writeFileSync(SHEET, sheetText);
   console.log(md);

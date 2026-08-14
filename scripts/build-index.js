@@ -74,6 +74,7 @@ const out = {
   statements, byCode, rows, passes, signs: signsOut, coins,
 };
 const dest = path.join(ROOT, 'plans/listener_index.json');
+fs.mkdirSync(path.dirname(dest), { recursive: true });   // plans/ is gitignored: absent in a fresh clone
 fs.writeFileSync(dest, JSON.stringify(out, null, 1));
 console.log(`plans/listener_index.json: ${Object.keys(statements).length} statements, ${rows.length} wire rows, ` +
             `${passes.length} passes, ${Object.keys(signsOut).length} signs, ${coins.length} coins`);
