@@ -10,7 +10,36 @@ kramdown:
   syntax_highlighter_opts:
     default_lang: haskell
 
+# SETTING `exclude` REPLACES JEKYLL'S DEFAULT LIST, it does not add to it — so everything Jekyll
+# would have excluded on its own has to be named again here, or it ships. The first block below IS
+# Jekyll's own default list. It looks redundant and is not.
+#
 # js/notes.js is the LOCAL note-taking widget and is deliberately not published: scripts/notes-server.py
 # serves it from the repo and injects its script tag into the pages it hands over, so the built site
 # has no reference to it and no 404 to fire.
-exclude: [scripts, plans, Gemfile, Gemfile.lock, js/notes.js]
+exclude:
+  # Jekyll's defaults, restored (see above)
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  # the repo's own
+  - scripts
+  - plans
+  - js/notes.js
+  # the test harness and its trappings: nothing a reader of the site ever asks for
+  - tests
+  - test-results
+  - playwright-report
+  - playwright.config.js
+  - package.json
+  - package-lock.json
+  # local scratch: the shared note queue, and an rvm-era serve helper
+  - notes.db
+  - go.sh
