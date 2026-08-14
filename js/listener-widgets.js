@@ -17,7 +17,7 @@
    label, measured from the button itself rather than declared in the stylesheet: the wording, the
    font and the font-size all move, and a hard-coded width silently stops matching any of them.
    (`ch` is not the answer either — in this face a character advance is not one ch.)
-   The twin of this lives in js/circuit-sim.js, for the let-it-run/rest toggle. */
+   Used by the three widgets below and by js/circuit-sim.js, which index.html loads after this. */
 function pinWidth(btn, labels) {
   if (!btn) return;
   var was = btn.textContent, w = 0;
