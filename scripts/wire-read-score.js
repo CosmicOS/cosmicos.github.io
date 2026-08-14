@@ -24,11 +24,8 @@
 'use strict';
 const fs = require('fs'), path = require('path');
 
-const TONE = { '0': '˩', '1': '˨', '2': '˦', '3': '˥' };
-const toneOf = code => [...code].map(c => TONE[c] || '?').join('');
-const MIN = 12;
-const MARK = { '▪': '˨', '▫': '˩', '⟅': '˦', '⟆': '˥' };   // ▪=1 ▫=0 ⟅=2 ⟆=3, then coded as tones
-const marksToTones = r => [...r].map(c => MARK[c]).join('');                       // shorter than this is a fragment, not a claim
+const { toneOf, marksToTones } = require('./tones');
+const MIN = 12;                                    // shorter than this is a fragment, not a claim
 
 const dir = process.argv[2] || path.join(
   process.env.TMPDIR || '/tmp', 'claude-1000', '-home-paulfitz-cvs-cosmicos-github-io',
