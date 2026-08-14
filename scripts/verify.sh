@@ -1,54 +1,34 @@
 #!/usr/bin/env bash
-# One command to answer "is the listener lesson still good?" — runs the three gates in order
-# and stops loudly at the first failure. Run before considering any prose/renderer/data change done.
+# One command to answer "is the listener lesson still good?" — runs every gate in order and stops
+# loudly at the first failure. Run before considering any prose/renderer/data change done.
 #
-#   1. prose-check    — every coined token appears at/after the pass that coins it (no premature marks)
-#   2. audit-coins    — show-before-coin: a sign is shown (fragment/.sg) before its word is coined
-#   3. audit-signs    — show-before-point: the mark itself. audit-coins governs the WORD and takes a
-#                       prose `.sg` as proof the sign was shown, so the FIRST inline glyph is checked
-#                       by nothing. This requires a figure showing the sign where the prose first
-#                       points at it — the §207 hole, found by a reader in 2026-08-01.
-#   3. audit-readback — show-after-coin: every coined word is re-shown after minting (fragment/.sg/.readback)
-#   4. audit-watch    — the change of watch: a taking-up record at every handoff, chaining hand to hand
-#   5. audit-glyphs   — no invented glyph coins; no hand-typed sign in prose (only her own notation)
-#   6. audit-values   — a "gives" row shows sender-side evaluation: the set is closed & each justified
-#   7. inventory-marks — every span class that puts a mark on the page is declared & within its shapes
-#   8. audit-hands    — every hand-drawn row declares why it is not a wire quote; every wire claim is anchored
-#      audit-drawn    — and every sign a row DRAWS is one that statement actually sent (no invented or
-#      audit-msg      — and every .msg block declares what it is (wire | fragment | hers) and IS it
-#                       doubled marks; omission is fine, invention is not) — caught §221 printing a stem twice
-#   9. audit-provenance — every wire quote sits where its pass sits in the message (a statement can be real
-#                         yet quoted at the wrong time; caught §511 and §591, both real yet upstream)
-#  10. audit-assets   — every image (inline or referenced) decodes and validates; no broken material ships
-#  11. build         — build-frags verifies every data-code is a real transmitted statement, then jekyll build
-#  12. render-check   — renders the story (/) through real headless Chrome; fails on JS errors / unrendered signs
-#      audit-blanks   — and every container the renderer fills came back with marks in it. NOT a count:
-#                       the old `scrawl spans > 100` passed with 96% of the book blanked (measured)
-#  13. browser suite  — Playwright drives the built site the way a reader does: the live exhibits, and the
-#                       top bar's behavior, which NOTHING else here can see. Every other check reads a
-#                       static DOM; these are the only ones that scroll, tap, follow a link and look at
-#                       what happened. What they have already caught: an anchored entry landing UNDER the
-#                       sticky bar, a bar whose background-color was transparent over a photograph, and a
-#                       link to a deep pass landing wrong one load in eight. It is the slowest step by
-#                       far (~50s) — run it before calling something done, not between nudges.
+# No index of the steps here: each step says what it is, at the step. A hand-kept list of what is one
+# screen below it drifts, and this one had.
 #
-#  (plus STEP 0, added 07-24: build-frags runs FIRST too, so the audits at 2-3 resolve data-codes against a
-#   fresh table rather than a stale one — see the comment at that step.)
+# THE ORDER IS LOAD-BEARING in two places only: step 0 must precede the audits that resolve
+# data-codes, and the build must precede render-check.
 #
 # Usage:  scripts/verify.sh
-# (render-check needs Chrome/Chromium; it rebuilds _site itself, so step 11's build is the fast, loud pre-check.)
+# (render-check needs Chrome/Chromium; it rebuilds _site itself, so the `build` step before it is the
+#  fast, loud pre-check.)
 set -euo pipefail
+SELF="$(readlink -f "$0")"          # before the cd, while "$0" still resolves
 cd "$(dirname "$0")/.."
 
-step() { printf '\n\033[1m── %s ──\033[0m\n' "$1"; }
+# The step numbers count themselves, so inserting a gate is one line and nothing below it moves.
+# TOTAL is the number of `step` calls in this file, less the step 0 preamble.
+TOTAL=$(( $(grep -c '^step "' "$SELF") - 1 ))
+n=-1
+step() { n=$((n + 1)); printf '\n\033[1m── %d/%d  %s ──\033[0m\n' "$n" "$TOTAL" "$1"; }
 
 # STEP 0 — regenerate the wire lookup table BEFORE the audits that read it.
 # audit-coins and audit-readback resolve a `data-code` through _includes/wire_quotes.json, which
-# build-frags writes — but build-frags only ran at step 11. So the first verify after adding a NEW
-# data-code read a stale table, could not find the new statement, and reported a show-before-coin
-# violation that did not exist (hit 07-24 on §544). A gate that cries wolf gets prose "fixed" to
-# satisfy it, which is worse than no gate. Cheap and idempotent, so just run it first.
-step "0/15  prose -> arc, then build-frags (refresh the wire table the audits resolve against)"
+# build-frags writes — but build-frags only ran inside the `build` step, near the end. So the first
+# verify after adding a NEW data-code read a stale table, could not find the new statement, and
+# reported a show-before-coin violation that did not exist (hit 07-24 on §544). A gate that cries
+# wolf gets prose "fixed" to satisfy it, which is worse than no gate. Cheap and idempotent, so just
+# run it first.
+step "prose -> arc, then build-frags (refresh the wire table the audits resolve against)"
 # The diary's SOURCE is _prose/*.html (the keeper's words) + _prose/*.blocks.json (the exhibits).
 # _includes/listener/*.html is GENERATED from those and must not be hand-edited; regenerate first so
 # every gate below reads what the prose actually says.  The splice asserts an exact round-trip, which
@@ -57,7 +37,7 @@ step "0/15  prose -> arc, then build-frags (refresh the wire table the audits re
 node scripts/prose.js build
 node scripts/build-frags.js > /dev/null
 
-step "1/15  prose-check (coined tokens introduced before use)"
+step "prose-check (coined tokens introduced before use)"
 node scripts/prose-check.js
 node scripts/check-american.js
 node scripts/check-limbs.js
@@ -66,53 +46,69 @@ node scripts/check-limbs.js
 # `_data/` artifacts are hand-copied from the generator, which still emits private-use, so this
 # catches a copy that skipped scripts/braille-codepoints.js.
 node scripts/braille-codepoints.js --check
+# and the renderer's tone map is the one the tools read the wire with
+node scripts/tones.js --check
 # and a hand row may not write a count as bare bits after §267 — the notation moved and the hand rows
 # do not move with it. Three survived the 08-07 change and were found one at a time, by eye.
 node scripts/audit-bare-bits.js
 
-step "2/15  audit-coins (show-before-coin: sign shown before its word is coined)"
+step "audit-coins (show-before-coin: sign shown before its word is coined)"
 node scripts/audit-coins.js
 
-step "3/15  audit-signs (show-before-point: a figure shows the sign where the prose first points)"
+# THE MARK ITSELF, not the word for it. audit-coins governs the WORD and takes a prose `.sg` as proof
+# the sign was shown, so the FIRST inline glyph is checked by nothing without this — the §207 hole.
+step "audit-signs (show-before-point: a figure shows the sign where the prose first points)"
 node scripts/audit-signs.js
 
-step "4/15  audit-before-after (a notation may not change by assertion — show one line both ways)"
+step "audit-before-after (a notation may not change by assertion — show one line both ways)"
 node scripts/audit-before-after.js
 
-step "5/15  audit-readback (show-after-coin: every coined word re-shown after minting)"
+step "audit-readback (show-after-coin: every coined word re-shown after minting)"
 node scripts/audit-readback.js
 
-step "6/15  audit-watch (a taking-up record at every handoff, succession unbroken)"
+step "audit-watch (a taking-up record at every handoff, succession unbroken)"
 node scripts/audit-watch.js
 
-step "7/15  audit-glyphs (no fabricated marks: coins are words, signs are .sg)"
+step "audit-glyphs (no fabricated marks: coins are words, signs are .sg)"
 node scripts/audit-glyphs.js
 node scripts/audit-notation.js
 
-step "8/15  audit-values (every "gives" row is one the keeper can settle herself)"
+step "audit-values (every \"gives\" row is one the keeper can settle herself)"
 node scripts/audit-values.js
 
-step "9/15 inventory-marks (every mark class declared; closed shape inventories)"
+step "inventory-marks (every mark class declared; closed shape inventories)"
 node scripts/inventory-marks.js --check
 
-step "10/15 audit-hands (every hand-drawn row declares why it is not a wire quote)"
+# audit-hands   every hand-drawn row declares why it is not a wire quote; every wire claim is anchored
+# audit-drawn   every sign a row DRAWS is one that statement actually sent. Omission is fine,
+#               invention is not — this caught §221 printing a stem twice.
+# audit-msg     every .msg block declares what it is (wire | fragment | hers), and IS it
+step "audit-hands (every hand-drawn row declares why it is not a wire quote)"
 node scripts/audit-hands.js
 node scripts/audit-drawn.js
 node scripts/audit-msg.js
 
-step "11/15 audit-provenance (every wire quote sits where its pass sits in the message)"
+# A STATEMENT CAN BE REAL AND STILL BE QUOTED AT THE WRONG TIME — the other gates only ask whether
+# the wire contains it. Caught §511 and §591, both real and both upstream of the pass quoting them.
+step "audit-provenance (every wire quote sits where its pass sits in the message)"
 node scripts/audit-provenance.js
 
-step "12/15 audit-assets (embedded images decode + validate — no broken material reaches a reader)"
+step "audit-assets (embedded images decode + validate — no broken material reaches a reader)"
 node scripts/audit-assets.js
 
-step "13/15  build (verify wire quotes + jekyll build)"
+step "build (verify wire quotes + jekyll build)"
 scripts/build.sh
 
-step "14/15  render-check (real post-JS DOM through headless Chrome)"
+# render-check  renders the story (/) through real headless Chrome; fails on JS errors and on any
+#               sign that reached the page unrendered.
+# audit-blanks  and every container the renderer fills came back with marks in it. NOT A COUNT: the
+#               old `scrawl spans > 100` passed with 96% of the book blanked (measured).
+step "render-check (real post-JS DOM through headless Chrome)"
 scripts/render-check.sh
 
-step "15/15  browser suite (Playwright drives the built site the way a reader does)"
+# THE ONLY STEP THAT SCROLLS, TAPS, AND FOLLOWS A LINK — every other check reads a static DOM, so the
+# live exhibits and the bar's behavior are invisible to all of them. Slowest by far (~60s).
+step "browser suite (Playwright drives the built site the way a reader does)"
 if [ -x node_modules/.bin/playwright ]; then
   npx playwright test
 else
