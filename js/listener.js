@@ -790,9 +790,24 @@ function reckonNum(v, barred){
               || entry.querySelector(':scope > .stamp');
       if (!head) return;
 
+      /* THE WAY OUT TO THE MESSAGE ITSELF. Everything on this page obeys the gloss rule — it says
+         what the wire sent and never what it means. message.html is the other side of that: the
+         statements written out, annotated, runnable in the console. Until now the only route there
+         was the coda a hundred and fifty thousand pixels down, or the burger — neither of which is
+         where the question occurs to you, which is at the row.
+
+         `#line-<stanza>` is that page's own anchor. The stanza is carried per statement in the spine
+         (`s`) because it is NOT the statement's place plus a constant — see scripts/wire.js. The
+         run's low end, not its shown rows: the stretch is what the panel beside this opens, so both
+         items name the same thing. */
+      var lo = SPINE[RUNS[id].lo], line = lo && lo.s;
+      var out = line === undefined || line === null ? '' :
+        '<a class="run-out" href="message.html#line-' + line + '"' +
+        ' title="leaves the log for the annotated message, where this stretch is written out">' +
+        'Find it in the message</a>';
+
       /* a `<details>`, like the top bar's menu: it brings the opening, the keyboard and the focus
-         ring, so the script below is only the closing. One item today; the next thing that wants to
-         hang off an entry goes in beside it. */
+         ring, so the script below is only the closing. */
       var menu = document.createElement('details');
       menu.className = 'entry-menu';
       menu.setAttribute('data-autoshut', '');    // js/topbar.js does the closing — see autoShut there
@@ -800,7 +815,7 @@ function reckonNum(v, barred){
         '<summary aria-label="more for this pass" title="more for this pass">⋮</summary>' +
         '<div class="entry-menu-pop">' +
           '<label class="run-check"><input type="checkbox" aria-controls="' + id + '-run">' +
-          '<span>Show whole run</span></label>' +
+          '<span>Show whole run</span></label>' + out +
         '</div>';
       entry.appendChild(menu);
 

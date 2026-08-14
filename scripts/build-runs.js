@@ -51,7 +51,10 @@ for (const r of Object.values(runs))
   for (let i = r.lo; i <= r.hi; i++) {
     if (i in spine) continue;
     if (!WIRE.parses[i]) { missing++; continue; }
-    spine[i] = { c: WIRE.codes[i] || null, p: WIRE.parses[i] };
+    /* `s` is where the statement sits in message.html — `#line-<s>`. Carried per statement rather
+       than computed on the page, because the gap between a statement's place and its stanza there
+       is not a constant: see `stanzas` in scripts/wire.js. */
+    spine[i] = { c: WIRE.codes[i] || null, p: WIRE.parses[i], s: WIRE.stanzas[i] };
   }
 
 if (missing) {

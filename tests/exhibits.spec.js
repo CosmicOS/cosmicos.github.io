@@ -423,6 +423,40 @@ test('a run is drawn in its own pass\'s hand, not the end of the book\'s', async
     .not.toMatch(/[⡀-⣿]/);
 });
 
+/* THE WAY OUT TO message.html, the second item in that menu. It is a bare href, so nothing about it
+   fails loudly: a wrong number is a link that lands on some OTHER statement and reads as if it were
+   the right one. Both halves are checked here — the number the page prints, and that message.html
+   still has a stanza by that name. */
+test('every run offers a way into the message, and it lands on the right statement', async ({ page }) => {
+  const SPINE = require('../_includes/wire_runs.json').spine;
+  const MSG = require('../_data/msg.json');
+  const byStanza = {}; for (const s of MSG) byStanza[s.stanza] = s;
+
+  await page.goto(PAGE);
+  const ids = Object.keys(RUNS);
+  await expect(page.locator('.entry-menu .run-out')).toHaveCount(ids.length);
+
+  const hrefs = await page.locator('.entry-menu .run-out').evaluateAll(
+    as => as.map(a => [a.closest('.entry').id, a.getAttribute('href')]));
+  for (const [id, href] of hrefs) {
+    const stanza = +String(href).replace('message.html#line-', '');
+    expect(href, `${id} names a stanza on the message page`).toMatch(/^message\.html#line-\d+$/);
+    /* the anchor's own stanza must carry the wire code of the statement the run begins at. This is
+       what catches the failure the feature was born with: `stanza = place + 3` holds for the
+       opening and drifts to +215 by the end, so a constant would pass a spot check and be wrong
+       across most of the book. */
+    expect(byStanza[stanza] && byStanza[stanza].code,
+           `${id} → line-${stanza} must be the run's first saying`).toBe(SPINE[RUNS[id].lo].c);
+  }
+
+  // and the targets exist over there — the two pages are built by different scripts
+  await page.goto('/message.html');
+  const missing = await page.evaluate(
+    ns => ns.filter(n => !document.getElementById('line-' + n)),
+    [...new Set(hrefs.map(([, h]) => +String(h).replace('message.html#line-', '')))]);
+  expect(missing, 'every anchor the log points at is on the message page').toEqual([]);
+});
+
 /* ---------- one rung simpler: the step-down control on a drawn line ----------
    Every mark on this page is drawn in the browser from a parse tree, so any line can be redrawn at
    any rung of the ladder. These check that the stepping is down-only, never repeats itself, and —

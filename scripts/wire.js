@@ -24,6 +24,10 @@ const codes = {};                       // seq -> its wire code. NOT the inverse
                                         // only a code's FIRST place, so every later repeat of an
                                         // identical statement would come back with no code at all.
 const byCode = {};                      // code -> seq (first occurrence)
+/* seq -> the stanza it is in message.html, which is `id="line-<stanza>"` there. NOT seq plus a
+   constant: message.html numbers every stanza, and the prose, comments and file markers between the
+   statements push the two apart from 3 at the opening to 215 by the end. */
+const stanzas = {};
 let seq = 0;
 for (const s of msg) {
   if ((s.role !== 'code' && s.role !== 'gate') || !s.code) continue;
@@ -31,6 +35,7 @@ for (const s of msg) {
   statements[seq] = (s.lines || []).join(' ').replace(/\s+/g, ' ').trim();
   parses[seq] = s.parse;
   codes[seq] = s.code;
+  stanzas[seq] = s.stanza;
   if (!(s.code in byCode)) byCode[s.code] = seq;
 }
 const codesByLen = Object.keys(byCode).sort((a, b) => b.length - a.length);   // longest-first for greedy split
@@ -146,4 +151,4 @@ function runsByEntry(rows) {
   return out.sort((a, b) => a.pass - b.pass);
 }
 
-module.exports = { msg, statements, parses, codes, byCode, count: seq, decompose, scanDiary, runsByEntry, TOL };
+module.exports = { msg, statements, parses, codes, stanzas, byCode, count: seq, decompose, scanDiary, runsByEntry, TOL };

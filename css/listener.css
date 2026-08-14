@@ -459,6 +459,15 @@
 /* `color-scheme` darkens the UNCHECKED box; `accent-color` only reaches the checked one */
 .entry-menu .run-check input { margin: 0; color-scheme: dark; accent-color: #5f9ab5; cursor: pointer; }
 
+/* the way out to message.html. Dimmer than the run check above it and ruled off from it, because
+   the two items are not peers: one opens more of this page, the other leaves it for the answer. */
+.entry-menu .run-out {
+  display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #233d4c;
+  font-family: var(--voice-station); font-size: var(--sz-word);
+  color: #7d9aab; text-decoration: none;
+}
+.entry-menu .run-out:hover, .entry-menu .run-out:focus-visible { color: #a8c4d4; text-decoration: underline; }
+
 /* No frame and no side padding: the rows sit on the prose's own left edge, marked off by the two
    rules and nothing else. Every other exhibit is an inset box because a keeper is holding it up;
    this is the part she didn't.
@@ -981,6 +990,7 @@
   .entry-menu { top: 8px; right: 8px; }
   .entry-menu > summary { padding: 11px 13px; }
   .entry-menu .run-check { font-size: var(--sz-mark); padding: 3px 0; }
+  .entry-menu .run-out { font-size: var(--sz-mark); padding: 6px 0 3px; }
 
   /* the founder's raw runs: wrap them. They are a stream, not a structured row —
      there is nothing to lose by breaking one, and everything to lose by hiding it. */
