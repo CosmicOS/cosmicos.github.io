@@ -31,6 +31,7 @@
 const fs = require('fs'), path = require('path');
 const DIR = path.resolve(__dirname, '../_includes/listener');
 const ORDER = require('./arc-order');
+const entries = require('./entries');
 
 /* Coins that changed the page's notation by assertion, inherited 08-01. DELETE a line when it is
  * paid — never add one. */
@@ -43,10 +44,8 @@ const paid = [], owing = [], broke = [];
 
 for (const f of ORDER) {
   const src = fs.readFileSync(path.join(DIR, f + '.html'), 'utf8');
-  const re = /<div class="entry"[\s\S]*?(?=<div class="entry"|$)/g;
-  let m;
-  while ((m = re.exec(src))) {
-    const sec = m[0], id = (sec.match(/id="(p\d+)"/) || [])[1] || '—';
+  for (const entry of entries.split(src)) {
+    const sec = entry.html, id = entry.id;
     let cm; const cre = /<span class="coin gl w" data-sign="([^"]*)"/g;
     while ((cm = cre.exec(sec))) {
       const key = id + ' ' + cm[1];

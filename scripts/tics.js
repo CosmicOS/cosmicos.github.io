@@ -6,6 +6,7 @@
 const fs=require('fs'),path=require('path');
 const dir=path.resolve(__dirname,'..','_includes/listener');
 const ORDER=require('./arc-order');
+const entries=require('./entries');
 const P={
   foreshadow:/\bthe someone\b|\ba someone\b|is coming\b|meant to (live|walk|rise|be made|be spoken|hold)|waiting, on|the one (who walks|at the (end|far))|someone is expected|what (the|it) .{0,25}(is for|was for)\b/gi,
   mortality:/\bbones now\b|\bis gone\b|will not (see|live to see)|across our deaths|dying hand|hand to (failing|dying) hand|the watch .{0,12}(gone )?(cold|dark)|\bdust\b|set down (her|his) pen|laid down (her|his) pen/gi,
@@ -23,10 +24,8 @@ function isSwellCloser(last){ // "not X. Y." antithesis OR lands on an abstract 
 let tot={foreshadow:0,mortality:0,plain:0,cold:0,lamp:0,swell:0,eulogy:0};
 for(const f of ORDER){
   const h=fs.readFileSync(path.join(dir,f+'.html'),'utf8');
-  const re=/<div class="entry" id="p(\d+)"[^>]*>/g;let m;
-  while((m=re.exec(h))){const p=+m[1],start=m.index+m[0].length;const tag=/<div\b[^>]*>|<\/div>/g;tag.lastIndex=start;let d=1,t;while(d>0&&(t=tag.exec(h)))d+=t[0]==='</div>'?-1:1;
-    const body=h.slice(start,tag.lastIndex-6);
-    const prose=(body.match(/<p[^>]*>[\s\S]*?<\/p>/g)||[]).map(x=>x.replace(/<[^>]+>/g,'')).join('\n');
+  for(const entry of entries.bodies(h)){const p=entry.pass;
+    const prose=(entry.html.match(/<p[^>]*>[\s\S]*?<\/p>/g)||[]).map(x=>x.replace(/<[^>]+>/g,'')).join('\n');
     if(!prose.trim())continue;
     const c={};for(const k in P)c[k]=(prose.match(P[k])||[]).length;
     const ps=prose.split('\n').filter(Boolean);

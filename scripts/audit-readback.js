@@ -11,6 +11,7 @@ const fs = require('fs'), path = require('path');
 const w = require(path.resolve(__dirname, '../_includes/wire_quotes.json'));
 const DIR = path.resolve(__dirname, '../_includes/listener');
 const FILES = require('./arc-order');
+const entries = require('./entries');
 const contains = (p, s) => Array.isArray(p) ? p.some(x => contains(x, s)) : String(p) === s;
 const unesc = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -18,10 +19,8 @@ const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 let gaps = [], ok = 0;
 for (const f of FILES) {
   const src = fs.readFileSync(path.join(DIR, f + '.html'), 'utf8');
-  const re = /<div class="entry"[^>]*id="(p\d+)"[\s\S]*?(?=<div class="entry"|$)/g;
-  let m;
-  while ((m = re.exec(src))) {
-    const sec = m[0], id = m[1];
+  for (const entry of entries.split(src)) {
+    const sec = entry.html, id = entry.id;
     let cm; const cre = /<span class="coin gl w" data-sign="([^"]*)"/g;
     while ((cm = cre.exec(sec))) {
       const sign = unesc(cm[1]);
