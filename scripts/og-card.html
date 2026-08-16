@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/css/main.css">
+<style>
+  /* SIZED FOR THE FEED, NOT FOR THE FILE. The card is authored at 1200x630 and almost never seen at
+     it: a Slack unfurl is about 400px wide, an X card about 500, a Bluesky embed about 570. So every
+     size here is really a size at ~0.4x, and the first version — 30px standfirst, 19px kicker — went
+     out at 12px and 8px on the wire. The rule used below is that nothing may be smaller than 26px,
+     which is the point where a caption is still legible at 0.4 scale. */
+  html, body { margin: 0; padding: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background-color: #05080b;
+    background-image: url("/images/party_planet.jpg");
+    background-size: 1200px auto;
+    background-repeat: no-repeat;
+    /* Pulled further up than the page does it: the type block below is taller now and the earth's
+       limb has to clear it, or the standfirst sits on the bright edge of the atmosphere. */
+    background-position: center -128px;
+  }
+  .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(5,8,11,.32) 0%, rgba(5,8,11,.66) 28%, #05080b 58%);
+  }
+  .card {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 72px 60px;
+    box-sizing: border-box;
+  }
+  /* 148px BECAUSE THE WORD IS SHORT. At the 124px that fitted "The Second Book" the wordmark filled
+     barely a third of the measure and the card read as mostly empty. A title sets the scale of
+     everything under it; it should run most of the width. */
+  h1 {
+    font-family: var(--voice-station);
+    font-size: 148px; line-height: 1; letter-spacing: -.005em;
+    color: #eaf2f6; margin: 0 0 26px; font-weight: normal;
+  }
+  /* TWO LINES, BROKEN BY HAND. Three lines of 39px serif under a 148px wordmark reads as a
+     paragraph, and a card is not read as a paragraph. The measure is set wide enough that the two
+     authored breaks are the ones that happen. */
+  .stand {
+    font-family: var(--voice-hers);
+    font-size: 39px; line-height: 1.34; color: #c3d2dd;
+    margin: 0 0 30px; max-width: 1130px;
+  }
+  /* THE WIRE IS THE ARTIFACT, so it is set as evidence rather than as a footer ornament — it is the
+     only thing on the card that is literally CosmicOS. Bigger than the caption sizes above it, in
+     the notation's own ink, trailing off under a fade because it does not end. */
+  .wire {
+    font-family: var(--voice-station);
+    font-size: 31px; letter-spacing: 3.4px; white-space: nowrap;
+    color: #cbb794; overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 70%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 70%, transparent 100%);
+  }
+  .wire i { font-style: normal; color: #8e8069; }
+  .wire u { text-decoration: none; color: #5c5548; }
+  .rule {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 8px;
+    background: linear-gradient(90deg, #c98b5a 0%, #8fb0c0 52%, #1d2a34 100%);
+  }
+  .kicker {
+    font-family: var(--voice-station);
+    font-size: 27px; letter-spacing: .22em; text-transform: uppercase;
+    color: #9dbccb; margin: 0 0 28px;
+  }
+</style>
+</head>
+<body>
+<div class="veil"></div>
+<div class="card">
+  <!-- THE CARD SELLS THE MESSAGE, NOT THE FICTION AROUND IT. It said "The Second Book — eleven
+       keepers of a lighthouse", which is wrong twice over: it put the wrapper in front of the thing
+       (a stranger seeing it has no idea CosmicOS is a real artifact, or that it is what the link is
+       actually about), and there is no lighthouse in the story — the keepers hold a signal station
+       on a tidal causeway, one post in a chain relaying down a coast. The book is named on the last
+       line, where it belongs: it is how you read this, not what it is. -->
+  <p class="kicker">an open source contact message</p>
+  <h1>CosmicOS</h1>
+  <!-- SHORTER THAN THE og:description, deliberately. The card is read at a glance from across a
+       feed; the fuller sentence is in the meta tag underneath for whoever stops on it. -->
+  <!-- The last clause points AT the wire below it, so the two elements are one statement instead of
+       a claim with an ornament under it: the card ends by handing over the actual artifact. -->
+  <p class="stand">Written to be understood by someone who shares no<br>
+    language, number or history with us. It begins like this:</p>
+  <div class="wire">12100103121113223312100103121211000<i>03121100013322331212113000312110</i><u>001330</u></div>
+</div>
+<div class="rule"></div>
+</body>
+</html>

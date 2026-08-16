@@ -1,5 +1,30 @@
 name: CosmicOS
 encoding: utf-8
+
+# ── WHAT A LINK TO THIS SITE LOOKS LIKE SOMEWHERE ELSE ────────────────────────────────────────────
+# A link is posted before it is read. With none of this, every paste of the site into Slack, Discord,
+# Bluesky, Mastodon or a group chat rendered as a bare URL — no title, no picture, nothing saying
+# there was a book on the other end. `_includes/header.html` builds the tags from these; a page may
+# override any of them in its own front matter.
+#
+# `url` is REQUIRED and must be absolute with its scheme: Open Graph has no notion of a relative
+# path, and a scraper handed `/images/og-second-book.jpg` fetches nothing. It is the canonical origin
+# only — `baseurl` above is still what joins on the front, so a move back to a project page (the
+# commented-out `/cosmicos`) needs no change here.
+url: https://cosmicos.github.io
+tagline: an open source contact message
+# THE FALLBACK, AND IT IS THE PROJECT'S AND NOT THE STORY'S. It is what a page that sets no
+# `description` of its own gets — the posts, the gate pages, anything added later. The story's pitch
+# lives in index.html's own front matter instead: it was here first, which handed every 2014 blog
+# post and every logic-gate page a description announcing a book about lighthouse keepers.
+description: >-
+  CosmicOS is an open source message designed to be readable by someone who shares no language,
+  number or history with us — a programming language that teaches itself from four symbols up.
+# 1200x630. Rebuild with `node scripts/build-og.js` after editing scripts/og-card.html.
+og_image: /images/og-second-book.jpg
+og_image_alt: >-
+  The Second Book — the earth's night limb, over a run of the message's four symbols.
+
 markdown: kramdown
 highlighter: rouge
 baseurl: 

@@ -6,6 +6,49 @@
         <title>{{ page.title }}</title>
         <link rel="alternate" type="application/rss+xml" title="CosmicOS RSS" href="/feed.xml" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        {% comment %} ══ THE CARD A LINK TO THIS PAGE TURNS INTO ═══════════════════════════════════
+             There was none of this, so every paste of the site anywhere rendered as a bare URL. The
+             defaults are in _config.yml; a page overrides `description`, `og_image` and `og_title`
+             in its own front matter.
+
+             ABSOLUTE URLS, ALWAYS. Open Graph is consumed by a scraper that is not on this origin
+             and does not know what a relative path is relative to, so both the image and the
+             canonical URL are prefixed with `site.url`. `page.url` already carries `baseurl`, hence
+             `site.url | append: page.url` and not all three joined.
+
+             ONE TITLE, TWO USES. `page.title` is written for a browser tab and so carries the
+             "CosmicOS: " prefix; a social card already shows the site name on its own line, which
+             made every preview read "CosmicOS — CosmicOS: an open source contact message". A page
+             may set `og_title` for the short form, and `/` does.
+        {% endcomment %}
+        {% comment %} `escape`, ON EVERY ONE OF THEM. These land inside a double-quoted attribute, and
+           the first description written with a quotation in it (slideshow.html, quoting Nick) closed
+           the attribute early and spilled the rest of the sentence into the tag as bare markup.
+           Apostrophes and ampersands are the same hazard. It goes LAST, after the whitespace
+           filters, so it escapes the text that is actually emitted. {% endcomment %}
+        {% assign og_title = page.og_title | default: page.title %}
+        {% capture og_desc %}{{ page.description | default: site.description | strip_newlines | strip }}{% endcapture %}
+        {% capture og_alt %}{{ page.og_image_alt | default: site.og_image_alt | strip_newlines | strip }}{% endcapture %}
+        {% assign og_img = page.og_image | default: site.og_image %}
+        <meta name="description" content="{{ og_desc | escape }}">
+        <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+        {% comment %} `book` for the story, `article` for a dated post, `website` for the rest — the
+           three types that mean anything to a scraper here. {% endcomment %}
+        <meta property="og:type" content="{% if page.url == '/' %}book{% elsif page.date %}article{% else %}website{% endif %}">
+        <meta property="og:site_name" content="{{ site.name }}">
+        <meta property="og:title" content="{{ og_title | escape }}">
+        <meta property="og:description" content="{{ og_desc | escape }}">
+        <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+        <meta property="og:image" content="{{ site.url }}{{ og_img }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="{{ og_alt | escape }}">
+        {% comment %} `summary_large_image` is the ONLY line here Twitter/X needs — it takes title,
+           description and image from the og: tags above. Without it the card is a thumbnail, which
+           is what the whole 1200x630 is drawn to avoid. Slack, Discord, Bluesky, Mastodon, iMessage
+           and Signal all read the og: tags and ignore this. {% endcomment %}
+        <meta name="twitter:card" content="summary_large_image">
         {% comment %} the phone's own chrome — address bar and status bar — takes the top bar's
            colour, so the browser furniture and the page's do not sit at two different darks. {% endcomment %}
         <meta name="theme-color" content="#111820">
