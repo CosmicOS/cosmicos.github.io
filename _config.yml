@@ -22,8 +22,11 @@ description: >-
   number or history with us — a programming language that teaches itself from four symbols up.
 # 1200x630. Rebuild with `node scripts/build-og.js` after editing scripts/og-card.html.
 og_image: /images/og-second-book.jpg
+# DESCRIBES THE CARD AS IT NOW STANDS. It said "The Second Book" for a while after the card had
+# already been retitled — which nobody sighted would ever have caught, because this is the one tag
+# here that is read aloud rather than looked at. Re-check it whenever scripts/og-card.html changes.
 og_image_alt: >-
-  The Second Book — the earth's night limb, over a run of the message's four symbols.
+  CosmicOS — the earth's night limb, over the opening run of the message's four symbols.
 
 markdown: kramdown
 highlighter: rouge
